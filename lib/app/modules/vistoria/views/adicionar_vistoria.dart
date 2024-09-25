@@ -117,7 +117,7 @@ class VistoriaFormPage extends StatelessWidget {
                     CarAndMotoFieldsWidget(),
 
                     // Botão para capturar/selecionar imagem
-                    Row(
+                    OverflowBar(
                       children: [
                         ElevatedButton.icon(
                           onPressed: () => _showImageSourceSelection(context),
