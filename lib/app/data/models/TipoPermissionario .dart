@@ -1,14 +1,14 @@
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 
 class TipoPermissionario {
-  int codTipoPermissao;
+  int? codTipoPermissao;
   String? descricao;
   String? reportAlvara;
   List<Vistoria> vistorias; // Relacionamento "muitos para um"
 
   // Construtor
   TipoPermissionario({
-    required this.codTipoPermissao,
+    this.codTipoPermissao,
     this.descricao,
     this.reportAlvara,
     this.vistorias = const [],
@@ -36,4 +36,3 @@ class TipoPermissionario {
     };
   }
 }
-

@@ -40,6 +40,8 @@ dependencies:
   printing: ^5.7.2
   get_storage: ^2.1.1
   image_picker: ^1.1.2
+  brasil_fields: ^1.15.0
+  easy_mask:
 
 dev_dependencies:
   flutter_test:

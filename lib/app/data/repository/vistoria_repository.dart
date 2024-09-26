@@ -1,4 +1,5 @@
 import 'package:vistoria_mobile/app/data/global/constants.dart';
+import 'package:vistoria_mobile/app/data/models/VeiculoDetran.dart';
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 import 'package:vistoria_mobile/app/data/models/vistoriaMobileDTO.dart';
 import 'package:vistoria_mobile/app/data/provider/vistoria_provider.dart';
@@ -25,9 +26,11 @@ class VistoriaRepository {
     }
   }
 
-  Future<dynamic> getPlaca({required int placa}) async {
+  Future<VeiculoDetran> getPlaca({required String placa}) async {
     var itens = await vistoriaclient.getPlacaDetraN(placa);
-    return itens;
+    VeiculoDetran veiculoDetran = VeiculoDetran.fromJson(itens);
+    print(itens);
+    return veiculoDetran;
   }
 
   Future<List<vistoriaMobileDTO>> getvistoriaMobileDTO({int? page}) async {

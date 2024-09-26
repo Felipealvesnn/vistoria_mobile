@@ -20,13 +20,14 @@ class vistoriaProvider extends GetConnect {
     }
   }
 
-  Future getPlacaDetraN(int placa) async {
+  Future getPlacaDetraN(String placa) async {
     timeout = const Duration(minutes: 10);
     final token = getUsuario();
+    token.token = "ff";
     final headers = {"Authorization": 'Bearer ${token.token}'};
 
     var response = await get(
-        "$baseUrlw2e/ConsultaPlaca?placa=$placa&blitz=n&blitzID=n",
+        "$pesquisarplacaURl/ConsultaPlaca?placa=$placa&blitz=n&blitzID=n",
         contentType: 'application/json',
         headers: headers);
 

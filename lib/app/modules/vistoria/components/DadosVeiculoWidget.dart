@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_controller.dart';
 
 class DadosVeiculoWidget extends StatelessWidget {
@@ -10,13 +12,13 @@ class DadosVeiculoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Lista de campos de Dados do Veículo com suas respectivas observações
-    final List<Map<String, String>> camposVeiculo = [
-      {'campo': 'chassi', 'label': 'Chassi', 'obs': 'chassiObs'},
-      {'campo': 'marcaModelo', 'label': 'Marca/Modelo', 'obs': 'marcaModeloObs'},
-      {'campo': 'ano', 'label': 'Ano', 'obs': 'anoObs'},
-      {'campo': 'cor', 'label': 'Cor', 'obs': 'corObs'},
-      {'campo': 'tipoVeiculo', 'label': 'Tipo de Veículo', 'obs': 'tipoVeiculoObs'},
-      {'campo': 'km', 'label': 'KM', 'obs': 'kmObs'},
+    final List<Map<String, dynamic>> camposVeiculo = [
+      {'controller': controller.chassiController, 'label': 'Chassi', 'obs': 'chassiObs'},
+      {'controller': controller.marcaModeloController, 'label': 'Marca/Modelo', 'obs': 'marcaModeloObs'},
+      {'controller': controller.anoController, 'label': 'Ano', 'obs': 'anoObs'},
+      {'controller': controller.corController, 'label': 'Cor', 'obs': 'corObs'},
+      {'controller': controller.tipoVeiculoController, 'label': 'Tipo de Veículo', 'obs': 'tipoVeiculoObs'},
+      {'controller': controller.kmController, 'label': 'KM', 'obs': 'kmObs'},
     ];
 
     return Column(
@@ -25,23 +27,21 @@ class DadosVeiculoWidget extends StatelessWidget {
         ...camposVeiculo.map((campo) {
           return Column(
             children: [
-              // Campo de texto (ao invés de checkbox)
-              // Obx(
-              //   () => 
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: campo['label']!,
-                    border: const OutlineInputBorder(),
-                  ),
-                  onChanged: (String? value) {
-                    // Atualiza o valor do campo no controlador
-                    controller.updateCampo(campo['campo']!, value ?? '');
-                  },
+              // Campo de texto com controlador
+              TextFormField(
+                controller: campo['controller'],
+                decoration: InputDecoration(
+                  labelText: campo['label'],
+                  border: const OutlineInputBorder(),
                 ),
-              //),
+                onChanged: (String? value) {
+                  // Atualiza o valor do campo no controlador
+                  controller.updateCampo(campo['obs'], value ?? '');
+                },
+              ),
               // Campo de observação, se necessário
               Obx(
-                () => controller.camposMap[campo['campo']] != null
+                () => controller.camposMap[campo['obs']] != null
                     ? Container(
                         margin: const EdgeInsets.only(top: 16.0),
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -52,7 +52,7 @@ class DadosVeiculoWidget extends StatelessWidget {
                           ),
                           onChanged: (String? value) {
                             // Atualiza a observação no controlador
-                            controller.updateCampo(campo['obs']!, value ?? '');
+                            controller.updateCampo(campo['obs'], value ?? '');
                           },
                         ),
                       )
