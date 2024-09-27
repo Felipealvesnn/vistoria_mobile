@@ -54,20 +54,15 @@ class VistoriaController extends GetxController {
     camposMap[campo] = valor;
   }
 
-  // Initializes dynamic fields
-  void addCamposDinamicamente(List<Map<dynamic, String>> campos) {
-    for (var campo in campos) {
-      camposMap.putIfAbsent(campo['campo'], () => false);
-      camposMap.putIfAbsent(campo['obs'], () => '');
-    }
-  }
-
   // Generates the JSON from the map
-  Map<dynamic, dynamic> generateJson() {
+  Future<Map<dynamic, dynamic>> generateJson() async {
+    // falta [agenteCod]
+    //[statusVistoria]
+    
     var vistoria = {
       "vistoriaId": 0,
       "idPermissionario": 0,
-      "codTipoPemissao": camposMap["codTipoPemissao"],
+      "codTipoPemissao": camposMap["codTipoPermissao"],
       "dataVistoria": "0001-01-01T00:00:00",
       "placa": camposMap["placa"],
       "chassi": camposMap["chassi"],
@@ -78,6 +73,7 @@ class VistoriaController extends GetxController {
       "km": camposMap["km"],
       ...camposMap // Mapa dinâmico contendo os campos e observações
     };
+    // await vistoriaProvider.postVistoria(vistoria);
     return vistoria;
   }
 
@@ -256,6 +252,5 @@ class VistoriaController extends GetxController {
     kmController.clear();
     selectedImages.clear();
     camposMap.clear();
-    placaController.clear();
   }
 }

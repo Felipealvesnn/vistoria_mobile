@@ -37,4 +37,19 @@ class vistoriaProvider extends GetConnect {
       throw Exception('Failed to load data!');
     }
   }
+  
+  Future postVistoria(Map<dynamic, dynamic> vistoria) async {
+    timeout = const Duration(minutes: 10);
+    final token = getUsuario();
+    final headers = {"Authorization": 'Bearer ${token.token}'};
+
+    var response = await post("$baseUrlw2e/Vistorium/VistoriaMobile",
+        vistoria, headers: headers);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load data!');
+    }
+  }
 }

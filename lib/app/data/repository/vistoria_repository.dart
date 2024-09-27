@@ -52,4 +52,14 @@ class VistoriaRepository {
       return [];
     }
   }
+  
+  Future<void> postVistoria(Map<dynamic, dynamic> vistoria) async {
+    try {
+      // Envia a notificação para o provedor
+      await vistoriaclient.postVistoria(vistoria);
+    } catch (e) {
+      print("Erro ao enviar notificação: $e");
+    }
+  }
+
 }

@@ -11,17 +11,38 @@ class MotoFieldsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> camposMoto = [
-      {'campo': 'ruidoMotor', 'label': 'Ruído do Motor', 'obs': 'ruidoMotorObs'},
-      {'campo': 'redutoresTemperatura', 'label': 'Redutores de Temperatura', 'obs': 'redutoresTemperaturaObs'},
+      {
+        'campo': 'ruidoMotor',
+        'label': 'Ruído do Motor',
+        'obs': 'ruidoMotorObs'
+      },
+      {
+        'campo': 'redutoresTemperatura',
+        'label': 'Redutores de Temperatura',
+        'obs': 'redutoresTemperaturaObs'
+      },
       {'campo': 'kitTracao', 'label': 'Kit de Tração', 'obs': 'kitTracaoObs'},
-      {'campo': 'chavesIgnicaoBau', 'label': 'Chave de Ignição do Baú', 'obs': 'chavesIgnicaoBauObs'},
-      {'campo': 'mataCachorro', 'label': 'Mata Cachorro', 'obs': 'mataCachorroObs'},
+      {
+        'campo': 'chavesIgnicaoBau',
+        'label': 'Chave de Ignição do Baú',
+        'obs': 'chavesIgnicaoBauObs'
+      },
+      {
+        'campo': 'mataCachorro',
+        'label': 'Mata Cachorro',
+        'obs': 'mataCachorroObs'
+      },
       {'campo': 'cortaPipa', 'label': 'Corta Pipa', 'obs': 'cortaPipaObs'},
       {'campo': 'colete', 'label': 'Colete', 'obs': 'coleteObs'},
-      {'campo': 'potenciaMinimaMaxima', 'label': 'Potência Mínima e Máxima', 'obs': 'potenciaMinimaMaximaObs'},
+      {
+        'campo': 'potenciaMinimaMaxima',
+        'label': 'Potência Mínima e Máxima',
+        'obs': 'potenciaMinimaMaximaObs'
+      },
       {'campo': 'capacetes', 'label': 'Capacetes', 'obs': 'capacetesObs'},
     ];
+    
 
-   return DynamicFieldsWidget(campos: camposMoto);
+    return DynamicFieldsWidget(campos: camposMoto);
   }
 }

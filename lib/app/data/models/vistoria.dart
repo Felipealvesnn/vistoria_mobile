@@ -116,6 +116,8 @@ class Vistoria {
   String? pinturaFaixaHorizontalObs;
   String? observacao;
   int? usuarioId;
+  String? agenteCod;
+  String? statusVistoria;
   TipoPermissionario? codTipoPemissaoNavigation;
 
   Vistoria({
@@ -235,6 +237,8 @@ class Vistoria {
     this.pinturaFaixaHorizontalObs,
     this.observacao,
     this.usuarioId,
+    this.agenteCod,
+    this.statusVistoria,
   });
 
   // Método para converter de JSON para a classe Dart
@@ -359,6 +363,8 @@ class Vistoria {
       pinturaFaixaHorizontalObs: json['pinturaFaixaHorizontalObs'],
       observacao: json['observacao'],
       usuarioId: json['usuarioId'],
+      agenteCod: json['agenteCod'],
+      statusVistoria: json['statusVistoria'],
     );
   }
 
@@ -480,6 +486,8 @@ class Vistoria {
       'pinturaFaixaHorizontalObs': pinturaFaixaHorizontalObs,
       'observacao': observacao,
       'usuarioId': usuarioId,
+      'agenteCod': agenteCod,
+      'statusVistoria': statusVistoria,
     };
   }
 }

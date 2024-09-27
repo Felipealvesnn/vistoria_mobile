@@ -14,7 +14,7 @@ import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_contro
 
 class VistoriaFormPage extends StatelessWidget {
   final VistoriaController controller = Get.find<VistoriaController>();
-
+  final FocusNode myFocusNode = FocusNode();
   VistoriaFormPage({super.key});
   void handlePlacaChange(String value) async {
     value = value.replaceAll('-', '').replaceAll('_', '');
@@ -65,6 +65,7 @@ class VistoriaFormPage extends StatelessWidget {
         if (result) {
           controller.limparCampos();
           controller.RecarregarDropwndoTipo.value = false;
+          controller.placaController.clear();
         }
       },
       child: Scaffold(
@@ -79,6 +80,7 @@ class VistoriaFormPage extends StatelessWidget {
                 const SizedBox(height: 16.0),
                 // Campo de placa sempre visível
                 TextFormField(
+                  focusNode: myFocusNode,
                   controller: controller.placaController,
                   decoration: const InputDecoration(
                     labelText: "Placa",
@@ -272,11 +274,19 @@ class VistoriaFormPage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () {
-                                  final jsonFinal = controller.generateJson();
-                                  print(
-                                      jsonFinal); // Aqui você pode enviar o JSON gerado
-                                },
+                                onPressed: controller
+                                        .RecarregarDropwndoTipo.value
+                                    ? () {
+                                        final jsonFinal =
+                                            controller.generateJson();
+                                        print(
+                                            jsonFinal); // Aqui você pode enviar o JSON gerado
+                                      }
+                                    : () {
+                                        myFocusNode.requestFocus();
+                                        Get.snackbar(
+                                            'Erro', 'Digite uma placa válida');
+                                      },
                                 child: const Text("Enviar"),
                               ),
                             ),

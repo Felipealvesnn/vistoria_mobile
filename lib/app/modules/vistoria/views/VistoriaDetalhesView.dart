@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/generatePdf.dart';
 
@@ -10,13 +11,13 @@ class VistoriaDetalhesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String?>> dadosVeiclos = [
-      {"label": "Marca", "value": vistoria.marcaModelo},
-      {"label": "Placa", "value": vistoria.placa},
+      //{"label": "Marca", "value": vistoria.marcaModelo},
+      // {"label": "Placa", "value": vistoria.placa},
       {"label": "Chassi", "value": vistoria.chassi},
       {"label": "Ano", "value": vistoria.ano},
-      {"label": "Cor", "value": vistoria.cor},
+      //{"label": "Cor", "value": vistoria.cor},
       {"label": "Tipo", "value": vistoria.tipo},
-      {"label": "KM", "value": vistoria.km.toString()},
+      //{"label": "KM", "value": vistoria.km.toString()},
     ];
     final List<Map<String, String?>> camposMoto = [
       {
@@ -255,111 +256,91 @@ class VistoriaDetalhesView extends StatelessWidget {
       },
     ];
 
+    // (Outras variáveis do seu código para camposMoto, camposCarro, camposCarroMoto...)
+
     // Determina os campos a serem exibidos com base no tipo de veículo
     List<Map<String, String?>> camposVistoria = [];
 
     if (vistoria.tipo == "MOTOCICLETA" || vistoria.tipo == "MOTONETA") {
-      // Mostrar campos de moto + campos compartilhados
       camposVistoria = [...dadosVeiclos, ...camposMoto, ...camposCarroMoto];
     } else {
-      // Mostrar campos de carro + campos compartilhados
       camposVistoria = [...dadosVeiclos, ...camposCarro, ...camposCarroMoto];
     }
-    // Indicador de progresso para KM
-    final levelIndicator = Container(
-      child: LinearProgressIndicator(
-        backgroundColor: const Color.fromRGBO(209, 224, 224, 0.2),
-        value: vistoria.km != null
-            ? vistoria.km! / 100000
-            : 0, // Verificação para KM nulo
-        valueColor: const AlwaysStoppedAnimation(Colors.green),
-      ),
-    );
 
-    // Informação de KM
-    final vistoriaInfo = Container(
-      padding: const EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-      child: Text(
-        'KM: ${vistoria.km ?? 'Não disponível'}', // Corrige a exibição do KM
-        style: const TextStyle(color: Colors.white),
-      ),
-    );
-
-    final topContentText = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(height: 50.0), // Diminui o espaço entre os itens
-
-        Text(
-          vistoria.placa ?? "Placa não disponível",
-          style: const TextStyle(
-              color: Colors.white, fontSize: 40.0), // Diminui a fonte
-        ),
-        const Divider(color: Colors.green, thickness: 2),
-
-        const SizedBox(height: 10.0), // Diminui o espaço entre os itens
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Flexible(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  'Cor: ${vistoria.cor ?? "Não disponível"}',
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 16.0), // Diminui a fonte
-                ),
-              ),
-            ),
-            Flexible(
-              flex: 1,
-              child: levelIndicator, // Ajuste no nível de quilometragem
-            ),
-            Flexible(
-              flex: 2,
-              child: vistoriaInfo, // Exibição do KM
-            ),
-          ],
-        ),
-      ],
-    );
-
+    // Top Content (com as informações da vistoria e a imagem de fundo)
     final topContent = Stack(
       children: <Widget>[
         Container(
           padding: const EdgeInsets.only(left: 10.0),
-          height: MediaQuery.of(context).size.height *
-              0.4, // Reduzi um pouco a altura
-          decoration: const BoxDecoration(
+          height: MediaQuery.of(context).size.height * 0.35,
+          decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(
-                  "assets/images/onix-hatch-showroom-1920x960.webp"), // Coloque sua imagem
+              image: (vistoria.tipo == "MOTOCICLETA" ||
+                      vistoria.tipo == "MOTONETA")
+                  ? const AssetImage("assets/images/FAN-LATERAL_4.webp")
+                  : const AssetImage(
+                      "assets/images/onix-hatch-showroom-1920x960.webp"),
               fit: BoxFit.cover,
             ),
           ),
         ),
         Container(
-          height: MediaQuery.of(context).size.height *
-              0.4, // Ajustei para não causar overflow
+          height: MediaQuery.of(context).size.height * 0.35,
           width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
             color: Color.fromRGBO(58, 66, 86, .9),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20.0), // Reduzi um pouco o padding
+            padding: const EdgeInsets.all(20.0),
             child: Center(
-              child: SingleChildScrollView(child: topContentText),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 50.0),
+                  Text(
+                    vistoria.placa ?? "Placa não disponível",
+                    style: const TextStyle(color: Colors.white, fontSize: 40.0),
+                  ),
+                  const Divider(color: Colors.green, thickness: 2),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Flexible(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: Text(
+                            'Cor: ${vistoria.cor ?? "Não disponível"}',
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 16.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Text(
+                      'Modelo: ${vistoria.marcaModelo ?? "Não disponível"}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Text(
+                      'Data Vistoria: ${vistoria.dataVistoria ?? "Não disponível"}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
         Positioned(
-          left: 10,
-          top: 45.0,
+          left: 15,
+          top: 30,
           child: InkWell(
             onTap: () {
               Navigator.pop(context);
@@ -375,67 +356,69 @@ class VistoriaDetalhesView extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton.icon(
         onPressed: () {
-          // Lógica para gerar e baixar o PDF
-          generatePdf(vistoria); // Chama a função para gerar o PDF
+          generatePdf(vistoria);
         },
         icon: const Icon(Icons.download),
         label: const Text("Baixar PDF", style: TextStyle(color: Colors.white)),
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              const Color.fromRGBO(58, 66, 86, 1.0), // Cor do botão
+          backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
         ),
       ),
     );
 
-    final bottomContentText = ListView.separated(
-      shrinkWrap: true,
-      physics:
-          const NeverScrollableScrollPhysics(), // Desabilita rolagem interna para rolar a view inteira
-      itemCount: camposVistoria.length,
-      separatorBuilder: (context, index) =>
-          const Divider(color: Colors.grey), // Divisor entre os itens
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: const Icon(Icons.info_outline,
-              color: Colors.green), // Ícone ao lado de cada item
-          title: Text(
-            camposVistoria[index]["label"]!,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          subtitle: Text(
-            camposVistoria[index]["value"] ?? "Não disponível",
-            style: const TextStyle(fontSize: 14, color: Colors.grey),
-          ),
-        );
-      },
-    );
-
-    final bottomContent = Container(
-      width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 300, // Define o tamanho da área de rolagem
-            child: SingleChildScrollView(
-              child: bottomContentText,
+    // Uso do CustomScrollView com Slivers
+    return Scaffold(
+      body: Column(
+        children: [
+          // Top content fixo
+          topContent,
+          // SliverList que será rolada
+          Expanded(
+            child: CustomScrollView(
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.info_outline,
+                                color: Colors.green),
+                            title: Text(
+                              camposVistoria[index]["label"]!,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            subtitle: Text(
+                              camposVistoria[index]["value"] ??
+                                  "Não disponível",
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.grey),
+                            ),
+                          ),
+                          // Adicionando o divisor entre os itens
+                          if (index !=
+                              camposVistoria.length -
+                                  1) // Para não mostrar divisor após o último item
+                            const Divider(
+                              color: Colors.grey,
+                              thickness: 1,
+                            ),
+                        ],
+                      );
+                    },
+                    childCount: camposVistoria.length,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 20), // Espaço entre o texto e o botão
-          readButton, // Botão para gerar o PDF
+          // Bottom content fixo (botão)
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: readButton,
+          ),
         ],
-      ),
-    );
-
-    return Scaffold(
-      body: SingleChildScrollView(
-        // Adicionei um scroll para evitar overflow
-        child: Column(
-          children: <Widget>[
-            topContent,
-            bottomContent,
-          ],
-        ),
       ),
     );
   }
