@@ -29,29 +29,31 @@ class DynamicFieldsWidget extends StatelessWidget {
                 ),
               ),
               // Campo de observação que aparece quando o checkbox é marcado
-              Obx(
-                () => AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  child: controller.camposMap[campo['campo']] ?? false
-                      ? Container(
-                          margin: const EdgeInsets.only(top: 16.0),
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: '${campo['label']} Observações',
-                              border: const OutlineInputBorder(),
+              if (campo['obs'] != null)
+                Obx(
+                  () => AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: controller.camposMap[campo['campo']] ?? false
+                        ? Container(
+                            margin: const EdgeInsets.only(top: 16.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: '${campo['label']} Observações',
+                                border: const OutlineInputBorder(),
+                              ),
+                              onChanged: (String? value) {
+                                // Atualiza a observação no controlador
+                                controller.updateCampo(
+                                    campo['obs']!, value ?? '');
+                              },
                             ),
-                            onChanged: (String? value) {
-                              // Atualiza a observação no controlador
-                              controller.updateCampo(
-                                  campo['obs']!, value ?? '');
-                            },
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
                 ),
-              ),
               // Espaçamento entre os campos
               const Divider(height: 24, thickness: 2),
             ],
