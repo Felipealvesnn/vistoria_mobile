@@ -13,25 +13,29 @@ class VistoriaView extends GetView<VistoriaController> {
       drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
-            Get.size.height * 0.14), // Define a altura do AppBar
+          Get.size.height * 0.14, // Define a altura do AppBar
+        ),
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(30.0),
             bottomRight: Radius.circular(30.0),
           ),
-          child: AppBar(
-            title: const Text(
-              'Vistoria ',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+          child: SizedBox(
+            height: Get.size.height * 0.14, // Ajusta a altura do AppBar
+            child: AppBar(
+              title: const Text(
+                'Vistoria',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              centerTitle: true,
+              elevation: 10, // Adiciona a elevação (sombra)
+              shadowColor:
+                  Colors.black.withOpacity(0.5), // Personaliza a cor da sombra
             ),
-            centerTitle: true,
-            elevation: 10, // Adiciona a elevação (sombra)
-            shadowColor:
-                Colors.black.withOpacity(0.5), // Personaliza a cor da sombra
           ),
         ),
       ),

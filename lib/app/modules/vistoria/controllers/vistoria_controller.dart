@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -58,7 +59,19 @@ class VistoriaController extends GetxController {
   Future<Map<dynamic, dynamic>> generateJson() async {
     // falta [agenteCod]
     //[statusVistoria]
-    
+
+    List<Map<String, dynamic>> fotosVistoria = [];
+
+    // Itera sobre as imagens selecionadas, transforma em base64 e adiciona ao JSON
+    for (var image in selectedImages) {
+      // Lê o arquivo como bytes
+      List<int> imageBytes = await image.readAsBytes();
+      // Converte para base64
+      String base64Image = base64Encode(imageBytes);
+
+      fotosVistoria.add({"NomeFoto": base64Image});
+    }
+
     var vistoria = {
       "vistoriaId": 0,
       "idPermissionario": 0,
@@ -71,7 +84,8 @@ class VistoriaController extends GetxController {
       "cor": camposMap["cor"],
       "tipo": camposMap["tipo"],
       "km": camposMap["km"],
-      ...camposMap // Mapa dinâmico contendo os campos e observações
+      ...camposMap, // Mapa dinâmico contendo os campos e observações
+      "FotosVistoria": fotosVistoria // Adiciona as fotos ao JSON
     };
     // await vistoriaProvider.postVistoria(vistoria);
     return vistoria;

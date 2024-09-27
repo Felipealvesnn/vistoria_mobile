@@ -119,6 +119,7 @@ class Vistoria {
   String? agenteCod;
   String? statusVistoria;
   TipoPermissionario? codTipoPemissaoNavigation;
+  FotosVistorium? FotosVistoria;
 
   Vistoria({
     this.codTipoPemissaoNavigation,
@@ -239,6 +240,7 @@ class Vistoria {
     this.usuarioId,
     this.agenteCod,
     this.statusVistoria,
+    this.FotosVistoria,
   });
 
   // Método para converter de JSON para a classe Dart
@@ -365,6 +367,9 @@ class Vistoria {
       usuarioId: json['usuarioId'],
       agenteCod: json['agenteCod'],
       statusVistoria: json['statusVistoria'],
+      FotosVistoria: json['FotosVistoria'] != null
+          ? FotosVistorium.fromJson(json['FotosVistoria'])
+          : null,
     );
   }
 
@@ -488,6 +493,40 @@ class Vistoria {
       'usuarioId': usuarioId,
       'agenteCod': agenteCod,
       'statusVistoria': statusVistoria,
+    };
+  }
+}
+
+class FotosVistorium {
+  int fotoVistoriaId;
+  int? vistoriaId;
+  String? nomeFoto;
+  Vistoria? vistoria;
+
+  FotosVistorium({
+    required this.fotoVistoriaId,
+    this.vistoriaId,
+    this.nomeFoto,
+    this.vistoria,
+  });
+
+  // Método para converter um Map (JSON) em um objeto FotosVistorium
+  factory FotosVistorium.fromJson(Map<String, dynamic> json) {
+    return FotosVistorium(
+      fotoVistoriaId: json['fotoVistoriaId'] ?? 0,
+      vistoriaId: json['vistoriaId'],
+      nomeFoto: json['nomeFoto'],
+      // vistoria: json['vistoria'] != null ? Vistoria.fromJson(json['vistoria']) : null,
+    );
+  }
+
+  // Método para converter um objeto FotosVistorium em um Map (JSON)
+  Map<String, dynamic> toJson() {
+    return {
+      'fotoVistoriaId': fotoVistoriaId,
+      'vistoriaId': vistoriaId,
+      'nomeFoto': nomeFoto,
+      'vistoria': vistoria?.toJson(),
     };
   }
 }

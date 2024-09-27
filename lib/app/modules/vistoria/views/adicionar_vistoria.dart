@@ -191,80 +191,90 @@ class VistoriaFormPage extends StatelessWidget {
                             : const SizedBox.shrink()),
 
                         // Botão para capturar/selecionar imagem
-                        Column(
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: () =>
-                                  _showImageSourceSelection(context),
-                              icon: const Icon(Icons.image),
-                              label: const Text('Adicionar Foto'),
-                            ),
-                            const SizedBox(height: 20),
-                            Obx(() {
-                              return OverflowBar(
-                                spacing: 8.0,
-                                children: [
-                                  // Mostrar mensagem se não houver imagens selecionadas
-                                  if (controller.selectedImages.isEmpty)
-                                    const Text("Nenhuma imagem selecionada"),
-                                  // Exibir imagens selecionadas
-                                  ...controller.selectedImages.map((imageFile) {
-                                    return Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        ClipOval(
-                                          child: Image.file(
-                                            imageFile,
-                                            height: 100,
-                                            width: 100,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete,
-                                              color: Colors.red),
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title:
-                                                      const Text("Confirmar"),
-                                                  content: const Text(
-                                                      "Você deseja excluir a imagem?"),
-                                                  actions: [
-                                                    TextButton(
-                                                      child: const Text(
-                                                          "Cancelar"),
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
+                        Obx(
+                          () => controller.RecarregarDropwndoTipo.value
+                              ? Column(
+                                  children: [
+                                    ElevatedButton.icon(
+                                      onPressed: () =>
+                                          _showImageSourceSelection(context),
+                                      icon: const Icon(Icons.image),
+                                      label: const Text('Adicionar Foto'),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Obx(() {
+                                      return OverflowBar(
+                                        spacing: 8.0,
+                                        children: [
+                                          // Mostrar mensagem se não houver imagens selecionadas
+                                          if (controller.selectedImages.isEmpty)
+                                            const Text(
+                                                "Nenhuma imagem selecionada"),
+                                          // Exibir imagens selecionadas
+                                          ...controller.selectedImages
+                                              .map((imageFile) {
+                                            return Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                ClipOval(
+                                                  child: Image.file(
+                                                    imageFile,
+                                                    height: 100,
+                                                    width: 100,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(Icons.delete,
+                                                      color: Colors.red),
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              "Confirmar"),
+                                                          content: const Text(
+                                                              "Você deseja excluir a imagem?"),
+                                                          actions: [
+                                                            TextButton(
+                                                              child: const Text(
+                                                                  "Cancelar"),
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                            ),
+                                                            TextButton(
+                                                              child: const Text(
+                                                                  "Excluir"),
+                                                              onPressed: () {
+                                                                controller
+                                                                    .selectedImages
+                                                                    .remove(
+                                                                        imageFile);
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                            ),
+                                                          ],
+                                                        );
                                                       },
-                                                    ),
-                                                    TextButton(
-                                                      child:
-                                                          const Text("Excluir"),
-                                                      onPressed: () {
-                                                        controller
-                                                            .selectedImages
-                                                            .remove(imageFile);
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                    ),
-                                                  ],
-                                                );
-                                              },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
                                             );
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  }).toList(),
-                                ],
-                              );
-                            }),
-                          ],
+                                          }).toList(),
+                                        ],
+                                      );
+                                    }),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
                         ),
 
                         const SizedBox(height: 16.0),
