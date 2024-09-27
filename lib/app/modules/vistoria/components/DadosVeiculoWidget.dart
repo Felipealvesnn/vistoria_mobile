@@ -13,11 +13,18 @@ class DadosVeiculoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // Lista de campos de Dados do Veículo com suas respectivas observações
     final List<Map<String, dynamic>> camposVeiculo = [
-      {'controller': controller.chassiController, 'label': 'Chassi', 'obs': 'chassiObs'},
-      {'controller': controller.marcaModeloController, 'label': 'Marca/Modelo', 'obs': 'marcaModeloObs'},
+      {
+        'controller': controller.chassiController,
+        'label': 'chassi',
+        'obs': 'chassiObs'
+      },
+      {
+        'controller': controller.marcaModeloController,
+        'label': 'Marca/Modelo',
+        'obs': 'marcaModeloObs'
+      },
       {'controller': controller.anoController, 'label': 'Ano', 'obs': 'anoObs'},
       {'controller': controller.corController, 'label': 'Cor', 'obs': 'corObs'},
-      {'controller': controller.tipoVeiculoController, 'label': 'Tipo de Veículo', 'obs': 'tipoVeiculoObs'},
       {'controller': controller.kmController, 'label': 'KM', 'obs': 'kmObs'},
     ];
 

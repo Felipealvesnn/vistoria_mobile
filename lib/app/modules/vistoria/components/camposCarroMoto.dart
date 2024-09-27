@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vistoria_mobile/app/modules/vistoria/components/DynamicFieldsWidget.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_controller.dart';
 
 class CarAndMotoFieldsWidget extends StatelessWidget {
@@ -62,59 +63,26 @@ class CarAndMotoFieldsWidget extends StatelessWidget {
         'obs': 'motorPartidaObs'
       },
       // Campos sem observações
-      {'campo': 'requerPrefDiretTributario01', 'label': 'Liberação de Alvará para Licenciamento de Veículo de Aluguel'},
-      {'campo': 'requerPrefDiretTributario02', 'label': 'Renovação de Alvará para Licenciamento de Veículo de Aluguel'},
-      {'campo': 'requerPrefDiretTributario03', 'label': 'Vistoria de Veículo de Aluguel'},
+      {
+        'campo': 'requerPrefDiretTributario01',
+        'label': 'Liberação de Alvará para Licenciamento de Veículo de Aluguel'
+      },
+      {
+        'campo': 'requerPrefDiretTributario02',
+        'label': 'Renovação de Alvará para Licenciamento de Veículo de Aluguel'
+      },
+      {
+        'campo': 'requerPrefDiretTributario03',
+        'label': 'Vistoria de Veículo de Aluguel'
+      },
       {'campo': 'requerPrefDiretTributario04', 'label': 'Transferência'},
-      {'campo': 'requerPrefDiretTributario05', 'label': 'Mudança de Placa ou Tarjeta'},
+      {
+        'campo': 'requerPrefDiretTributario05',
+        'label': 'Mudança de Placa ou Tarjeta'
+      },
       {'campo': 'requerPrefDiretTributario06', 'label': 'Outros'},
     ];
 
-    return Column(
-      children: [
-        // Itera sobre a lista de campos, criando os checkboxes para cada campo
-        ...camposCarroMoto.map((campo) {
-          return Column(
-            children: [
-              // Checkbox para o campo
-              Obx(
-                () => CheckboxListTile(
-                  title: Text(campo['label']!),
-                  value: controller.camposMap[campo['campo']] ?? false,
-                  onChanged: (bool? value) {
-                    // Atualiza o valor do checkbox no controlador
-                    controller.updateCampo(campo['campo']!, value ?? false);
-                  },
-                ),
-              ),
-              // Verifica se o campo tem observações, se sim, cria o campo de observação
-              if (campo['obs'] != null)
-                Obx(
-                  () => controller.camposMap[campo['campo']] ?? false
-                      ? Container(
-                          margin: const EdgeInsets.only(top: 16.0),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: '${campo['label']} Observações',
-                              border: const OutlineInputBorder(),
-                            ),
-                            onChanged: (String? value) {
-                              // Atualiza a observação no controlador
-                              controller.updateCampo(campo['obs']!, value ?? '');
-                            },
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
-              const Divider(
-                  height: 24, thickness: 2), // Espaçamento entre os campos
-            ],
-          );
-        }).toList(),
-
-        // Separador
-        const Divider(height: 40, thickness: 2),
-      ],
-    );
+    return DynamicFieldsWidget(campos: camposCarroMoto);
   }
 }

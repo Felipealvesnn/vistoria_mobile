@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vistoria_mobile/app/modules/vistoria/components/DynamicFieldsWidget.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_controller.dart';
 
 class MotoFieldsWidget extends StatelessWidget {
@@ -21,42 +22,6 @@ class MotoFieldsWidget extends StatelessWidget {
       {'campo': 'capacetes', 'label': 'Capacetes', 'obs': 'capacetesObs'},
     ];
 
-    return Column(
-      children: camposMoto.map((campo) {
-        return Column(
-          children: [
-            // Checkbox para o campo
-            Obx(
-              () => CheckboxListTile(
-                title: Text(campo['label']!),
-                value: controller.camposMap[campo['campo']] ?? false,
-                onChanged: (bool? value) {
-                  controller.updateCampo(campo['campo']!, value ?? false);
-                },
-              ),
-            ),
-            // TextFormField para observações, se o checkbox estiver marcado
-            Obx(
-              () => controller.camposMap[campo['campo']] ?? false
-                  ? Container(
-                      margin: const EdgeInsets.only(top: 16.0),
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: '${campo['label']} Observações',
-                          border: const OutlineInputBorder(),
-                        ),
-                        onChanged: (String? value) {
-                          controller.updateCampo(campo['obs']!, value ?? '');
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-            const Divider(height: 24, thickness: 2), // Espaçamento entre os campos
-          ],
-        );
-      }).toList(),
-    );
+   return DynamicFieldsWidget(campos: camposMoto);
   }
 }

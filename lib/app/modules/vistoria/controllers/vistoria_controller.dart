@@ -10,28 +10,25 @@ import 'package:vistoria_mobile/app/data/repository/vistoria_repository.dart';
 import '../../../data/models/vistoria.dart';
 
 class VistoriaController extends GetxController {
-  VistoriaRepository vistoriaProvider = VistoriaRepository();
+  final VistoriaRepository vistoriaProvider = VistoriaRepository();
 
-  // Variável observável para manter o valor selecionado do dropdown de tipo de veículo
+  // Observables and Controllers
   var veiculoTipoSelecionado = Rxn<VeiculoTipo>();
-
-  // Lista de tipos permissionários filtrados
   var tipoPermissionariosFiltrados = <TipoPermissionario>[].obs;
+  var vistorias = <Vistoria>[].obs;
+  var vistoriaMobileDTOs = <vistoriaMobileDTO>[].obs;
 
-  var vistorias = <Vistoria>[].obs; // Lista de vistorias observáveis
-  var vistoriaMobileDTOs =
-      <vistoriaMobileDTO>[].obs; // Lista de vistorias observáveis
-
-  // Controle para travar o dropdown de tipo de veículo
+  // Lock for VeiculoTipo dropdown
   var isVeiculoTipoLocked = false.obs;
 
   final chassiController = TextEditingController();
+  final placaController = TextEditingController();
   final marcaModeloController = TextEditingController();
   final anoController = TextEditingController();
   final corController = TextEditingController();
   final tipoVeiculoController = TextEditingController();
   final kmController = TextEditingController();
-  
+
   var isLoading = false.obs;
   var showDadosVeiculo = false.obs;
   var showMotoFields = false.obs;
@@ -39,59 +36,71 @@ class VistoriaController extends GetxController {
   var showCarAndMotoFields = false.obs;
   var RecarregarDropwndoTipo = false.obs;
 
-  var selectedImage =
-      Rx<File?>(null); // Variável reativa para armazenar a imagem selecionada
+  var selectedImage = Rx<File?>(null);
   final ImagePicker _picker = ImagePicker();
 
   var camposMap = <dynamic, dynamic>{}.obs;
 
-  // Função para atualizar dinamicamente os valores
+  @override
+  void onInit() async {
+    super.onInit();
+    await fetchVistorias();
+    await fetchVistoriasMobileDTO();
+  }
+
+  // Updates a specific field dynamically in the map
   void updateCampo(String campo, dynamic valor) {
     camposMap[campo] = valor;
   }
 
-  // Função para adicionar campos dinamicamente (usado ao inicializar o widget)
+  // Initializes dynamic fields
   void addCamposDinamicamente(List<Map<dynamic, String>> campos) {
     for (var campo in campos) {
-      // Se o campo ainda não estiver no mapa, adicione com valor inicial
-      if (!camposMap.containsKey(campo['campo'])) {
-        camposMap[campo['campo']] =
-            false; // Inicializa com false (para checkboxes)
-      }
-      if (!camposMap.containsKey(campo['obs'])) {
-        camposMap[campo['obs']] =
-            ''; // Inicializa com string vazia (para observações)
-      }
+      camposMap.putIfAbsent(campo['campo'], () => false);
+      camposMap.putIfAbsent(campo['obs'], () => '');
     }
   }
 
-  // Função para gerar o JSON a partir do mapa
-  Map<String, dynamic> generateJson() {
-    var camposMapd = {
-      "vistorium": {
-        "vistoriaId": 0,
-        "idPermissionario": 0,
-        "codTipoPemissao": null,
-        "dataVistoria": "0001-01-01T00:00:00",
-        "placa": camposMap["placa"],
-        "chassi": camposMap["chassi"],
-        "marcaModelo": camposMap["marcaModelo"],
-        "ano": camposMap["ano"],
-        "cor": camposMap["cor"],
-        "tipo": camposMap["tipo"],
-        "km": camposMap["km"],
-        ...camposMap // Mapa dinâmico contendo os campos e observações
-      }
+  // Generates the JSON from the map
+  Map<dynamic, dynamic> generateJson() {
+    var vistoria = {
+      "vistoriaId": 0,
+      "idPermissionario": 0,
+      "codTipoPemissao": camposMap["codTipoPemissao"],
+      "dataVistoria": "0001-01-01T00:00:00",
+      "placa": camposMap["placa"],
+      "chassi": camposMap["chassi"],
+      "marcaModelo": camposMap["marcaModelo"],
+      "ano": camposMap["ano"],
+      "cor": camposMap["cor"],
+      "tipo": camposMap["tipo"],
+      "km": camposMap["km"],
+      ...camposMap // Mapa dinâmico contendo os campos e observações
     };
-    return camposMapd;
+    return vistoria;
   }
 
+  // Fetch vistorias data
   Future<void> fetchVistorias() async {
-    var mockData = await vistoriaProvider.getVistorias();
-    vistorias.addAll(mockData); // Adiciona os dados na lista observável
+    try {
+      final mockData = await vistoriaProvider.getVistorias();
+      vistorias.addAll(mockData);
+    } catch (e) {
+      Get.snackbar('Erro', 'Erro ao buscar vistorias');
+    }
   }
 
-  // Função para escolher imagem
+  // Fetch vistoriasMobileDTO data
+  Future<void> fetchVistoriasMobileDTO() async {
+    try {
+      final mockData = await vistoriaProvider.getvistoriaMobileDTO();
+      vistoriaMobileDTOs.addAll(mockData);
+    } catch (e) {
+      Get.snackbar('Erro', 'Erro ao buscar tipos de veículos');
+    }
+  }
+
+  // Select an image from the device
   Future<void> pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -99,74 +108,130 @@ class VistoriaController extends GetxController {
     }
   }
 
-  Future<void> fetchVistoriasMobileDTO() async {
-    var mockData = await vistoriaProvider.getvistoriaMobileDTO();
-    vistoriaMobileDTOs
-        .addAll(mockData); // Adiciona os dados na lista observável
-  }
-
+  // Fetch vehicle information from Detran
   Future<VeiculoDetran> getInforVeiculoDetran(String placa) async {
     try {
       limparCampos();
       isLoading.value = true;
       VeiculoDetran dadosVeiculo =
           await vistoriaProvider.getPlaca(placa: placa);
-      esconderCampos();
-      // Atualiza os controladores de texto com os dados retornados
-      chassiController.text = dadosVeiculo.chassi ?? "";
-      marcaModeloController.text = dadosVeiculo.marcaModelo ?? '';
-      anoController.text = dadosVeiculo.anoFabricacao.toString() ?? '';
-      corController.text = dadosVeiculo.cor ?? '';
-      tipoVeiculoController.text = dadosVeiculo.tipo ?? '';
-      kmController.text = '';
 
-      // Atualiza o tipo de veículo selecionado
-      var tipoEncontrado = vistoriaMobileDTOs.first.veiculoTipos?.firstWhere(
-        (veiculoTipo) => veiculoTipo.veiTipDesc?.trim() == dadosVeiculo.tipo,
-        orElse: () => VeiculoTipo(veiTipCod: 0, veiTipDesc: ''),
-      );
+      updateFieldsWithVeiculoDetran(dadosVeiculo);
+      filterVeiculoTipo(dadosVeiculo.tipo);
 
-      if (tipoEncontrado != null) {
-        veiculoTipoSelecionado.value = tipoEncontrado;
-
-        isVeiculoTipoLocked.value = true;
-
-        // Filtra os tipos permissionários de acordo com o tipo de veículo
-        filtrarTipoPermissionarios(dadosVeiculo.tipo!);
-      } else {
-        isVeiculoTipoLocked.value = false;
-      }
       return dadosVeiculo;
     } catch (e) {
-      esconderCampos();
+      hideAllFields();
       RecarregarDropwndoTipo.value = false;
       Get.snackbar('Erro', 'Erro ao buscar veículo');
       return VeiculoDetran();
-    }
-    finally{
+    } finally {
       isLoading.value = false;
     }
   }
 
+  // Update visibility of fields based on conditions
   void updateVisibility(String tipoPermissao, String tipoVeiculo) {
-    showDadosVeiculo.value = true; // Mostrar sempre que tiver dados do veículo
-    showCarAndMotoFields.value = true; // Mostrar sempre o CarAndMotoFields
+    showDadosVeiculo.value = true; // Always show vehicle data
+    showCarAndMotoFields.value = true;
 
-    // Lógica para mostrar campos específicos
     if (tipoPermissao == "2" ||
         (tipoPermissao == "7" &&
             (tipoVeiculo == "MOTOCICLETA" || tipoVeiculo == "MOTONETA"))) {
-      // Mostrar campos relacionados a motos
       showMotoFields.value = true;
       showCarFields.value = false;
     } else {
-      // Mostrar campos relacionados a carros
       showCarFields.value = true;
       showMotoFields.value = false;
     }
   }
 
-  void esconderCampos() {
+  // Filter permission types based on vehicle type
+  void filtrarTipoPermissionarios(String tipoVeiculo) {
+    // Define um mapa para associar tipos de veículos aos tipos de permissionários
+    final Map<String, List<String>> tipoVeiculoMap = {
+      'CAMINHONETE': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
+      'CAMIONETA': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
+      'AUTOMOVEL': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
+      'MOTOCICLETA': ['MOTO - TAXI', 'ESPECIAIS'],
+      'MOTONETA': ['MOTO - TAXI', 'ESPECIAIS'],
+      'ONIBUS': ['COLETIVO', 'ESCOLAR'],
+      'MICROONIBUS': ['COLETIVO', 'ESCOLAR'],
+      'UTILITARIO': ['COLETIVO', 'ESCOLAR'],
+      'CAMINHAO': ['CARGA', 'COLETIVO', 'ESPECIAIS'],
+      'REBOQUE': ['CARGA', 'COLETIVO', 'ESPECIAIS'],
+      'SEMI-REBOQUE': ['CARGA', 'COLETIVO', 'ESPECIAIS']
+    };
+
+    // Remove espaços e busca os tipos de permissionários associados ao tipo de veículo
+    final trimmedTipoVeiculo = tipoVeiculo.trim();
+    final tiposPermissionarios = tipoVeiculoMap[trimmedTipoVeiculo];
+
+    // Atualiza a lista de tipos permissionários com base no tipo de veículo encontrado
+    if (tiposPermissionarios != null) {
+      addPermissionarioToList(tiposPermissionarios);
+    } else {
+      tipoPermissionariosFiltrados
+          .clear(); // Limpa a lista se não encontrar correspondência
+    }
+  }
+
+  // Helper to add permissionários to list based on descriptions
+  void addPermissionarioToList(List<String> descriptions) {
+    tipoPermissionariosFiltrados.value = descriptions.map((descricao) {
+      return TipoPermissionario(
+        codTipoPermissao: getCodTipoPermissaoByDescricao(descricao),
+        descricao: descricao,
+      );
+    }).toList();
+  }
+
+  // Helper to find codTipoPermissao by description
+  int? getCodTipoPermissaoByDescricao(String descricao) {
+    for (var dto in vistoriaMobileDTOs) {
+      for (var tipoPermissionario in dto.tipoPermissionario ?? []) {
+        if (tipoPermissionario.descricao == descricao) {
+          return tipoPermissionario.codTipoPermissao;
+        }
+      }
+    }
+    return null;
+  }
+
+  // Updates fields with VeiculoDetran data
+  void updateFieldsWithVeiculoDetran(VeiculoDetran dadosVeiculo) {
+    chassiController.text = dadosVeiculo.chassi ?? "";
+    marcaModeloController.text = dadosVeiculo.marcaModelo ?? '';
+    anoController.text = dadosVeiculo.anoFabricacao?.toString() ?? '';
+    corController.text = dadosVeiculo.cor ?? '';
+    tipoVeiculoController.text = dadosVeiculo.tipo ?? '';
+    kmController.text = '';
+
+    updateCampo("chassi", chassiController.text);
+    updateCampo("marcaModelo", marcaModeloController.text);
+    updateCampo("ano", anoController.text);
+    updateCampo("cor", corController.text);
+    updateCampo("tipo", tipoVeiculoController.text);
+    updateCampo("km", kmController.text);
+  }
+
+  // Filter VeiculoTipo and update lock status
+  void filterVeiculoTipo(String? tipoVeiculo) {
+    if (tipoVeiculo != null) {
+      final tipoEncontrado = vistoriaMobileDTOs.first.veiculoTipos?.firstWhere(
+        (veiculoTipo) => veiculoTipo.veiTipDesc?.trim() == tipoVeiculo,
+        orElse: () => VeiculoTipo(veiTipCod: 0, veiTipDesc: ''),
+      );
+
+      veiculoTipoSelecionado.value = tipoEncontrado;
+      isVeiculoTipoLocked.value = tipoEncontrado != null;
+
+      filtrarTipoPermissionarios(tipoVeiculo);
+    }
+  }
+
+  // Clears and hides all form fields
+  void hideAllFields() {
     showDadosVeiculo.value = false;
     showCarAndMotoFields.value = false;
     showMotoFields.value = false;
@@ -174,8 +239,9 @@ class VistoriaController extends GetxController {
     RecarregarDropwndoTipo.value = true;
   }
 
+  // Resets all form fields and controllers
   void limparCampos() {
-    RecarregarDropwndoTipo.value = false;
+    hideAllFields();
     chassiController.clear();
     marcaModeloController.clear();
     anoController.clear();
@@ -185,63 +251,4 @@ class VistoriaController extends GetxController {
     selectedImage.value = null;
     camposMap.clear();
   }
-
-  // Função para filtrar os tipos permissionários com base no tipo de veículo
-  void filtrarTipoPermissionarios(String tipoVeiculo) {
-    tipoPermissionariosFiltrados.value.clear(); // Limpa a lista
-
-    switch (tipoVeiculo.trim()) {
-      case 'CAMINHONETE':
-      case 'CAMIONETA':
-      case 'AUTOMOVEL':
-        tipoPermissionariosFiltrados.value = [
-          TipoPermissionario(codTipoPermissao: 1, descricao: 'TAXI'),
-          TipoPermissionario(codTipoPermissao: 4, descricao: 'COLETIVO'),
-          TipoPermissionario(codTipoPermissao: 5, descricao: 'ESCOLAR'),
-          TipoPermissionario(codTipoPermissao: 6, descricao: 'ESPECIAIS'),
-        ];
-        break;
-      case 'MOTOCICLETA':
-      case 'MOTONETA':
-        tipoPermissionariosFiltrados.value = [
-          TipoPermissionario(codTipoPermissao: 2, descricao: 'MOTO - TAXI'),
-          TipoPermissionario(codTipoPermissao: 7, descricao: 'ESPECIAIS'),
-        ];
-        break;
-      case 'ONIBUS':
-      case 'MICROONIBUS':
-      case 'UTILITARIO':
-        tipoPermissionariosFiltrados.value = [
-          TipoPermissionario(codTipoPermissao: 4, descricao: 'COLETIVO'),
-          TipoPermissionario(codTipoPermissao: 5, descricao: 'ESCOLAR'),
-        ];
-        break;
-      case 'CAMINHAO':
-      case 'REBOQUE':
-      case 'SEMI-REBOQUE':
-        tipoPermissionariosFiltrados.value = [
-          TipoPermissionario(
-            codTipoPermissao: 3,
-            descricao: 'CARGA',
-          ),
-          TipoPermissionario(codTipoPermissao: 4, descricao: 'COLETIVO'),
-          TipoPermissionario(codTipoPermissao: 7, descricao: 'ESPECIAIS'),
-        ];
-        break;
-      default:
-        tipoPermissionariosFiltrados
-            .clear(); // Limpa se não houver correspondência
-    }
-  }
-
-  final count = 0.obs;
-
-  @override
-  void onInit() async {
-    await fetchVistorias();
-    await fetchVistoriasMobileDTO();
-    super.onInit();
-  }
-
-  void increment() => count.value++;
 }

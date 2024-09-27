@@ -72,6 +72,7 @@ class VistoriaFormPage extends StatelessWidget {
               const SizedBox(height: 16.0),
               // Campo de placa sempre visível
               TextFormField(
+                controller: controller.placaController,
                 decoration: const InputDecoration(
                   labelText: "Placa",
                   border: OutlineInputBorder(),
@@ -148,6 +149,9 @@ class VistoriaFormPage extends StatelessWidget {
                                 onChanged: (TipoPermissionario? newValue) {
                                   // Atualizar estado conforme necessário
                                   // Atualiza visibilidade com base na seleção
+                                  controller.updateCampo(
+                                      'codTipoPermissao',
+                                      newValue?.codTipoPermissao.toString() ?? '');
                                   controller.updateVisibility(
                                       newValue?.codTipoPermissao.toString() ??
                                           '',
