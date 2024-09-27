@@ -152,8 +152,7 @@ class VistoriaController extends GetxController {
     showCarAndMotoFields.value = true;
 
     if (tipoPermissao == "2" ||
-        (tipoPermissao == "7" &&
-            (tipoVeiculo == "MOTOCICLETA" || tipoVeiculo == "MOTONETA"))) {
+        (tipoVeiculo == "MOTOCICLETA" || tipoVeiculo == "MOTONETA")) {
       showMotoFields.value = true;
       showCarFields.value = false;
     } else {
@@ -169,7 +168,7 @@ class VistoriaController extends GetxController {
       'CAMINHONETE': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
       'CAMIONETA': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
       'AUTOMOVEL': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
-      'MOTOCICLETA': ['MOTO - TAXI', 'ESPECIAIS'],
+      'MOTOCICLETA': ['MOTO - TAXI',],
       'MOTONETA': ['MOTO - TAXI', 'ESPECIAIS'],
       'ONIBUS': ['COLETIVO', 'ESCOLAR'],
       'MICROONIBUS': ['COLETIVO', 'ESCOLAR'],
