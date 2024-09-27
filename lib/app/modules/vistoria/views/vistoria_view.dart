@@ -10,7 +10,7 @@ class VistoriaView extends GetView<VistoriaController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
+      drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
             Get.size.height * 0.14), // Define a altura do AppBar
@@ -41,7 +41,7 @@ class VistoriaView extends GetView<VistoriaController> {
         child: FloatingActionButton.extended(
           onPressed: () {
             // Aqui você pode adicionar uma nova vistoria
-            Get.to(() =>VistoriaFormPage());
+            Get.to(() => VistoriaFormPage());
           },
           label: const Text(
             'Adicionar Vistoria',

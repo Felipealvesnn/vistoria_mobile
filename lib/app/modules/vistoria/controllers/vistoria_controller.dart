@@ -36,7 +36,8 @@ class VistoriaController extends GetxController {
   var showCarAndMotoFields = false.obs;
   var RecarregarDropwndoTipo = false.obs;
 
-  var selectedImage = Rx<File?>(null);
+  var selectedImages = RxList<File>([]);
+
   final ImagePicker _picker = ImagePicker();
 
   var camposMap = <dynamic, dynamic>{}.obs;
@@ -101,10 +102,15 @@ class VistoriaController extends GetxController {
   }
 
   // Select an image from the device
-  Future<void> pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
+  void pickImage(ImageSource source) async {
+    if (selectedImages.length >= 3) {
+      // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
+      Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
+      return;
+    }
+    final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
-      selectedImage.value = File(pickedFile.path);
+      selectedImages.add(File(pickedFile.path));
     }
   }
 
@@ -248,7 +254,8 @@ class VistoriaController extends GetxController {
     corController.clear();
     tipoVeiculoController.clear();
     kmController.clear();
-    selectedImage.value = null;
+    selectedImages.clear();
     camposMap.clear();
+    placaController.clear();
   }
 }

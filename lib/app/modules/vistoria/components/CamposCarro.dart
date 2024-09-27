@@ -17,6 +17,11 @@ class CarFieldsWidget extends StatelessWidget {
       {'campo': 'triangulo', 'label': 'Triângulo', 'obs': 'trianguloObs'},
       {'campo': 'vidros', 'label': 'Vidros', 'obs': 'vidrosObs'},
       {
+        'campo': 'limpadorParabrisa',
+        'label': 'limpador Parabrisa',
+        'obs': 'limpadorParabrisaObs'
+      },
+      {
         'campo': 'luzIndicadoraDirecaoDianteira',
         'label': 'Luz Indicadora Direção Dianteira',
         'obs': 'luzIndicadoraDirecaoDianteiraObs'
@@ -53,8 +58,32 @@ class CarFieldsWidget extends StatelessWidget {
         'obs': 'freioEstacionamentoObs'
       },
       {'campo': 'nivelAgua', 'label': 'Nível de Água', 'obs': 'nivelAguaObs'},
+      {'campo': 'faroletes', 'label': 'Faroletes', 'obs': 'faroletesObs'},
+      {
+        'campo': 'lanternasDirecao',
+        'label': 'Lanternas Direção',
+        'obs': 'lanternasDirecaoObs'
+      },
+      {
+        'campo': 'lanternaMarchaRe',
+        'label': 'Lanterna Marcha Ré',
+        'obs': 'lanternaMarchaReObs'
+      },
+      {'campo': 'extintor', 'label': 'Extintor', 'obs': 'extintorObs'},
+      {
+        'campo': 'cintoSeguranca',
+        'label': 'Cinto de Segurança',
+        'obs': 'cintoSegurancaObs'
+      },
+      {'campo': 'step', 'label': 'Step', 'obs': 'stepObs'},
+      {'campo': 'chaveRoda', 'label': 'Chave de Roda', 'obs': 'chaveRodaObs'},
+      {
+        'campo': 'cinlindroGas',
+        'label': 'Cilindro de Gás',
+        'obs': 'cilindroGasObs'
+      },
     ];
 
-  return DynamicFieldsWidget(campos: camposCarro);
+    return DynamicFieldsWidget(campos: camposCarro);
   }
 }

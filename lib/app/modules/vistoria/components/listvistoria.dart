@@ -29,7 +29,8 @@ class ListVistoria extends StatelessWidget {
                 Text('Cor: ${vistoria.cor}'),
               ],
             ),
-            trailing: const Icon(Icons.arrow_forward_ios),
+            trailing:  const Icon(Icons.info_outline,
+              color: Colors.red) ,
             onTap: () {
               // Navega para a página de detalhes da vistoria ao clicar
               Get.to(() => VistoriaDetalhesView(vistoria: vistoria));

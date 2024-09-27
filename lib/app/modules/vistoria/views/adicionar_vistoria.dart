@@ -60,208 +60,234 @@ class VistoriaFormPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Formulário de Vistoria"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          child: ListView(
-            children: [
-              const SizedBox(height: 16.0),
-              // Campo de placa sempre visível
-              TextFormField(
-                controller: controller.placaController,
-                decoration: const InputDecoration(
-                  labelText: "Placa",
-                  border: OutlineInputBorder(),
+    return PopScope(
+      onPopInvokedWithResult: (result, dinamic) {
+        if (result) {
+          controller.limparCampos();
+          controller.RecarregarDropwndoTipo.value = false;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Formulário de Vistoria"),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            child: ListView(
+              children: [
+                const SizedBox(height: 16.0),
+                // Campo de placa sempre visível
+                TextFormField(
+                  controller: controller.placaController,
+                  decoration: const InputDecoration(
+                    labelText: "Placa",
+                    border: OutlineInputBorder(),
+                  ),
+                  inputFormatters: [
+                    TextInputMask(
+                        mask: 'AAA-9N99',
+                        placeholder: '_',
+                        maxPlaceHolders: 11,
+                        reverse: false),
+                    PlacaVeiculoInputFormatter()
+                  ],
+                  onChanged: (String? value) {
+                    if (value != null) handlePlacaChange(value);
+                  },
                 ),
-                inputFormatters: [
-                  TextInputMask(
-                      mask: 'AAA-9N99',
-                      placeholder: '_',
-                      maxPlaceHolders: 11,
-                      reverse: false),
-                  PlacaVeiculoInputFormatter()
-                ],
-                onChanged: (String? value) {
-                  if (value != null) handlePlacaChange(value);
-                },
-              ),
-              const SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
 
-              // Verifica se está carregando
-              Obx(() {
-                // Se estiver carregando, mostra o CircularProgressIndicator
-                if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                } else {
-                  // Caso contrário, mostra os demais campos
-                  return Column(
-                    children: [
-                      Obx(
-                        () => controller.RecarregarDropwndoTipo.value
-                            ? DropdownButtonFormField<VeiculoTipo>(
-                                decoration: const InputDecoration(
-                                  labelText: "Tipo de Veículo",
-                                  border: OutlineInputBorder(),
-                                ),
-                                // Usa o valor selecionado do controlador
-                                value: controller.veiculoTipoSelecionado.value,
-                                items: controller
-                                    .vistoriaMobileDTOs.first.veiculoTipos
-                                    ?.map((veiculoTipo) => DropdownMenuItem(
-                                          value: veiculoTipo,
-                                          child: Text(
-                                              veiculoTipo.veiTipDesc?.trim() ??
-                                                  ''),
-                                        ))
-                                    .toList(),
-                                onChanged: controller.isVeiculoTipoLocked.value
-                                    ? null // Desabilita a seleção se o tipo estiver travado
-                                    : (VeiculoTipo? newValue) {
-                                        // Atualiza o valor selecionado do controlador
-                                        controller.veiculoTipoSelecionado
-                                            .value = newValue;
-                                        // Atualiza o filtro de tipo permissionário
-                                        controller.filtrarTipoPermissionarios(
-                                            newValue?.veiTipDesc ?? '');
-                                      },
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Obx(
-                        () => controller.RecarregarDropwndoTipo.value
-                            ? DropdownButtonFormField<TipoPermissionario>(
-                                decoration: const InputDecoration(
-                                  labelText: "Tipo Permissionário",
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: controller.tipoPermissionariosFiltrados
-                                    .map((permissionario) => DropdownMenuItem(
-                                          value: permissionario,
-                                          child: Text(
-                                              permissionario.descricao ?? ''),
-                                        ))
-                                    .toList(),
-                                onChanged: (TipoPermissionario? newValue) {
-                                  // Atualizar estado conforme necessário
-                                  // Atualiza visibilidade com base na seleção
-                                  controller.updateCampo(
-                                      'codTipoPermissao',
-                                      newValue?.codTipoPermissao.toString() ?? '');
-                                  controller.updateVisibility(
-                                      newValue?.codTipoPermissao.toString() ??
-                                          '',
-                                      controller.veiculoTipoSelecionado.value
-                                              ?.veiTipDesc ??
-                                          '');
-                                },
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                      const SizedBox(height: 16.0),
-
-                      // Campos Condicionais
-                      Obx(() => controller.showDadosVeiculo.value
-                          ? DadosVeiculoWidget()
-                          : const SizedBox.shrink()),
-                      Obx(() => controller.showMotoFields.value
-                          ? MotoFieldsWidget()
-                          : const SizedBox.shrink()),
-                      Obx(() => controller.showCarFields.value
-                          ? CarFieldsWidget()
-                          : const SizedBox.shrink()),
-                      Obx(() => controller.showCarAndMotoFields.value
-                          ? CarAndMotoFieldsWidget()
-                          : const SizedBox.shrink()),
-
-                      // Botão para capturar/selecionar imagem
-                      OverflowBar(
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () => _showImageSourceSelection(context),
-                            icon: const Icon(Icons.image),
-                            label: const Text('Adicionar Foto'),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Obx(() {
-                            if (controller.selectedImage.value != null) {
-                              return Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  ClipOval(
-                                    child: Image.file(
-                                      controller.selectedImage.value!,
-                                      height: 100,
-                                      width: 100,
-                                      fit: BoxFit.cover,
-                                    ),
+                // Verifica se está carregando
+                Obx(() {
+                  // Se estiver carregando, mostra o CircularProgressIndicator
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    // Caso contrário, mostra os demais campos
+                    return Column(
+                      children: [
+                        Obx(
+                          () => controller.RecarregarDropwndoTipo.value
+                              ? DropdownButtonFormField<VeiculoTipo>(
+                                  decoration: const InputDecoration(
+                                    labelText: "Tipo de Veículo",
+                                    border: OutlineInputBorder(),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: const Text("Confirmar"),
-                                            content: const Text(
-                                                "Você deseja excluir a imagem?"),
-                                            actions: [
-                                              TextButton(
-                                                child: const Text("Cancelar"),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                              TextButton(
-                                                child: const Text("Excluir"),
-                                                onPressed: () {
-                                                  controller.selectedImage
-                                                      .value = null;
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
-                                          );
+                                  // Usa o valor selecionado do controlador
+                                  value:
+                                      controller.veiculoTipoSelecionado.value,
+                                  items: controller
+                                      .vistoriaMobileDTOs.first.veiculoTipos
+                                      ?.map((veiculoTipo) => DropdownMenuItem(
+                                            value: veiculoTipo,
+                                            child: Text(veiculoTipo.veiTipDesc
+                                                    ?.trim() ??
+                                                ''),
+                                          ))
+                                      .toList(),
+                                  onChanged: controller
+                                          .isVeiculoTipoLocked.value
+                                      ? null // Desabilita a seleção se o tipo estiver travado
+                                      : (VeiculoTipo? newValue) {
+                                          // Atualiza o valor selecionado do controlador
+                                          controller.veiculoTipoSelecionado
+                                              .value = newValue;
+                                          // Atualiza o filtro de tipo permissionário
+                                          controller.filtrarTipoPermissionarios(
+                                              newValue?.veiTipDesc ?? '');
                                         },
-                                      );
-                                    },
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        const SizedBox(height: 16.0),
+                        Obx(
+                          () => controller.RecarregarDropwndoTipo.value
+                              ? DropdownButtonFormField<TipoPermissionario>(
+                                  decoration: const InputDecoration(
+                                    labelText: "Tipo Permissionário",
+                                    border: OutlineInputBorder(),
                                   ),
+                                  items: controller.tipoPermissionariosFiltrados
+                                      .map((permissionario) => DropdownMenuItem(
+                                            value: permissionario,
+                                            child: Text(
+                                                permissionario.descricao ?? ''),
+                                          ))
+                                      .toList(),
+                                  onChanged: (TipoPermissionario? newValue) {
+                                    // Atualizar estado conforme necessário
+                                    // Atualiza visibilidade com base na seleção
+                                    controller.updateCampo(
+                                        'codTipoPermissao',
+                                        newValue?.codTipoPermissao.toString() ??
+                                            '');
+                                    controller.updateVisibility(
+                                        newValue?.codTipoPermissao.toString() ??
+                                            '',
+                                        controller.veiculoTipoSelecionado.value
+                                                ?.veiTipDesc ??
+                                            '');
+                                  },
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        const SizedBox(height: 16.0),
+
+                        // Campos Condicionais
+                        Obx(() => controller.showDadosVeiculo.value
+                            ? DadosVeiculoWidget()
+                            : const SizedBox.shrink()),
+                        Obx(() => controller.showMotoFields.value
+                            ? MotoFieldsWidget()
+                            : const SizedBox.shrink()),
+                        Obx(() => controller.showCarFields.value
+                            ? CarFieldsWidget()
+                            : const SizedBox.shrink()),
+                        Obx(() => controller.showCarAndMotoFields.value
+                            ? CarAndMotoFieldsWidget()
+                            : const SizedBox.shrink()),
+
+                        // Botão para capturar/selecionar imagem
+                        Column(
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () =>
+                                  _showImageSourceSelection(context),
+                              icon: const Icon(Icons.image),
+                              label: const Text('Adicionar Foto'),
+                            ),
+                            const SizedBox(height: 20),
+                            Obx(() {
+                              return OverflowBar(
+                                spacing: 8.0,
+                                children: [
+                                  // Mostrar mensagem se não houver imagens selecionadas
+                                  if (controller.selectedImages.isEmpty)
+                                    const Text("Nenhuma imagem selecionada"),
+                                  // Exibir imagens selecionadas
+                                  ...controller.selectedImages.map((imageFile) {
+                                    return Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        ClipOval(
+                                          child: Image.file(
+                                            imageFile,
+                                            height: 100,
+                                            width: 100,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title:
+                                                      const Text("Confirmar"),
+                                                  content: const Text(
+                                                      "Você deseja excluir a imagem?"),
+                                                  actions: [
+                                                    TextButton(
+                                                      child: const Text(
+                                                          "Cancelar"),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                    TextButton(
+                                                      child:
+                                                          const Text("Excluir"),
+                                                      onPressed: () {
+                                                        controller
+                                                            .selectedImages
+                                                            .remove(imageFile);
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
                                 ],
                               );
-                            } else {
-                              return const Text("Nenhuma imagem selecionada");
-                            }
-                          }),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
+                            }),
+                          ],
+                        ),
 
-                      // Botão de envio
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                final jsonFinal = controller.generateJson();
-                                print(
-                                    jsonFinal); // Aqui você pode enviar o JSON gerado
-                              },
-                              child: const Text("Enviar"),
+                        const SizedBox(height: 16.0),
+
+                        // Botão de envio
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  final jsonFinal = controller.generateJson();
+                                  print(
+                                      jsonFinal); // Aqui você pode enviar o JSON gerado
+                                },
+                                child: const Text("Enviar"),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                }
-              }),
-            ],
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                }),
+              ],
+            ),
           ),
         ),
       ),
