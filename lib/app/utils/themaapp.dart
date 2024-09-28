@@ -3,16 +3,29 @@ import 'package:flutter/material.dart';
 ThemeData ThemaApp() {
   return ThemeData(
     fontFamily: 'Quicksand',
+    primaryColor: Colors.green,
     primarySwatch: Colors.green,
+    colorScheme: ColorScheme.fromSwatch(
+      primarySwatch: Colors.green,
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.green,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green, // Botões elevados terão a cor verde
+      style: ButtonStyle(
+        foregroundColor: WidgetStateProperty.all<Color>(
+            Colors.white), // Define a cor da label
+        backgroundColor: WidgetStateProperty.all<Color>(
+            Colors.green), // Cor de fundo do botão
+        textStyle: WidgetStateProperty.all<TextStyle>(
+          const TextStyle(fontSize: 16), // Tamanho do texto
+        ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
+      labelStyle: const TextStyle(
+        color: Colors.black, // Cor do label
+      ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(
             12.0), // Defina o raio das bordas arredondadas
