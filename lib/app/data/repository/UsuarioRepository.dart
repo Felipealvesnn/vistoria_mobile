@@ -2,8 +2,8 @@ import 'package:vistoria_mobile/app/data/models/Usuario.dart';
 import 'package:vistoria_mobile/app/data/provider/usuario_provider.dart';
 
 class UsuarioRepository {
-  UsuarioProvider _usuarioProvider = UsuarioProvider();
-  
+  final UsuarioProvider _usuarioProvider = UsuarioProvider();
+
   Future<usuarioDtop> login(Usuario usu) async {
     try {
       var usuar = await _usuarioProvider.postVistoria(usu);

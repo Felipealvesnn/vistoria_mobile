@@ -6,7 +6,7 @@ class Usuario {
   double? usuarioId;
   String? usuNome;
   double? usuCPF;
-  String? usuRg;
+  double? usuRg;
   String? usuLogin;
   String? usuSenha;
   bool? usuAtivo;
@@ -105,43 +105,43 @@ class Usuario {
     };
   }
 
-  factory Usuario.fromMap(Map<String, dynamic> map) {
-    return Usuario(
-      usuarioId: map['usuarioId'] ?? 0.0,
-      usuNome: map['usuNome'],
-      usuCPF: map['usuCPF'],
-      usuRg: map['usuRg'],
-      usuLogin: map['usuLogin'],
-      usuSenha: map['usuSenha'],
-      usuAtivo: map['usuAtivo'],
-      usuEmail: map['usuEmail'],
-      usuFoneRes: map['usuFoneRes'],
-      usuFoneCom: map['usuFoneCom'],
-      usuFoneCel: map['usuFoneCel'],
-      usuCodLogradouro: map['usuCodLogradouro'],
-      usuCodBairro: map['usuCodBairro'],
-      usuComplemento: map['usuComplemento'],
-      usuNumResidencia: map['usuNumResidencia'],
-      usuCEP: map['usuCEP'],
-      usuCodCidade: map['usuCodCidade'],
-      usuCodUF: map['usuCodUF'],
-      usuCodPais: map['usuCodPais'],
-      usuDataCadastro: map['usuDataCadastro'] != null
-          ? DateTime.parse(map['usuDataCadastro'])
-          : null,
-      usuTrocarSenhaPrimeiroAcesso: map['usuTrocarSenhaPrimeiroAcesso'],
-      agenteCod: map['agenteCod'],
-      usuEndereco: map['usuEndereco'],
-      docCod: map['docCod'],
-      foto: map['foto'],
-      usuNomeSocial: map['usuNomeSocial'],
-      permConsultar: map['permConsultar'],
-      permInserir: map['permInserir'],
-      permAlterar: map['permAlterar'],
-      permApagar: map['permApagar'],
-      usuMatriculaFuncionario: map['usuMatriculaFuncionario'],
-    );
-  }
+ factory Usuario.fromMap(Map<String, dynamic> map) {
+  return Usuario(
+    usuarioId: map['usuarioId'] ?? 0,
+    usuNome: map['usuNome'] ?? '',
+    usuCPF: map['usuCPF'] ?? 0,
+    usuRg: map['usuRg'] ?? 0,
+    usuLogin: map['usuLogin'] ?? '',
+    usuSenha: map['usuSenha'] ?? '',
+    usuAtivo: map['usuAtivo'] ?? false,
+    usuEmail: map['usuEmail'] ?? '',
+    usuFoneRes: map['usuFoneRes'] ?? '',
+    usuFoneCom: map['usuFoneCom'] ?? '',
+    usuFoneCel: map['usuFoneCel'] ?? '',
+    usuCodLogradouro: map['usuCodLogradouro'] ?? 0,
+    usuCodBairro: map['usuCodBairro'] ?? 0,
+    usuComplemento: map['usuComplemento'] ?? '',
+    usuNumResidencia: map['usuNumResidencia'] ?? '',
+    usuCEP: map['usuCEP'] ?? '',
+    usuCodCidade: map['usuCodCidade'] ?? 0,
+    usuCodUF: map['usuCodUF'] ?? 0,
+    usuCodPais: map['usuCodPais'] ?? 0,
+    usuDataCadastro: map['usuDataCadastro'] != null
+        ? DateTime.parse(map['usuDataCadastro'])
+        : null,
+    usuTrocarSenhaPrimeiroAcesso: map['usuTrocarSenhaPrimeiroAcesso'] ?? '',
+    agenteCod: map['agenteCod'] ?? 0,
+    usuEndereco: map['usuEndereco'] ?? '',
+    docCod: map['docCod'] ?? 0,
+    foto: map['foto'] ?? '',
+    usuNomeSocial: map['usuNomeSocial'] ?? '',
+    permConsultar: map['permConsultar'] ?? false,
+    permInserir: map['permInserir'] ?? false,
+    permAlterar: map['permAlterar'] ?? false,
+    permApagar: map['permApagar'] ?? false,
+    usuMatriculaFuncionario: map['usuMatriculaFuncionario'] ?? '',
+  );
+}
 
   String toJson() => json.encode(toMap());
 
