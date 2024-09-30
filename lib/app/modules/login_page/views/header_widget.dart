@@ -104,7 +104,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
                     top: 50,
                     bottom: 70.0,
                   ),
-                  //child: Image.asset('assets/icon/icon.png'),
+                  child: Image.asset('assets/icon/icon.png'),
                   // child: Image.asset('assets/logo003.png'),
                 ),
               ),

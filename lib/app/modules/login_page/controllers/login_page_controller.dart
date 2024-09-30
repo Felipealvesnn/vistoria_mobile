@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vistoria_mobile/app/data/models/Usuario.dart';
 import 'package:vistoria_mobile/app/data/repository/UsuarioRepository.dart';
 import 'package:vistoria_mobile/app/routes/app_pages.dart';
 import 'package:vistoria_mobile/app/utils/getstorages.dart';
@@ -14,27 +15,27 @@ class LoginPageController extends GetxController {
   void login(String email, String senha) async {
     try {
       loading.value = true;
-      await Get.offAllNamed(Routes.VISTORIA);
-      final user = await repository.login(email, senha);
+      Usuario userf = Usuario(usuEmail: email, usuSenha: senha);
+      final user = await repository.login(userf);
 
-      if (user != null && user.ativo!) {
+      if (user.token != null) {
         Storagers.boxUserLogado.write("user", user);
-        Storagers.boxCpf.write('boxCpf', user.cpf.toString());
+        // Storagers.boxCpf.write('boxCpf', user.usuario.cpf.toString());
         Storagers.boxToken.write('boxToken', user.token.toString());
         print(user.token);
 
         await Get.offAllNamed(Routes.HOME, arguments: [
           {"user": user}
         ]);
-      } else if (user != null && !user.ativo!) {
+      } else if (user.usuario != null && user.usuario!.usuAtivo == true) {
         Get.snackbar(
           "Impossível autenticar",
           "Usuário Inativo",
-          icon: Icon(Icons.error_outline,
-              color: const Color.fromARGB(255, 214, 205, 205)),
+          icon: const Icon(Icons.error_outline,
+              color: Color.fromARGB(255, 214, 205, 205)),
           colorText: Colors.white,
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
           snackPosition: SnackPosition.TOP,
         );
       }
@@ -47,15 +48,6 @@ class LoginPageController extends GetxController {
   }
 
   final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
 
   @override
   void onClose() {}

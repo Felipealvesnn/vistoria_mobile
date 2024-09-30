@@ -154,7 +154,7 @@ class LoginPageView extends GetView<LoginPageController> {
                                     decoration: ThemeHelper()
                                         .buttonBoxDecoration(context),
                                     child: ElevatedButton(
-                                      style: ThemeHelper().buttonStyle(),
+                                      //style: ThemeHelper().buttonStyle(),
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             40, 10, 40, 10),

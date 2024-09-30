@@ -167,8 +167,10 @@ class VistoriaController extends GetxController {
     final Map<String, List<String>> tipoVeiculoMap = {
       'CAMINHONETE': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
       'CAMIONETA': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
-      'AUTOMOVEL': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS','BUGGY'],
-      'MOTOCICLETA': ['MOTO - TAXI',],
+      'AUTOMOVEL': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS', 'BUGGY'],
+      'MOTOCICLETA': [
+        'MOTO - TAXI',
+      ],
       'MOTONETA': ['MOTO - TAXI', 'ESPECIAIS'],
       'ONIBUS': ['COLETIVO', 'ESCOLAR'],
       'MICROONIBUS': ['COLETIVO', 'ESCOLAR'],

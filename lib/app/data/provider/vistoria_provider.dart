@@ -1,17 +1,17 @@
 import 'package:get/get_connect/connect.dart';
 import 'package:vistoria_mobile/app/data/global/constants.dart';
 import 'package:vistoria_mobile/app/utils/funcoesUtils.dart';
+import 'package:vistoria_mobile/app/utils/getstorages.dart';
 
 class vistoriaProvider extends GetConnect {
   Future getVistoria(int? page) async {
     timeout = const Duration(minutes: 10);
-    final token = getUsuario();
-    final headers = {"Authorization": 'Bearer ${token.token}'};
+    final token = Storagers.boxToken.read("boxToken");
 
-    var response = await get(
-        "$baseUrlw2e/Vistorium/VistoriaMobile?page=$page&cpfUsuario=${token.cpf}",
-        contentType: 'application/json',
-        headers: headers);
+    final headers = {"Authorization": 'Bearer $token'};
+
+    var response = await get("$baseUrlw2e/Vistoria",
+        contentType: 'application/json', headers: headers);
 
     if (response.statusCode == 200) {
       return response.body;
@@ -22,9 +22,8 @@ class vistoriaProvider extends GetConnect {
 
   Future getPlacaDetraN(String placa) async {
     timeout = const Duration(minutes: 10);
-    final token = getUsuario();
-    token.token = "ff";
-    final headers = {"Authorization": 'Bearer ${token.token}'};
+    final token = Storagers.boxToken.read("boxToken");
+    final headers = {"Authorization": 'Bearer $token'};
 
     var response = await get(
         "$pesquisarplacaURl/ConsultaPlaca?placa=$placa&blitz=n&blitzID=n",
@@ -37,14 +36,15 @@ class vistoriaProvider extends GetConnect {
       throw Exception('Failed to load data!');
     }
   }
-  
+
   Future postVistoria(Map<dynamic, dynamic> vistoria) async {
     timeout = const Duration(minutes: 10);
-    final token = getUsuario();
-    final headers = {"Authorization": 'Bearer ${token.token}'};
+    final token = Storagers.boxToken.read("boxToken");
 
-    var response = await post("$baseUrlw2e/Vistorium/VistoriaMobile",
-        vistoria, headers: headers);
+    final headers = {"Authorization": 'Bearer $token'};
+
+    var response =
+        await post("$baseUrlw2e/getmobile", vistoria, headers: headers);
 
     if (response.statusCode == 200) {
       return response.body;
