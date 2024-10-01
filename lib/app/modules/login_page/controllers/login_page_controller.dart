@@ -61,28 +61,7 @@ class LoginPageController extends GetxController {
     }
   }
 
-  Future verifyAuth() async {
-    var biometria = await Storagers.boxInicial.read('biometria');
-    Usuario user = Usuario();
-    final usuario = await Storagers.boxUserLogado.read('user');
-    if (usuario != null) {
-      user = usuario is Usuario ? usuario : Usuario.fromJson(usuario);
-      print(user.usuLogin);
-    }
-
-    if (user.usuCPF != null) {
-      if (biometria ?? false) {
-        await Get.offAllNamed(Routes.WELCOME);
-        //return await authenticateWithBiometrics();
-      }
-
-      return Get.offAllNamed(Routes.VISTORIA);
-    } else {
-     // await Get.offAllNamed(Routes.LOGIN);
-
-      //return const WelcomeView();
-    }
-  }
+  
 
   Future<void> authenticateWithBiometrics() async {
     final LocalAuthentication localAuth = LocalAuthentication();
@@ -125,7 +104,7 @@ class LoginPageController extends GetxController {
   @override
   onInit() async {
     isSwitched.value = await Storagers.boxInicial.read('biometria') ?? false;
-    await verifyAuth();
+   // await verifyAuth();
 
     super.onInit();
   }

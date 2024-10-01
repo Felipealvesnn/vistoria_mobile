@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/modules/WELCOME/controllers/welcome_controller.dart';
@@ -17,20 +19,18 @@ class MyDrawer extends StatelessWidget {
             accountEmail: const Text("email@exemplo.com"),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.network(
-                  'https://www.w3schools.com/howto/img_avatar.png',
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
             decoration: BoxDecoration(
               color: Get.theme.primaryColor,
-              image: const DecorationImage(
-                image: AssetImage('assets/images/drawer_bg.jpg'),
-                fit: BoxFit.cover,
-              ),
             ),
           ),
 
@@ -56,7 +56,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Configurações'),
             onTap: () {
               // Navegar para a tela de configurações
-               Get.toNamed(Routes.CONFIGURACOES);
+              Get.toNamed(Routes.CONFIGURACOES);
             },
           ),
 

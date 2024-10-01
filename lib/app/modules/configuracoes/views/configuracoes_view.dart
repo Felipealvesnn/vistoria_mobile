@@ -26,6 +26,7 @@ class ConfiguracoesView extends GetView<ConfiguracoesController> {
                 title: "Exibir Biometria?",
                 value: controller.isBiometriaEnabled.value, 
                 onChanged: (value) {
+                  controller.isBiometriaEnabled.value = value;
                   controller.mudarBiometria();
                 },
               ),
