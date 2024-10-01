@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/modules/login_page/views/header_widget.dart';
 import 'package:vistoria_mobile/app/routes/app_pages.dart';
 import 'package:vistoria_mobile/app/utils/theme_helper.dart';
-
 import '../controllers/login_page_controller.dart';
 
 class LoginPageView extends GetView<LoginPageController> {
@@ -14,6 +13,8 @@ class LoginPageView extends GetView<LoginPageController> {
 
   TextEditingController myEmailController = TextEditingController();
   TextEditingController myPasswordController = TextEditingController();
+
+  // Controlador para o switch de biometria
 
   LoginPageView({super.key});
   @override
@@ -30,201 +31,195 @@ class LoginPageView extends GetView<LoginPageController> {
                     Icons.login_rounded), //let's create a common header widget
               ),
               Container(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                  margin: const EdgeInsets.fromLTRB(
-                      20, 10, 20, 10), // This will be the login form
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Olá',
-                        style: TextStyle(
-                            fontSize: 50, fontWeight: FontWeight.bold),
-                      ),
-                      const Text(
-                        'Faça login na sua conta',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: Form(
-                          key: formKey,
-                          child: Column(
-                            children: [
-                              Container(
-                                decoration:
-                                    ThemeHelper().inputBoxDecorationShaddow(),
-                                child: TextFormField(
-                                  decoration: ThemeHelper().textInputDecoration(
-                                      'Email / CPF',
-                                      'Entre com Email OU CPF registrado'),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                margin: const EdgeInsets.fromLTRB(
+                    20, 2, 20, 10), // This will be the login form
+                child: Column(
+                  children: [
+                    const Text(
+                      'Olá',
+                      style:
+                          TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+                    ),
+                    const Text(
+                      'Faça login na sua conta',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          children: [
+                            Container(
+                              decoration:
+                                  ThemeHelper().inputBoxDecorationShaddow(),
+                              child: TextFormField(
+                                decoration: ThemeHelper().textInputDecoration(
+                                    'Email / CPF',
+                                    'Entre com Email OU CPF registrado'),
+                                validator: Validatorless.multiple([
+                                  Validatorless.required("campo obrigatório !"),
+                                  // Validatorless.email("E-mail Inválido"),
+                                ]),
+                                keyboardType: TextInputType.text,
+                                autofocus: false,
+                                controller: myEmailController,
+                              ),
+                            ),
+                            const SizedBox(height: 15.0),
+                            Container(
+                              decoration:
+                                  ThemeHelper().inputBoxDecorationShaddow(),
+                              child: Obx(
+                                () => TextFormField(
                                   validator: Validatorless.multiple([
-                                    Validatorless.required(
-                                        "campo obrigatório !"),
-                                    // Validatorless.email("E-mail Inválido"),
+                                    Validatorless.required("Senha Obrigatória"),
+                                    Validatorless.min(3,
+                                        "Senha precisa ter pelo menos 3 caracteres")
                                   ]),
-                                  keyboardType: TextInputType.text,
+                                  controller: myPasswordController,
                                   autofocus: false,
-                                  controller: myEmailController,
-                                ),
-                              ),
-                              const SizedBox(height: 15.0),
-                              Container(
-                                decoration:
-                                    ThemeHelper().inputBoxDecorationShaddow(),
-                                child: Obx(
-                                  () => TextFormField(
-                                      validator: Validatorless.multiple([
-                                        Validatorless.required(
-                                            "Senha Obrigatória"),
-                                        Validatorless.min(3,
-                                            "Senha precisa ter pelo menos 3 caracteres")
-                                      ]),
-                                      controller: myPasswordController,
-                                      autofocus: false,
-                                      obscureText:
-                                          controller.showPassword.value,
-                                      decoration: InputDecoration(
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            Icons.visibility,
-                                            color: Get.theme.primaryColor,
-                                          ),
-                                          onPressed: () {
-                                            controller.showPassword.value =
-                                                !controller.showPassword.value;
-                                          },
-                                        ),
-                                        labelText: "Senha",
-                                        hintText: "Entre com sua senha",
-                                        fillColor: Colors.white,
-                                        filled: true,
-                                        contentPadding:
-                                            const EdgeInsets.fromLTRB(
-                                                20, 10, 20, 10),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.grey)),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            borderSide: BorderSide(
-                                                color: Colors.grey.shade400)),
-                                        errorBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.red, width: 2.0)),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.red, width: 2.0)),
-                                      )),
-                                ),
-                              ),
-                              const SizedBox(height: 15),
-                              Container(
-                                margin:
-                                    const EdgeInsets.fromLTRB(10, 0, 10, 15),
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                       Get.toNamed(Routes.ESQUECI_A_SENHA);
-                                    /*   Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ForgotPasswordPage()),
-                                      ); */
-                                  },
-                                  child: const Text(
-                                    "Esqueceu a senha?",
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Obx(
-                                () => Visibility(
-                                  visible: !controller.loading.value,
-                                  child: Container(
-                                    decoration: ThemeHelper()
-                                        .buttonBoxDecoration(context),
-                                    child: ElevatedButton(
-                                      style: ThemeHelper().buttonStyle(),
-                                      child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            40, 10, 40, 10),
-                                        child: Text(
-                                          'Login'.toUpperCase(),
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
-                                        ),
+                                  obscureText: controller.showPassword.value,
+                                  decoration: InputDecoration(
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        controller.showPassword.value
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Get.theme.primaryColor,
                                       ),
                                       onPressed: () {
-                                        if (formKey.currentState!.validate()) {
-                                          controller.login(
-                                              myEmailController.text,
-                                              myPasswordController.text);
-                                        }
+                                        controller.showPassword.value =
+                                            !controller.showPassword.value;
                                       },
                                     ),
+                                    labelText: "Senha",
+                                    hintText: "Entre com sua senha",
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        20, 10, 20, 10),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        borderSide: const BorderSide(
+                                            color: Colors.grey)),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        borderSide: BorderSide(
+                                            color: Colors.grey.shade400)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        borderSide: const BorderSide(
+                                            color: Colors.red, width: 2.0)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        borderSide: const BorderSide(
+                                            color: Colors.red, width: 2.0)),
                                   ),
                                 ),
                               ),
-                              Obx(() => Visibility(
-                                    visible: controller.loading.value,
-                                    child: Container(
-                                      decoration: ThemeHelper()
-                                          .buttonBoxDecoration(context),
-                                      child: ElevatedButton(
-                                        style: ThemeHelper().buttonStyle(),
-                                        child: const Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                40, 10, 40, 10),
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                            )),
-                                        onPressed: () {},
+                            ),
+                            const SizedBox(height: 15),
+                            Container(
+                              margin: const EdgeInsets.fromLTRB(10, 0, 10, 15),
+                              alignment: Alignment.topRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Get.toNamed(Routes.ESQUECI_A_SENHA);
+                                },
+                                child: const Text(
+                                  "Esqueceu a senha?",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Obx(
+                              () => Visibility(
+                                visible: !controller.loading.value,
+                                replacement: Container(
+                                  decoration: ThemeHelper()
+                                      .buttonBoxDecoration(context),
+                                  child: ElevatedButton(
+                                    style: ThemeHelper().buttonStyle(),
+                                    child: const Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(40, 10, 40, 10),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )),
+                                    onPressed: () {},
+                                  ),
+                                ),
+                                child: Container(
+                                  decoration: ThemeHelper()
+                                      .buttonBoxDecoration(context),
+                                  child: ElevatedButton(
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          40, 10, 40, 10),
+                                      child: Text(
+                                        'Login'.toUpperCase(),
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
                                       ),
                                     ),
-                                  )),
-                              Container(
-                                margin:
-                                    const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                                //child: Text('Don\'t have an account? Create'),
-                                child: Text.rich(TextSpan(children: [
-                                  const TextSpan(text: "Não tem uma conta? "),
-                                  TextSpan(
-                                    text: 'Criar',
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        //  Get.toNamed(Routes.CADASTRO_USUARIO);
-                                        /* Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      RegistrationPage())); */
-                                      },
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary),
+                                    onPressed: () {
+                                      if (formKey.currentState!.validate()) {
+                                        controller.login(myEmailController.text,
+                                            myPasswordController.text);
+                                      }
+                                    },
                                   ),
-                                ])),
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+
+                            // Switch para usar biometria
+                            Obx(
+                              () => SwitchListTile(
+                                title: const Text("Usar biometria"),
+                                value: controller.isSwitched.value,
+                                onChanged: (bool value) {
+                                  controller.isSwitched.value = value;
+                                  controller.mudarBiometria();
+                                  // Adicione sua lógica para ativar/desativar biometria
+                                },
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                              child: Text.rich(TextSpan(children: [
+                                const TextSpan(text: "Não tem uma conta? "),
+                                TextSpan(
+                                  text: 'Criar',
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Get.toNamed(Routes.CADASTRO_USUARIO);
+                                    },
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
+                              ])),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ))
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
@@ -232,7 +227,6 @@ class LoginPageView extends GetView<LoginPageController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Powered by'),
-            //Image.asset('assets/logo001.png'),
           ],
         ),
       ),

@@ -5,8 +5,49 @@ ThemeData ThemaApp() {
     fontFamily: 'Quicksand',
     primaryColor: Colors.green,
     primarySwatch: Colors.green,
+    dividerTheme: const DividerThemeData(
+      space: 0,
+      thickness: 1,
+      color: Colors.grey,
+    ),
     colorScheme: ColorScheme.fromSwatch(
       primarySwatch: Colors.green,
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.disabled)) {
+            return Colors.grey.withOpacity(0.5); // Cor para o estado desabilitado
+          }
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white; // Cor quando o switch está ativado
+          }
+          return Colors.green; // Cor quando o switch está desativado
+        },
+      ),
+      trackColor: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.disabled)) {
+            return Colors.white; // Cor para o estado desabilitado
+          }
+          if (states.contains(WidgetState.selected)) {
+            return Colors.green
+                ; // Cor quando o switch está ativado
+          }
+          return Colors.black12; // Cor quando o switch está desativado
+        },
+      ),
+      trackOutlineColor: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.disabled)) {
+            return Colors.black12; // Cor para o estado desabilitado
+          }
+          if (states.contains(WidgetState.selected)) {
+            return Colors.black12; // Cor quando o switch está ativado
+          }
+          return Colors.black12; // Cor quando o switch está desativado
+        },
+      ),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.green,

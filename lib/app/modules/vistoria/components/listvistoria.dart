@@ -10,42 +10,67 @@ class ListVistoria extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: controller.vistorias.length,
-      itemBuilder: (context, index) {
-        var vistoria = controller.vistorias[index];
+    return Obx(() {
+      return ListView.builder(
+        controller: controller.scrollController, // Usa o ScrollController
+        itemCount: controller.vistorias.length +
+            1, // Adiciona 1 para o item de carregamento
+        itemBuilder: (context, index) {
+          if (index == controller.vistorias.length) {
+            // Se chegou ao final da lista, mostra o item de carregamento ou mensagem de fim
+            return Obx(() {
+              if (controller.isLoadingMore.value) {
+                return const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              } else if (!controller.hasMoreVistorias.value) {
+                return const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(child: Text('Não tem mais vistoria')),
+                );
+              } else {
+                return const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(child: Text('Carregar mais...')),
+                );
+              }
+            });
+          }
 
-        // Escolhe o ícone com base no tipo do veículo
-        IconData leadingIcon;
-        if (vistoria.tipo != null &&
-            (vistoria.tipo == "MOTOCICLETA" || vistoria.tipo == "MOTONETA")) {
-          leadingIcon = Icons.motorcycle; // Ícone para moto/motoneta
-        } else {
-          leadingIcon = Icons.car_rental; // Ícone para carro ou outros
-        }
+          // Escolhe o ícone com base no tipo do veículo
+          var vistoria = controller.vistorias[index];
+          IconData leadingIcon;
+          if (vistoria.tipo != null &&
+              (vistoria.tipo == "MOTOCICLETA" || vistoria.tipo == "MOTONETA")) {
+            leadingIcon = Icons.motorcycle; // Ícone para moto/motoneta
+          } else {
+            leadingIcon = Icons.car_rental; // Ícone para carro ou outros
+          }
 
-        return Card(
-          elevation: 3,
-          margin: const EdgeInsets.all(10),
-          child: ListTile(
-            leading: Icon(leadingIcon), // Usa o ícone correto
-            title: Text('Placa: ${vistoria.placa}'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Modelo: ${vistoria.marcaModelo}'),
-                Text('Data da Vistoria: ${vistoria.dataVistoria!.toLocal()}'),
-                Text('Cor: ${vistoria.cor}'),
-              ],
+          return Card(
+            elevation: 3,
+            margin: const EdgeInsets.all(10),
+            child: ListTile(
+              leading: Icon(leadingIcon), // Usa o ícone correto
+              title: Text('Placa: ${vistoria.placa}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Modelo: ${vistoria.marcaModelo}'),
+                  Text('Data da Vistoria: ${vistoria.dataVistoria!.toLocal()}'),
+                  Text('Cor: ${vistoria.cor}'),
+                ],
+              ),
+              trailing: const Icon(Icons.info_outline, color: Colors.red),
+              onTap: () {
+                // Navega para a página de detalhes da vistoria ao clicar
+                Get.to(() => VistoriaDetalhesView(vistoria: vistoria));
+              },
             ),
-            trailing: const Icon(Icons.info_outline, color: Colors.red),
-            onTap: () {
-              // Navega para a página de detalhes da vistoria ao clicar
-              Get.to(() => VistoriaDetalhesView(vistoria: vistoria));
-            },
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    });
   }
 }

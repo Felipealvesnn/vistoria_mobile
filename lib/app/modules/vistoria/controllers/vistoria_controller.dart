@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:vistoria_mobile/app/data/models/VeiculoDetran.dart';
 import 'package:vistoria_mobile/app/data/models/VeiculoTipo.dart';
 import 'package:vistoria_mobile/app/data/models/vistoriaMobileDTO.dart';
 import 'package:vistoria_mobile/app/data/repository/vistoria_repository.dart';
+import 'package:vistoria_mobile/app/routes/app_pages.dart';
 import '../../../data/models/vistoria.dart';
 
 class VistoriaController extends GetxController {
@@ -29,13 +31,21 @@ class VistoriaController extends GetxController {
   final corController = TextEditingController();
   final tipoVeiculoController = TextEditingController();
   final kmController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
 
   var isLoading = false.obs;
+  var isLoadingVistoriaInicial = true.obs; // Adicione esta linha
   var showDadosVeiculo = false.obs;
   var showMotoFields = false.obs;
   var showCarFields = false.obs;
   var showCarAndMotoFields = false.obs;
   var RecarregarDropwndoTipo = false.obs;
+
+  var isLoadingMore = false.obs;
+  var currentPage = 1.obs;
+  var hasMoreVistorias = true.obs;
+
+  List<Map<String, dynamic>> fotosVistoria = [];
 
   var selectedImages = RxList<File>([]);
 
@@ -48,6 +58,16 @@ class VistoriaController extends GetxController {
     super.onInit();
     await fetchVistorias();
     await fetchVistoriasMobileDTO();
+    isLoadingVistoriaInicial.value = false; // Adicione esta linha
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent &&
+          hasMoreVistorias.value &&
+          !isLoadingMore.value) {
+        loadMoreVistorias();
+      }
+    });
   }
 
   // Updates a specific field dynamically in the map
@@ -60,16 +80,20 @@ class VistoriaController extends GetxController {
     // falta [agenteCod]
     //[statusVistoria]
 
-    List<Map<String, dynamic>> fotosVistoria = [];
-
     // Itera sobre as imagens selecionadas, transforma em base64 e adiciona ao JSON
     for (var image in selectedImages) {
       // Lê o arquivo como bytes
       List<int> imageBytes = await image.readAsBytes();
+
       // Converte para base64
       String base64Image = base64Encode(imageBytes);
 
-      fotosVistoria.add({"NomeFoto": base64Image});
+      // Obter o nome da foto
+      String fileName = path.basename(image.path);
+
+      // Adiciona a imagem como base64 e o nome ao JSON
+      fotosVistoria.add({"NomeFoto": base64Image, "NomeArquivo": fileName});
+      print(base64Image);
     }
 
     var vistoria = {
@@ -87,25 +111,50 @@ class VistoriaController extends GetxController {
       ...camposMap, // Mapa dinâmico contendo os campos e observações
       "FotosVistoria": fotosVistoria // Adiciona as fotos ao JSON
     };
-    // await vistoriaProvider.postVistoria(vistoria);
+
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+
+    await vistoriaProvider.postVistoria(vistoria);
+    Get.back();
+
+    Get.snackbar('Sucesso', 'Vistoria cadastrada com sucesso', duration: 5.seconds);
+
+    await Get.offAllNamed(Routes.VISTORIA, arguments: false);
+
     return vistoria;
   }
 
   // Fetch vistorias data
   Future<void> fetchVistorias() async {
     try {
-      final mockData = await vistoriaProvider.getVistorias();
-      vistorias.addAll(mockData);
+      final mockData =
+          await vistoriaProvider.getVistorias(page: currentPage.value);
+      if (mockData.isNotEmpty) {
+        vistorias.addAll(mockData);
+      } else {
+        hasMoreVistorias.value = false; // Não há mais vistorias para carregar
+      }
     } catch (e) {
       Get.snackbar('Erro', 'Erro ao buscar vistorias');
     }
+  }
+
+  Future<void> loadMoreVistorias() async {
+    isLoadingMore.value = true;
+    currentPage.value += 1; // Incrementa o número da página
+    await fetchVistorias();
+    isLoadingMore.value = false;
   }
 
   // Fetch vistoriasMobileDTO data
   Future<void> fetchVistoriasMobileDTO() async {
     try {
       final mockData = await vistoriaProvider.getvistoriaMobileDTO();
-      vistoriaMobileDTOs.addAll(mockData);
+      vistoriaMobileDTOs.clear();
+      vistoriaMobileDTOs.addAll([mockData]);
     } catch (e) {
       Get.snackbar('Erro', 'Erro ao buscar tipos de veículos');
     }
@@ -120,7 +169,13 @@ class VistoriaController extends GetxController {
     }
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
+      // Obter o nome da foto
+      String fileName = path.basename(pickedFile.path);
+
+      // Adiciona o arquivo à lista de imagens selecionadas
       selectedImages.add(File(pickedFile.path));
+
+      print('Nome da foto: $fileName'); // Exibe o nome da foto
     }
   }
 
@@ -167,8 +222,10 @@ class VistoriaController extends GetxController {
     final Map<String, List<String>> tipoVeiculoMap = {
       'CAMINHONETE': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
       'CAMIONETA': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS'],
-      'AUTOMOVEL': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS','BUGGY'],
-      'MOTOCICLETA': ['MOTO - TAXI',],
+      'AUTOMOVEL': ['TAXI', 'COLETIVO', 'ESCOLAR', 'ESPECIAIS', 'BUGGY'],
+      'MOTOCICLETA': [
+        'MOTO - TAXI',
+      ],
       'MOTONETA': ['MOTO - TAXI', 'ESPECIAIS'],
       'ONIBUS': ['COLETIVO', 'ESCOLAR'],
       'MICROONIBUS': ['COLETIVO', 'ESCOLAR'],

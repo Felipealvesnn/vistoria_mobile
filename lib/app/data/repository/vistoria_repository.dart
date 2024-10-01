@@ -9,14 +9,17 @@ class VistoriaRepository {
 
   Future<List<Vistoria>> getVistorias({int? page}) async {
     try {
-      // Obtém a lista de notificações do provedor
-      // List<dynamic> jsonList = await vistoriaclient.getVistoria(page);
-      //   List<Vistoria> vistoriaList =
-      //     jsonList.map((json) => Vistoria.fromJson(json)).toList();
-
+     // Obtém a lista de notificações do provedor
+      List<dynamic> jonsonVistoria = await vistoriaclient.getVistoria(page!);
+       
       List<Vistoria> mockData =
-          jsonMoch.map((json) => Vistoria.fromJson(json)).toList();
-      // Mapeia a lista de JSON para uma lista de objetos Notificacoes
+          jonsonVistoria.map((json) => Vistoria.fromJson(json)).toList();
+
+     
+
+      // List<Vistoria> mockData =
+      //     jsonMoch.map((json) => Vistoria.fromJson(json)).toList();
+      
 
       return mockData;
     } catch (e) {
@@ -33,23 +36,23 @@ class VistoriaRepository {
     return veiculoDetran;
   }
 
-  Future<List<vistoriaMobileDTO>> getvistoriaMobileDTO({int? page}) async {
+  Future<vistoriaMobileDTO> getvistoriaMobileDTO({int? page}) async {
     try {
       // Obtém a lista de notificações do provedor
-      // List<dynamic> jsonList = await vistoriaclient.getVistoria(page);
-      //   List<Vistoria> vistoriaList =
-      //     jsonList.map((json) => Vistoria.fromJson(json)).toList();
+      Map<String, dynamic> jsonList = await vistoriaclient.getvistoriaMobileDTO(page);
+        vistoriaMobileDTO mockData =
+           vistoriaMobileDTO.fromJson(jsonList);
 
-      List<vistoriaMobileDTO> mockData = vistoriaMobileDTOjson
-          .map((json) => vistoriaMobileDTO.fromJson(json))
-          .toList();
+      // List<vistoriaMobileDTO> mockData = vistoriaMobileDTOjson
+      //     .map((json) => vistoriaMobileDTO.fromJson(json))
+      //     .toList();
       // Mapeia a lista de JSON para uma lista de objetos Notificacoes
 
       return mockData;
     } catch (e) {
       print("Erro ao buscar notificações: $e");
       // Retorna uma lista vazia em caso de erro
-      return [];
+      return vistoriaMobileDTO.vistoriaMobileDTO();
     }
   }
   

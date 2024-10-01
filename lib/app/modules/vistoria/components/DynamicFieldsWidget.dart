@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vistoria_mobile/app/data/global/constants.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_controller.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -23,28 +24,58 @@ class _DynamicFieldsWidgetState extends State<DynamicFieldsWidget> {
       _initializeCampos();
     });
   }
-  
 
   void _initializeCampos() {
     // Inicializa os campos fora do build
     for (var campo in widget.campos) {
+      // Inicializa o campo como "true" para os que devem ser marcados por padrão
+      bool defaultValue = _shouldCheckField(campo['campo']!);
+
+      // Verifica se o campo já existe no mapa antes de inicializar
       if (!controller.camposMap.containsKey(campo['campo'])) {
-        controller.updateCampo(campo['campo']!, false);
+        controller.updateCampo(campo['campo']!, defaultValue);
       }
+
       // Inicializa o campo de observações como string vazia
-      if (campo['obs'] != null && !controller.camposMap.containsKey(campo['obs'])) {
+      if (campo['obs'] != null &&
+          !controller.camposMap.containsKey(campo['obs'])) {
         controller.updateCampo(campo['obs']!, '');
       }
     }
   }
 
+  bool _shouldCheckField(String campo) {
+    // Lista de campos que devem aparecer marcados por padrão
+    const List<String> camposMarcados = [
+      'capacetes',
+      'faroisPrincipaisDianteiros',
+      'lanternasPosicaoTraseira',
+      'lanternasFreio',
+      'lanternaPlacaTraseira',
+      'pneus',
+      // Adicione outros campos que você deseja marcar como 'true' por padrão
+    ];
+
+    return camposMarcados.contains(campo);
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Iteração sobre os campos fornecidos
-        ...widget.campos.map((campo) {
-          return Column(
+  @override
+Widget build(BuildContext context) {
+  return Column(
+    children: [
+      // Iteração sobre os campos fornecidos
+      ...widget.campos.asMap().entries.map((entry) {
+        int index = entry.key;
+        Map<String, String?> campo = entry.value;
+
+        // Alterna entre cinza claro e branco para o efeito zebragem
+        Color backgroundColor = (index % 2 == 0) ? CinzaCalro : Colors.white;
+
+        return Container(
+          color: backgroundColor,
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Column(
             children: [
               // Checkbox para o campo
               Obx(
@@ -55,6 +86,8 @@ class _DynamicFieldsWidgetState extends State<DynamicFieldsWidget> {
                     // Atualiza o valor do checkbox no controlador
                     controller.updateCampo(campo['campo']!, value ?? false);
                   },
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
                 ),
               ),
               // Campo de observação que aparece quando o checkbox é marcado
@@ -65,8 +98,7 @@ class _DynamicFieldsWidgetState extends State<DynamicFieldsWidget> {
                     curve: Curves.easeInOut,
                     child: controller.camposMap[campo['campo']] == true
                         ? Container(
-                            margin: const EdgeInsets.only(top: 16.0),
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            margin: const EdgeInsets.only(top: 8.0),
                             child: TextFormField(
                               decoration: InputDecoration(
                                 labelText: '${campo['label']} Observações',
@@ -81,12 +113,11 @@ class _DynamicFieldsWidgetState extends State<DynamicFieldsWidget> {
                         : const SizedBox.shrink(),
                   ),
                 ),
-              // Espaçamento entre os campos
-              const Divider(height: 24, thickness: 2),
             ],
-          );
-        }).toList(),
-      ],
-    );
-  }
+          ),
+        );
+      }).toList(),
+    ],
+  );
+}
 }
