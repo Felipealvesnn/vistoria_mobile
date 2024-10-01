@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 
 import '../modules/WELCOME/bindings/welcome_binding.dart';
 import '../modules/WELCOME/views/welcome_view.dart';
+import '../modules/configuracoes/bindings/configuracoes_binding.dart';
+import '../modules/configuracoes/views/configuracoes_view.dart';
 import '../modules/esqueci_a_senha/bindings/esqueci_a_senha_binding.dart';
 import '../modules/esqueci_a_senha/views/esqueci_a_senha_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -41,8 +43,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.WELCOME,
-      page: () =>  WelcomeView(),
+      page: () => WelcomeView(),
       binding: WelcomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.CONFIGURACOES,
+      page: () => const ConfiguracoesView(),
+      binding: ConfiguracoesBinding(),
     ),
   ];
 }

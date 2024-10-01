@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/modules/WELCOME/controllers/welcome_controller.dart';
+import 'package:vistoria_mobile/app/routes/app_pages.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -32,14 +33,14 @@ class MyDrawer extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Lista de opções no Drawer
           ListTile(
             leading: const Icon(Icons.home),
             title: const Text('Home'),
             onTap: () {
               // Navegar para outra tela ou fechar o Drawer
-             // Get.toNamed('/home');
+              // Get.toNamed('/home');
             },
           ),
           ListTile(
@@ -47,7 +48,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Perfil'),
             onTap: () {
               // Navegar para a tela de perfil ou fechar o Drawer
-             // Get.toNamed('/perfil');
+              // Get.toNamed('/perfil');
             },
           ),
           ListTile(
@@ -55,10 +56,10 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Configurações'),
             onTap: () {
               // Navegar para a tela de configurações
-            //  Get.toNamed('/configuracoes');
+               Get.toNamed(Routes.CONFIGURACOES);
             },
           ),
-          
+
           const Spacer(),
 
           // Botão de logout na parte inferior
@@ -66,10 +67,33 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
             onTap: () {
-              // Lógica para realizar logout e redirecionar para tela de login
-             WelcomeController.logout();
+              // Exibe a caixa de diálogo de confirmação
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Confirmar Logout'),
+                    content: const Text('Você realmente deseja sair?'),
+                    actions: [
+                      TextButton(
+                        child: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Fecha o diálogo
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Sair'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Fecha o diálogo
+                          WelcomeController.logout(); // Realiza o logout
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
-          ),
+          )
         ],
       ),
     );

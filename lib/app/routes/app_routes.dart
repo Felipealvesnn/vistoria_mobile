@@ -9,6 +9,7 @@ abstract class Routes {
   static const ESQUECI_A_SENHA_VERIFICACAO = _Paths.ESQUECI_A_SENHA_VERIFICACAO;
   static const LOGIN = _Paths.LOGIN;
   static const WELCOME = _Paths.WELCOME;
+  static const CONFIGURACOES = _Paths.CONFIGURACOES;
 }
 
 abstract class _Paths {
@@ -19,4 +20,5 @@ abstract class _Paths {
   static const ESQUECI_A_SENHA_VERIFICACAO = '/esqueci-a-senha-verificacao';
   static const LOGIN = '/login';
   static const WELCOME = '/welcome';
+  static const CONFIGURACOES = '/configuracoes';
 }
