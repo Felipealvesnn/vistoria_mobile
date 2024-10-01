@@ -153,7 +153,7 @@ class EsqueciASenhaView extends GetView<EsqueciASenhaController> {
                                       text: 'Login',
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          Get.toNamed(Routes.LOGIN);
+                                          Get.offAllNamed(Routes.LOGIN);
                                           /* Navigator.push(
                                             context,
                                             MaterialPageRoute(
