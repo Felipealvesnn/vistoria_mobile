@@ -34,7 +34,7 @@ class VistoriaController extends GetxController {
   final ScrollController scrollController = ScrollController();
 
   var isLoading = false.obs;
-   var isLoadingVistoriaInicial = true.obs; // Adicione esta linha
+  var isLoadingVistoriaInicial = true.obs; // Adicione esta linha
   var showDadosVeiculo = false.obs;
   var showMotoFields = false.obs;
   var showCarFields = false.obs;
@@ -59,14 +59,15 @@ class VistoriaController extends GetxController {
     await fetchVistorias();
     await fetchVistoriasMobileDTO();
     isLoadingVistoriaInicial.value = false; // Adicione esta linha
-    
+
     scrollController.addListener(() {
-      if (scrollController.position.pixels >= scrollController.position.maxScrollExtent && hasMoreVistorias.value && !isLoadingMore.value) {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent &&
+          hasMoreVistorias.value &&
+          !isLoadingMore.value) {
         loadMoreVistorias();
       }
     });
-   
-
   }
 
   // Updates a specific field dynamically in the map
@@ -111,8 +112,16 @@ class VistoriaController extends GetxController {
       "FotosVistoria": fotosVistoria // Adiciona as fotos ao JSON
     };
 
-    // await vistoriaProvider.postVistoria(vistoria);
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+
     await vistoriaProvider.postVistoria(vistoria);
+    Get.back();
+
+    Get.snackbar('Sucesso', 'Vistoria cadastrada com sucesso', duration: 5.seconds);
+
     await Get.offAllNamed(Routes.VISTORIA, arguments: false);
 
     return vistoria;
