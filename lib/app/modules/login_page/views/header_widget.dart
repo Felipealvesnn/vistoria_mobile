@@ -26,98 +26,93 @@ class _HeaderWidgetState extends State<HeaderWidget> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     Color color = const Color.fromARGB(255, 34, 90, 35);
-    return Container(
-      child: Stack(
-        children: [
-          ClipPath(
-            clipper: ShapeClipper([
-              Offset(width / 5, _height),
-              Offset(width / 10 * 5, _height - 60),
-              Offset(width / 5 * 4, _height + 20),
-              Offset(width, _height - 18)
-            ]),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [
-                      Get.theme.primaryColor.withOpacity(0.4),
-                      const Color.fromARGB(221, 34, 90, 35)
-                      //Theme.of(context).primaryColor.withOpacity(0.4),
-                      //Theme.of(context).accentColor.withOpacity(0.4),
-                    ],
-                    begin: const FractionalOffset(0.0, 0.0),
-                    end: const FractionalOffset(1.0, 0.0),
-                    stops: const [0.0, 1.0],
-                    tileMode: TileMode.clamp),
-              ),
+    return Stack(
+      children: [
+        ClipPath(
+          clipper: ShapeClipper([
+            Offset(width / 5, _height),
+            Offset(width / 10 * 5, _height - 60),
+            Offset(width / 5 * 4, _height + 20),
+            Offset(width, _height - 18)
+          ]),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [
+                    Get.theme.primaryColor.withOpacity(0.4),
+                    const Color.fromARGB(221, 34, 90, 35)
+                    //Theme.of(context).primaryColor.withOpacity(0.4),
+                    //Theme.of(context).accentColor.withOpacity(0.4),
+                  ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(1.0, 0.0),
+                  stops: const [0.0, 1.0],
+                  tileMode: TileMode.clamp),
             ),
           ),
-          ClipPath(
-            clipper: ShapeClipper([
-              Offset(width / 3, _height + 20),
-              Offset(width / 10 * 8, _height - 60),
-              Offset(width / 5 * 4, _height - 60),
-              Offset(width, _height - 20)
-            ]),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor.withOpacity(0.4),
-                     color
-                    ],
-                    begin: const FractionalOffset(0.0, 0.0),
-                    end: const FractionalOffset(1.0, 0.0),
-                    stops: const [0.0, 1.0],
-                    tileMode: TileMode.clamp),
-              ),
+        ),
+        ClipPath(
+          clipper: ShapeClipper([
+            Offset(width / 3, _height + 20),
+            Offset(width / 10 * 8, _height - 60),
+            Offset(width / 5 * 4, _height - 60),
+            Offset(width, _height - 20)
+          ]),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.4),
+                    color
+                  ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(1.0, 0.0),
+                  stops: const [0.0, 1.0],
+                  tileMode: TileMode.clamp),
             ),
           ),
-          ClipPath(
-            clipper: ShapeClipper([
-              Offset(width / 5, _height),
-              Offset(width / 2, _height - 40),
-              Offset(width / 5 * 4, _height - 80),
-              Offset(width, _height - 20)
-            ]),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      color
-                    ],
-                    begin: const FractionalOffset(0.0, 0.0),
-                    end: const FractionalOffset(1.0, 0.0),
-                    stops: const [0.0, 1.0],
-                    tileMode: TileMode.clamp),
-              ),
+        ),
+        ClipPath(
+          clipper: ShapeClipper([
+            Offset(width / 5, _height),
+            Offset(width / 2, _height - 40),
+            Offset(width / 5 * 4, _height - 80),
+            Offset(width, _height - 20)
+          ]),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Theme.of(context).primaryColor, color],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(1.0, 0.0),
+                  stops: const [0.0, 1.0],
+                  tileMode: TileMode.clamp),
             ),
           ),
-          Visibility(
-            visible: _showIcon,
-            child: SizedBox(
-              height: _height,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.only(
-                    top: 50,
-                    bottom: 70.0,
-                  ),
-                  child: Image.asset('assets/icon/icon.png'),
-                  // child: Image.asset('assets/logo003.png'),
+        ),
+        Visibility(
+          visible: _showIcon,
+          child: SizedBox(
+            height: _height,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 50,
+                  bottom: 70.0,
                 ),
+                child: Image.asset('assets/icon/icon.png'),
+                // child: Image.asset('assets/logo003.png'),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 class ShapeClipper extends CustomClipper<Path> {
-  List<Offset> _offsets = [];
+   List<Offset> _offsets = [];
   ShapeClipper(this._offsets);
   @override
   Path getClip(Size size) {

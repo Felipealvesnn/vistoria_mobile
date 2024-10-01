@@ -11,7 +11,7 @@ class Vistoria {
   String? ano;
   String? cor;
   String? tipo;
-  int? km;
+  double? km;
   bool? parachoques;
   String? parachoquesObs;
   bool? retrovisores;
@@ -119,7 +119,7 @@ class Vistoria {
   String? agenteCod;
   String? statusVistoria;
   TipoPermissionario? codTipoPemissaoNavigation;
-  FotosVistorium? FotosVistoria;
+  List<FotosVistorium>? FotosVistoria;
 
   Vistoria({
     this.codTipoPemissaoNavigation,
@@ -244,7 +244,7 @@ class Vistoria {
   });
 
   // Método para converter de JSON para a classe Dart
-  factory Vistoria.fromJson(Map<String, dynamic> json) {
+  factory Vistoria.fromJson(Map<dynamic, dynamic> json) {
     return Vistoria(
       codTipoPemissaoNavigation: json['codTipoPemissaoNavigation'] != null
           ? TipoPermissionario.fromJson(json['codTipoPemissaoNavigation'])
@@ -368,8 +368,9 @@ class Vistoria {
       agenteCod: json['agenteCod'],
       statusVistoria: json['statusVistoria'],
       FotosVistoria: json['FotosVistoria'] != null
-          ? FotosVistorium.fromJson(json['FotosVistoria'])
-          : null,
+          ? List<FotosVistorium>.from(json['FotosVistoria']
+              .map((item) => FotosVistorium.fromJson(item)))
+          : [],
     );
   }
 
@@ -498,8 +499,8 @@ class Vistoria {
 }
 
 class FotosVistorium {
-  int fotoVistoriaId;
-  int? vistoriaId;
+  double fotoVistoriaId;
+  double? vistoriaId;
   String? nomeFoto;
   Vistoria? vistoria;
 

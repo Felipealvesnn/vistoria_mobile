@@ -6,8 +6,10 @@ import 'package:vistoria_mobile/app/utils/themaapp.dart';
 
 import 'app/routes/app_pages.dart';
 
-void main() {
-  inicializacaoGetStorage();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await inicializacaoGetStorage();
+
   runApp(
     GetMaterialApp(
       title: "Vistoria",
@@ -17,5 +19,3 @@ void main() {
     ),
   );
 }
-
-

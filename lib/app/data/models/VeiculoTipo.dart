@@ -21,9 +21,9 @@ class VeiculoTipo {
       veiTipDesc: json['veiTipDesc'],
       veiTipCodSnt: json['veiTipCodSnt'],
       idGrupoTipoVeic: json['idGrupoTipoVeic'],
-      veiculos: (json['veiculos'] as List<dynamic>)
-          .map((item) => Veiculo.fromJson(item))
-          .toList(),
+      //veiculos: (json['veiculos'] as List<dynamic>)
+          // .map((item) => Veiculo.fromJson(item))
+          // .toList(),
     );
   }
 

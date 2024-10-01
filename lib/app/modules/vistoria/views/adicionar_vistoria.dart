@@ -14,6 +14,7 @@ import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_contro
 
 class VistoriaFormPage extends StatelessWidget {
   final VistoriaController controller = Get.find<VistoriaController>();
+  final formKey = GlobalKey<FormState>();
   final FocusNode myFocusNode = FocusNode();
   VistoriaFormPage({super.key});
   void handlePlacaChange(String value) async {
@@ -75,6 +76,7 @@ class VistoriaFormPage extends StatelessWidget {
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
+            key: formKey,
             child: ListView(
               children: [
                 const SizedBox(height: 16.0),
@@ -157,6 +159,12 @@ class VistoriaFormPage extends StatelessWidget {
                                                 permissionario.descricao ?? ''),
                                           ))
                                       .toList(),
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return 'Campo obrigatório!';
+                                    }
+                                    return null;
+                                  },
                                   onChanged: (TipoPermissionario? newValue) {
                                     // Atualizar estado conforme necessário
                                     // Atualiza visibilidade com base na seleção
@@ -287,10 +295,17 @@ class VistoriaFormPage extends StatelessWidget {
                                 onPressed: controller
                                         .RecarregarDropwndoTipo.value
                                     ? () {
-                                        final jsonFinal =
-                                            controller.generateJson();
-                                        print(
-                                            jsonFinal); // Aqui você pode enviar o JSON gerado
+                                        if (formKey.currentState?.validate() ??
+                                            false) {
+                                          // Se o formulário for válido, gera e envia o JSON
+                                          final jsonFinal =
+                                              controller.generateJson();
+                                          print(
+                                              jsonFinal); // Aqui você pode enviar o JSON gerado
+                                        } else {
+                                          Get.snackbar('Erro',
+                                              'Preencha todos os campos obrigatórios');
+                                        }
                                       }
                                     : () {
                                         myFocusNode.requestFocus();
