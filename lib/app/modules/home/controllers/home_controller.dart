@@ -12,6 +12,7 @@ class HomeController extends GetxController {
     if (usuario != null) {
       user = usuario is Usuario ? usuario : Usuario.fromJson(usuario);
       print(user.usuLogin);
+      await Storagers.boxUserLogado.write('user', user);
     }
 
     if (user.usuCPF != null) {
@@ -22,7 +23,7 @@ class HomeController extends GetxController {
 
       return Get.offAllNamed(Routes.VISTORIA);
     } else {
-       await Get.offAllNamed(Routes.LOGIN);
+      await Get.offAllNamed(Routes.LOGIN);
 
       //return const WelcomeView();
     }

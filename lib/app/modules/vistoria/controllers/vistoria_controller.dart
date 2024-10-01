@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/data/models/TipoPermissionario%20.dart';
+import 'package:vistoria_mobile/app/data/models/Usuario.dart';
 import 'package:vistoria_mobile/app/data/models/VeiculoDetran.dart';
 import 'package:vistoria_mobile/app/data/models/VeiculoTipo.dart';
 import 'package:vistoria_mobile/app/data/models/vistoriaMobileDTO.dart';
 import 'package:vistoria_mobile/app/data/repository/vistoria_repository.dart';
 import 'package:vistoria_mobile/app/routes/app_pages.dart';
+import 'package:vistoria_mobile/app/utils/getstorages.dart';
 import '../../../data/models/vistoria.dart';
 
 class VistoriaController extends GetxController {
@@ -79,6 +81,7 @@ class VistoriaController extends GetxController {
   Future<Map<dynamic, dynamic>> generateJson() async {
     // falta [agenteCod]
     //[statusVistoria]
+    Usuario user = Storagers.boxUserLogado.read('user');
 
     // Itera sobre as imagens selecionadas, transforma em base64 e adiciona ao JSON
     for (var image in selectedImages) {
@@ -108,6 +111,8 @@ class VistoriaController extends GetxController {
       "cor": camposMap["cor"],
       "tipo": camposMap["tipo"],
       "km": camposMap["km"],
+      "agenteCod": user.agenteCod,
+      "usuarioId": user.usuarioId!.toInt(),
       ...camposMap, // Mapa dinâmico contendo os campos e observações
       "FotosVistoria": fotosVistoria // Adiciona as fotos ao JSON
     };
