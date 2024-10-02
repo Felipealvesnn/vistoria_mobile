@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
+Color colorVerde = const Color(0xFF86AE28);
+
 ThemeData ThemaApp() {
-  final MaterialColor customGreen =
-      createMaterialColor(Color.fromRGBO(138, 166, 53, 1.0));
+  final MaterialColor customGreen = createMaterialColor(colorVerde);
 
   return ThemeData(
     fontFamily: 'Quicksand',
-    primaryColor: const Color.fromRGBO(138, 166, 53, 1.0),
+    primaryColor: colorVerde,
     primarySwatch: customGreen,
     dividerTheme: const DividerThemeData(
       space: 0,
@@ -26,8 +27,7 @@ ThemeData ThemaApp() {
           if (states.contains(WidgetState.selected)) {
             return Colors.white; // Cor quando o switch está ativado
           }
-          return const Color.fromRGBO(
-              138, 166, 53, 1.0); // Cor quando o switch está desativado
+          return colorVerde; // Cor quando o switch está desativado
         },
       ),
       trackColor: WidgetStateProperty.resolveWith<Color>(
@@ -36,8 +36,7 @@ ThemeData ThemaApp() {
             return Colors.white; // Cor para o estado desabilitado
           }
           if (states.contains(WidgetState.selected)) {
-            return const Color.fromRGBO(
-                138, 166, 53, 1.0); // Cor quando o switch está ativado
+            return colorVerde; // Cor quando o switch está ativado
           }
           return Colors.black12; // Cor quando o switch está desativado
         },
@@ -54,15 +53,15 @@ ThemeData ThemaApp() {
         },
       ),
     ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Color.fromRGBO(138, 166, 53, 1.0),
+    appBarTheme: AppBarTheme(
+      backgroundColor: colorVerde,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         foregroundColor: WidgetStateProperty.all<Color>(
             Colors.white), // Define a cor da label
-        backgroundColor: WidgetStateProperty.all<Color>(
-            const Color.fromRGBO(138, 166, 53, 1.0)), // Cor de fundo do botão
+        backgroundColor:
+            WidgetStateProperty.all<Color>(colorVerde), // Cor de fundo do botão
         textStyle: WidgetStateProperty.all<TextStyle>(
           const TextStyle(fontSize: 16), // Tamanho do texto
         ),
@@ -79,9 +78,8 @@ ThemeData ThemaApp() {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(
             12.0), // Bordas arredondadas quando o campo estiver focado
-        borderSide: const BorderSide(
-          color: Color.fromRGBO(
-              138, 166, 53, 1.0), // Cor da borda quando o campo estiver focado
+        borderSide: BorderSide(
+          color: colorVerde, // Cor da borda quando o campo estiver focado
         ),
       ),
       enabledBorder: OutlineInputBorder(
@@ -103,7 +101,7 @@ MaterialColor createMaterialColor(Color color) {
   for (int i = 1; i < 10; i++) {
     strengths.add(0.1 * i);
   }
-  strengths.forEach((strength) {
+  for (var strength in strengths) {
     final double ds = 0.5 - strength;
     swatch[(strength * 1000).round()] = Color.fromRGBO(
       r + ((ds < 0 ? r : (255 - r)) * ds).round(),
@@ -111,6 +109,6 @@ MaterialColor createMaterialColor(Color color) {
       b + ((ds < 0 ? b : (255 - b)) * ds).round(),
       1,
     );
-  });
+  }
   return MaterialColor(color.value, swatch);
 }

@@ -20,7 +20,9 @@ class VistoriaController extends GetxController {
   // Observables and Controllers
   var veiculoTipoSelecionado = Rxn<VeiculoTipo>();
   var tipoPermissionariosFiltrados = <TipoPermissionario>[].obs;
-  var vistorias = <Vistoria>[].obs;
+  var vistoriasAll = <Vistoria>[];
+  var vistoriasFiltro = <Vistoria>[];
+  var vistoriasTela = <Vistoria>[].obs;
   var vistoriaMobileDTOs = <vistoriaMobileDTO>[].obs;
 
   // Lock for VeiculoTipo dropdown
@@ -34,6 +36,9 @@ class VistoriaController extends GetxController {
   final tipoVeiculoController = TextEditingController();
   final kmController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  TextEditingController placaSeacherController = TextEditingController();
+  TextEditingController dataInicioController = TextEditingController();
+  TextEditingController dataFimController = TextEditingController();
 
   var isLoading = false.obs;
   var isLoadingVistoriaInicial = true.obs; // Adicione esta linha
@@ -42,6 +47,7 @@ class VistoriaController extends GetxController {
   var showCarFields = false.obs;
   var showCarAndMotoFields = false.obs;
   var RecarregarDropwndoTipo = false.obs;
+  final statusVistoria = RxString(''); // Controlador para o valor selecionado
 
   var isLoadingMore = false.obs;
   var currentPage = 1.obs;
@@ -75,6 +81,46 @@ class VistoriaController extends GetxController {
   // Updates a specific field dynamically in the map
   void updateCampo(String campo, dynamic valor) {
     camposMap[campo] = valor;
+  }
+
+  Future<void> fetchFiltroVistorias() async {
+    try {
+      isLoadingVistoriaInicial.value = true;
+      final mockData = await vistoriaProvider.searchFiltroVistorias(
+          placa: placaSeacherController.text,
+          dataInicial: dataInicioController.text,
+          dataFinal: dataFimController.text);
+      if (mockData.isNotEmpty) {
+        vistoriasFiltro.clear();
+        vistoriasFiltro.addAll(mockData);
+        vistoriasTela.value = vistoriasFiltro;
+        hasMoreVistorias.value = false;
+      } else {
+        vistoriasFiltro.clear();
+        vistoriasTela.value = vistoriasFiltro;
+        hasMoreVistorias.value = true;
+      }
+    } catch (e) {
+      Get.snackbar('Erro', 'Erro ao buscar vistorias');
+    }finally{
+      isLoadingVistoriaInicial.value = false;
+    }
+  }
+
+  Future<void> reseteFiltroVistorias() async {
+    try {
+       isLoadingVistoriaInicial.value = true;
+      placaSeacherController.clear();
+      dataInicioController.clear();
+      dataFimController.clear();
+      vistoriasTela.value = vistoriasAll;
+      hasMoreVistorias.value = true;
+    } catch (e) {
+      Get.snackbar('Erro', 'Erro ao buscar vistorias');
+    }
+    finally{
+      isLoadingVistoriaInicial.value = false;
+    }
   }
 
   // Generates the JSON from the map
@@ -113,6 +159,7 @@ class VistoriaController extends GetxController {
       "km": camposMap["km"],
       "agenteCod": user.agenteCod,
       "usuarioId": user.usuarioId!.toInt(),
+      "statusVistoria": statusVistoria.value,
       ...camposMap, // Mapa dinâmico contendo os campos e observações
       "FotosVistoria": fotosVistoria // Adiciona as fotos ao JSON
     };
@@ -125,7 +172,8 @@ class VistoriaController extends GetxController {
     await vistoriaProvider.postVistoria(vistoria);
     Get.back();
 
-    Get.snackbar('Sucesso', 'Vistoria cadastrada com sucesso', duration: 5.seconds);
+    Get.snackbar('Sucesso', 'Vistoria cadastrada com sucesso',
+        duration: 5.seconds);
 
     await Get.offAllNamed(Routes.VISTORIA, arguments: false);
 
@@ -138,7 +186,8 @@ class VistoriaController extends GetxController {
       final mockData =
           await vistoriaProvider.getVistorias(page: currentPage.value);
       if (mockData.isNotEmpty) {
-        vistorias.addAll(mockData);
+        vistoriasAll.addAll(mockData);
+        vistoriasTela.value = vistoriasAll;
       } else {
         hasMoreVistorias.value = false; // Não há mais vistorias para carregar
       }
@@ -153,6 +202,8 @@ class VistoriaController extends GetxController {
     await fetchVistorias();
     isLoadingMore.value = false;
   }
+   
+   
 
   // Fetch vistoriasMobileDTO data
   Future<void> fetchVistoriasMobileDTO() async {
@@ -327,5 +378,6 @@ class VistoriaController extends GetxController {
     kmController.clear();
     selectedImages.clear();
     camposMap.clear();
+    statusVistoria.value = '';
   }
 }

@@ -16,6 +16,7 @@ class VistoriaFormPage extends StatelessWidget {
   final VistoriaController controller = Get.find<VistoriaController>();
   final formKey = GlobalKey<FormState>();
   final FocusNode myFocusNode = FocusNode();
+  final FocusNode radioFocusNode = FocusNode();
   VistoriaFormPage({super.key});
   void handlePlacaChange(String value) async {
     value = value.replaceAll('-', '').replaceAll('_', '');
@@ -137,6 +138,8 @@ class VistoriaFormPage extends StatelessWidget {
                                           // Atualiza o valor selecionado do controlador
                                           controller.veiculoTipoSelecionado
                                               .value = newValue;
+                                          controller.filterVeiculoTipo(
+                                              newValue?.veiTipDesc ?? '');
                                           // Atualiza o filtro de tipo permissionário
                                           controller.filtrarTipoPermissionarios(
                                               newValue?.veiTipDesc ?? '');
@@ -194,10 +197,73 @@ class VistoriaFormPage extends StatelessWidget {
                         Obx(() => controller.showCarFields.value
                             ? CarFieldsWidget()
                             : const SizedBox.shrink()),
-                        Obx(() => controller.showCarAndMotoFields.value
-                            ? CarAndMotoFieldsWidget()
-                            : const SizedBox.shrink()),
+                        Obx(
+                          () => controller.showCarAndMotoFields.value
+                              ? CarAndMotoFieldsWidget()
+                              : const SizedBox.shrink(),
+                        ),
 
+                        Obx(
+                          () => controller.RecarregarDropwndoTipo.value
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Status da Vistoria",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Radio<String>(
+                                              value: 'APROVADO',
+                                              groupValue: controller
+                                                  .statusVistoria.value,
+                                              onChanged: (String? value) {
+                                                controller.statusVistoria
+                                                    .value = value ?? '';
+                                              },
+                                              focusNode:
+                                                  radioFocusNode, // Adiciona o FocusNode ao Radio
+                                            ),
+                                            const Text('APROVADO'),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 20),
+                                        Row(
+                                          children: [
+                                            Radio<String>(
+                                              value: 'DESAPROVADO',
+                                              groupValue: controller
+                                                  .statusVistoria.value,
+                                              onChanged: (String? value) {
+                                                controller.statusVistoria
+                                                    .value = value ?? '';
+                                              },
+                                              focusNode: radioFocusNode,
+                                            ),
+                                            const Text('DESAPROVADO'),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    if (controller.statusVistoria.value
+                                        .isEmpty) // Exibe mensagem de erro
+                                      const Text(
+                                        'Selecione um status',
+                                        style: TextStyle(
+                                            color: Colors.red, fontSize: 12),
+                                      ),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        const SizedBox(height: 16.0),
                         // Botão para capturar/selecionar imagem
                         Obx(
                           () => controller.RecarregarDropwndoTipo.value
@@ -295,9 +361,12 @@ class VistoriaFormPage extends StatelessWidget {
                                 onPressed: controller
                                         .RecarregarDropwndoTipo.value
                                     ? () {
-                                        if (formKey.currentState?.validate() ??
-                                            false) {
+                                        if ((formKey.currentState?.validate() ??
+                                                false) &&
+                                            controller.statusVistoria.value
+                                                .isNotEmpty) {
                                           // Se o formulário for válido, gera e envia o JSON
+
                                           final jsonFinal =
                                               controller.generateJson();
                                           print(

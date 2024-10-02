@@ -106,7 +106,7 @@ class EsqueciASenhaView extends GetView<EsqueciASenhaController> {
                                       .buttonBoxDecoration(context),
                                   child: Obx(
                                     () => ElevatedButton(
-                                      style: ThemeHelper().buttonStyle(),
+                                      //style: ThemeHelper().buttonStyle(),
                                       onPressed: controller
                                               .botaoEmailEnviado.value
                                           ? () async {

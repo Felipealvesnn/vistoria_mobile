@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'dart:convert';
 
 class Usuario {
   double? usuarioId;

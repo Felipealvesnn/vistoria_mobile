@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/generatePdf.dart';
 
@@ -329,7 +330,7 @@ class VistoriaDetalhesView extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
-                      'Data Vistoria: ${vistoria.dataVistoria ?? "Não disponível"}',
+                      'Realizada: ${DateFormat('dd/MM/yyyy HH:mm').format(vistoria.dataVistoria!) ?? "Não disponível"}',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),

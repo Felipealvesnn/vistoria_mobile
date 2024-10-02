@@ -5,9 +5,50 @@ import 'package:vistoria_mobile/app/utils/funcoesUtils.dart';
 import 'package:vistoria_mobile/app/utils/getstorages.dart';
 
 class vistoriaProvider extends GetConnect {
+  // Método para buscar vistorias por placa, dataInicial ou dataFinal
+  Future searchVistorias(
+      {String? placa, String? dataInicial, String? dataFinal}) async {
+    timeout = const Duration(minutes: 10);
+    final token = Storagers.boxToken.read("boxToken");
+
+    final headers = {"Authorization": 'Bearer $token'};
+
+    // Monta a URL de acordo com os parâmetros fornecidos
+    String url = "${baseUrlw2e}getVistoriasFiltro";
+    List<String> queryParams = [];
+
+    if (placa != null && placa.isNotEmpty) {
+      queryParams.add("placa=$placa");
+    }
+    if (dataInicial != null && dataInicial.isNotEmpty) {
+      queryParams.add("dataInicial=$dataInicial");
+    }
+    if (dataFinal != null && dataFinal.isNotEmpty) {
+      queryParams.add("dataFinal=$dataFinal");
+    }
+
+    // Adiciona os parâmetros à URL
+    if (queryParams.isNotEmpty) {
+      url += "?${queryParams.join('&')}";
+    }
+
+    // Faz a requisição GET ao endpoint
+    var response = await get(
+      url,
+      contentType: 'application/json',
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      return response.body["Vistorias"];
+    } else {
+      throw Exception('Failed to load data!');
+    }
+  }
+
   Future getVistoria(int pageNumber) async {
     timeout = const Duration(minutes: 10);
-      int pageSize = 10;
+    int pageSize = 10;
     final token = Storagers.boxToken.read("boxToken");
 
     final headers = {"Authorization": 'Bearer $token'};
@@ -58,8 +99,27 @@ class vistoriaProvider extends GetConnect {
       throw Exception('Failed to load data!');
     }
   }
+  
+   Future getPpermissionario(String placa) async {
+    timeout = const Duration(minutes: 10);
+    final token = Storagers.boxToken.read("boxToken");
+    final headers = {"Authorization": 'Bearer $token'};
 
-  Future<dynamic> postVistoria(Map<dynamic, dynamic> vistoria) async {
+    var response = await get(
+        "$baseUrlw2e/getPermissionario?placa=$placa",
+        contentType: 'application/json',
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load data!');
+    }
+  }
+ 
+
+
+ Future<dynamic> postVistoria(Map<dynamic, dynamic> vistoria) async {
     try {
       timeout = const Duration(minutes: 10);
 
@@ -96,4 +156,6 @@ class vistoriaProvider extends GetConnect {
       throw Exception('Erro ao enviar dados de vistoria: $e');
     }
   }
+
+
 }

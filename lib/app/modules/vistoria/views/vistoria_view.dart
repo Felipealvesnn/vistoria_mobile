@@ -1,20 +1,149 @@
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/MyDrawer.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/listvistoria.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/views/adicionar_vistoria.dart';
 import '../controllers/vistoria_controller.dart';
+import 'package:intl/intl.dart'; // Biblioteca para manipular datas
 
 class VistoriaView extends GetView<VistoriaController> {
   const VistoriaView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    double tamanho = 100;
+    void showFilterModal(BuildContext context) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
+        ),
+        builder: (BuildContext context) {
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Filtros',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Campo de texto para filtrar por placa
+                  TextFormField(
+                    controller: controller.placaSeacherController,
+                    inputFormatters: [
+                      TextInputMask(
+                          mask: 'AAA-9N99',
+                          placeholder: '_',
+                          maxPlaceHolders: 11,
+                          reverse: false),
+                      PlacaVeiculoInputFormatter()
+                    ],
+                    decoration: const InputDecoration(
+                      labelText: 'Placa',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Campo para selecionar data inicial
+                  TextFormField(
+                    controller: controller.dataInicioController,
+                    decoration: const InputDecoration(
+                      labelText: 'Data Inicial',
+                      border: OutlineInputBorder(),
+                    ),
+                    readOnly: true, // Impede edição manual
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(),
+                      );
+                      if (pickedDate != null) {
+                        controller.dataInicioController.text =
+                            DateFormat('dd/MM/yyyy').format(pickedDate);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Campo para selecionar data final
+                  TextFormField(
+                    controller: controller.dataFimController,
+                    decoration: const InputDecoration(
+                      labelText: 'Data Final',
+                      border: OutlineInputBorder(),
+                    ),
+                    readOnly: true, // Impede edição manual
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(),
+                      );
+                      if (pickedDate != null) {
+                        controller.dataFimController.text =
+                            DateFormat('dd/MM/yyyy').format(pickedDate);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Botão para aplicar os filtros
+                  OverflowBar(
+                    spacing: 16,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // Lógica para aplicar os filtros aqui
+                          controller.reseteFiltroVistorias();
+                          // Fechar o modal após aplicar os filtros
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Resetar Filtros'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Lógica para aplicar os filtros aqui
+                          controller.placaSeacherController.text = controller
+                              .placaSeacherController.text
+                              .replaceAll('-', '')
+                              .replaceAll('_', '');
+                          controller.fetchFiltroVistorias();
+                          // Fechar o modal após aplicar os filtros
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Aplicar Filtros'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       drawer: const MyDrawer(),
-      appBar: PreferredSize(
+      appBar: 
+      PreferredSize(
         preferredSize: Size.fromHeight(
-          Get.size.height * 0.14, // Define a altura do AppBar
+          tamanho, // Define a altura do AppBar
         ),
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
@@ -22,8 +151,14 @@ class VistoriaView extends GetView<VistoriaController> {
             bottomRight: Radius.circular(30.0),
           ),
           child: SizedBox(
-            height: Get.size.height * 0.14, // Ajusta a altura do AppBar
+            height: tamanho, // Ajusta a altura do AppBar
             child: AppBar(
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: () => showFilterModal(context),
+                ),
+              ],
               title: const Text(
                 'Vistoria',
                 textAlign: TextAlign.center,
@@ -42,30 +177,28 @@ class VistoriaView extends GetView<VistoriaController> {
       ),
       floatingActionButton: Container(
         margin: const EdgeInsets.all(16),
-        child: FloatingActionButton.extended(
+        child: FloatingActionButton(
           onPressed: () {
             Get.to(() => VistoriaFormPage());
           },
-          label: const Text(
-            'Adicionar Vistoria',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          icon: const Icon(Icons.add),
-       //   backgroundColor: Colors.green,
+          // Cor do botão e do ícone
           foregroundColor: Colors.white,
+          elevation: 6,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 6,
+          child: const Icon(Icons.add),
         ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
           controller.currentPage.value = 1;
           controller.hasMoreVistorias.value = true;
-          controller.vistorias.clear();
+          controller.isLoadingVistoriaInicial.value = true;
+          controller.vistoriasAll.clear();
           await controller.fetchVistorias();
-          controller.fetchVistoriasMobileDTO();
+          await controller.fetchVistoriasMobileDTO();
+          controller.isLoadingVistoriaInicial.value = false;
         },
         child: Obx(() {
           if (controller.isLoadingVistoriaInicial.value) {
@@ -83,7 +216,7 @@ class VistoriaView extends GetView<VistoriaController> {
             );
           }
 
-          if (controller.vistorias.isEmpty) {
+          if (controller.vistoriasTela.isEmpty) {
             // Mostra a mensagem somente após o carregamento estar completo
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -108,5 +241,3 @@ class VistoriaView extends GetView<VistoriaController> {
     );
   }
 }
-
-

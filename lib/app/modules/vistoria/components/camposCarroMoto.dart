@@ -80,7 +80,7 @@ class CarAndMotoFieldsWidget extends StatelessWidget {
         'campo': 'requerPrefDiretTributario05',
         'label': 'Mudança de Placa ou Tarjeta'
       },
-      {'campo': 'requerPrefDiretTributario06', 'label': 'Outros'},
+      {'campo': 'requerPrefDiretTributario06', 'label': 'Outros', 'obs': 'observacao'},
     ];
 
     return DynamicFieldsWidget(campos: camposCarroMoto);

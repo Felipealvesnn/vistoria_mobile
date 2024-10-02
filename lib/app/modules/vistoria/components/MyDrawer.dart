@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vistoria_mobile/app/data/models/Usuario.dart';
 import 'package:vistoria_mobile/app/modules/WELCOME/controllers/welcome_controller.dart';
 import 'package:vistoria_mobile/app/routes/app_pages.dart';
+import 'package:vistoria_mobile/app/utils/getstorages.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Usuario usuario = Storagers.boxUserLogado.read('user');
     return Drawer(
       child: Column(
         children: [
           // Cabeçalho com Avatar
           UserAccountsDrawerHeader(
-            accountName: const Text("Nome do Usuário"),
-            accountEmail: const Text("email@exemplo.com"),
+            accountName: Text(usuario.usuNome!),
+            accountEmail: Text(usuario.usuEmail!),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.network(
@@ -35,22 +38,22 @@ class MyDrawer extends StatelessWidget {
           ),
 
           // Lista de opções no Drawer
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () {
-              // Navegar para outra tela ou fechar o Drawer
-              // Get.toNamed('/home');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Perfil'),
-            onTap: () {
-              // Navegar para a tela de perfil ou fechar o Drawer
-              // Get.toNamed('/perfil');
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.home),
+          //   title: const Text('Home'),
+          //   onTap: () {
+          //     // Navegar para outra tela ou fechar o Drawer
+          //     // Get.toNamed('/home');
+          //   },
+          // ),
+          // ListTile(
+          //   leading: const Icon(Icons.person),
+          //   title: const Text('Perfil'),
+          //   onTap: () {
+          //     // Navegar para a tela de perfil ou fechar o Drawer
+          //     // Get.toNamed('/perfil');
+          //   },
+          // ),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Configurações'),

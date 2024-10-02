@@ -15,6 +15,7 @@ void main() async {
       title: "Vistoria",
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
+      debugShowCheckedModeBanner: false,
       theme: ThemaApp(),
     ),
   );

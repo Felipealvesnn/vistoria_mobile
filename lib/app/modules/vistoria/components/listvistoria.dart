@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/views/VistoriaDetalhesView.dart';
 import '../controllers/vistoria_controller.dart'; // Importa a tela de detalhes
 
@@ -13,10 +14,11 @@ class ListVistoria extends StatelessWidget {
     return Obx(() {
       return ListView.builder(
         controller: controller.scrollController, // Usa o ScrollController
-        itemCount: controller.vistorias.length +
+        physics: const BouncingScrollPhysics(),
+        itemCount: controller.vistoriasTela.length +
             1, // Adiciona 1 para o item de carregamento
         itemBuilder: (context, index) {
-          if (index == controller.vistorias.length) {
+          if (index == controller.vistoriasTela.length) {
             // Se chegou ao final da lista, mostra o item de carregamento ou mensagem de fim
             return Obx(() {
               if (controller.isLoadingMore.value) {
@@ -39,7 +41,7 @@ class ListVistoria extends StatelessWidget {
           }
 
           // Escolhe o ícone com base no tipo do veículo
-          var vistoria = controller.vistorias[index];
+          var vistoria = controller.vistoriasTela[index];
           IconData leadingIcon;
           if (vistoria.tipo != null &&
               (vistoria.tipo == "MOTOCICLETA" || vistoria.tipo == "MOTONETA")) {
@@ -58,11 +60,18 @@ class ListVistoria extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Modelo: ${vistoria.marcaModelo}'),
-                  Text('Data da Vistoria: ${vistoria.dataVistoria!.toLocal()}'),
+                  Text(
+                      'Realizada: ${DateFormat('dd/MM/yyyy HH:mm').format(vistoria.dataVistoria!)}'),
                   Text('Cor: ${vistoria.cor}'),
+                  Text(
+                      'Vistoria status: ${(vistoria.statusVistoria != null ? vistoria.statusVistoria!.toUpperCase() : "NAO APROVADO")}'),
                 ],
               ),
-              trailing: const Icon(Icons.info_outline, color: Colors.red),
+              trailing: (vistoria.statusVistoria != null &&
+                      vistoria.statusVistoria!.toUpperCase() == "APROVADO")
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : const Icon(Icons.info_outline, color: Colors.red),
+
               onTap: () {
                 // Navega para a página de detalhes da vistoria ao clicar
                 Get.to(() => VistoriaDetalhesView(vistoria: vistoria));
