@@ -301,7 +301,7 @@ class VistoriaDetalhesView extends StatelessWidget {
                     vistoria.placa ?? "Placa não disponível",
                     style: const TextStyle(color: Colors.white, fontSize: 40.0),
                   ),
-                  const Divider(color: Colors.green, thickness: 2),
+                  const Divider( thickness: 2),
                   const SizedBox(height: 10.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -382,8 +382,10 @@ class VistoriaDetalhesView extends StatelessWidget {
                       return Column(
                         children: [
                           ListTile(
-                            leading: const Icon(Icons.info_outline,
-                                color: Colors.green),
+                            leading: const Icon(
+                              Icons.info_outline,
+                            //  color: Colors.green,
+                            ),
                             title: Text(
                               camposVistoria[index]["label"]!,
                               style: const TextStyle(
@@ -401,7 +403,7 @@ class VistoriaDetalhesView extends StatelessWidget {
                               camposVistoria.length -
                                   1) // Para não mostrar divisor após o último item
                             const Divider(
-                              color: Colors.grey,
+                              //color: Colors.grey,
                               thickness: 1,
                             ),
                         ],

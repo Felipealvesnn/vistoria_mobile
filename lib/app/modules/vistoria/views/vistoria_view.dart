@@ -51,7 +51,7 @@ class VistoriaView extends GetView<VistoriaController> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           icon: const Icon(Icons.add),
-          backgroundColor: Colors.green,
+       //   backgroundColor: Colors.green,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -108,3 +108,5 @@ class VistoriaView extends GetView<VistoriaController> {
     );
   }
 }
+
+

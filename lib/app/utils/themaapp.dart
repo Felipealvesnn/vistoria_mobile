@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 
 ThemeData ThemaApp() {
+  final MaterialColor customGreen =
+      createMaterialColor(Color.fromRGBO(138, 166, 53, 1.0));
+
   return ThemeData(
     fontFamily: 'Quicksand',
-    primaryColor: Colors.green,
-    primarySwatch: Colors.green,
+    primaryColor: const Color.fromRGBO(138, 166, 53, 1.0),
+    primarySwatch: customGreen,
     dividerTheme: const DividerThemeData(
       space: 0,
       thickness: 1,
       color: Colors.grey,
     ),
     colorScheme: ColorScheme.fromSwatch(
-      primarySwatch: Colors.green,
+      primarySwatch: customGreen,
     ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(0.5); // Cor para o estado desabilitado
+            return Colors.grey
+                .withOpacity(0.5); // Cor para o estado desabilitado
           }
           if (states.contains(WidgetState.selected)) {
             return Colors.white; // Cor quando o switch está ativado
           }
-          return Colors.green; // Cor quando o switch está desativado
+          return const Color.fromRGBO(
+              138, 166, 53, 1.0); // Cor quando o switch está desativado
         },
       ),
       trackColor: WidgetStateProperty.resolveWith<Color>(
@@ -31,8 +36,8 @@ ThemeData ThemaApp() {
             return Colors.white; // Cor para o estado desabilitado
           }
           if (states.contains(WidgetState.selected)) {
-            return Colors.green
-                ; // Cor quando o switch está ativado
+            return const Color.fromRGBO(
+                138, 166, 53, 1.0); // Cor quando o switch está ativado
           }
           return Colors.black12; // Cor quando o switch está desativado
         },
@@ -50,14 +55,14 @@ ThemeData ThemaApp() {
       ),
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.green,
+      backgroundColor: Color.fromRGBO(138, 166, 53, 1.0),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         foregroundColor: WidgetStateProperty.all<Color>(
             Colors.white), // Define a cor da label
         backgroundColor: WidgetStateProperty.all<Color>(
-            Colors.green), // Cor de fundo do botão
+            const Color.fromRGBO(138, 166, 53, 1.0)), // Cor de fundo do botão
         textStyle: WidgetStateProperty.all<TextStyle>(
           const TextStyle(fontSize: 16), // Tamanho do texto
         ),
@@ -75,7 +80,8 @@ ThemeData ThemaApp() {
         borderRadius: BorderRadius.circular(
             12.0), // Bordas arredondadas quando o campo estiver focado
         borderSide: const BorderSide(
-          color: Colors.green, // Cor da borda quando o campo estiver focado
+          color: Color.fromRGBO(
+              138, 166, 53, 1.0), // Cor da borda quando o campo estiver focado
         ),
       ),
       enabledBorder: OutlineInputBorder(
@@ -87,4 +93,24 @@ ThemeData ThemaApp() {
       ),
     ),
   );
+}
+
+MaterialColor createMaterialColor(Color color) {
+  List strengths = <double>[.05];
+  Map<int, Color> swatch = {};
+  final int r = color.red, g = color.green, b = color.blue;
+
+  for (int i = 1; i < 10; i++) {
+    strengths.add(0.1 * i);
+  }
+  strengths.forEach((strength) {
+    final double ds = 0.5 - strength;
+    swatch[(strength * 1000).round()] = Color.fromRGBO(
+      r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+      g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+      b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+      1,
+    );
+  });
+  return MaterialColor(color.value, swatch);
 }
