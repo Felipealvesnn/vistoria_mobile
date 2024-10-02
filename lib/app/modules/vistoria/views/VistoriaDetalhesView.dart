@@ -218,6 +218,7 @@ class VistoriaDetalhesView extends StatelessWidget {
         'label': 'Motor de Partida',
         'value': vistoria.motorPartida == true ? "OK" : "Não disponível"
       },
+      {"label": "observacao", "value": vistoria.observacao ??"Não disponível"},
       // Campos sem observações
       {
         'label': 'Liberação de Alvará para Licenciamento de Veículo de Aluguel',
