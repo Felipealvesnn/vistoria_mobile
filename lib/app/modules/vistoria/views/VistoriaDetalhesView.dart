@@ -395,28 +395,43 @@ class VistoriaDetalhesView extends StatelessWidget {
       {
         'label': 'Liberação de Alvará para Licenciamento de Veículo de Aluguel',
         'value': vistoria.requerPrefDiretTributario01 == true ? "OK" : "False",
+        'Obs': ''
       },
       {
         'label': 'Renovação de Alvará para Licenciamento de Veículo de Aluguel',
         'value': vistoria.requerPrefDiretTributario02 == true ? "OK" : "False",
+        'Obs': ''
       },
       {
         'label': 'Vistoria de Veículo de Aluguel',
         'value': vistoria.requerPrefDiretTributario03 == true ? "OK" : "False",
+        'Obs': ''
       },
       {
         'label': 'Transferência',
         'value': vistoria.requerPrefDiretTributario04 == true ? "OK" : "False",
+        'Obs': ''
       },
       {
         'label': 'Mudança de Placa ou Tarjeta',
         'value': vistoria.requerPrefDiretTributario05 == true ? "OK" : "False",
+        'Obs': ''
       },
       {
         'label': 'Outros',
         'value': vistoria.requerPrefDiretTributario06 == true ? "OK" : "False",
+        'Obs': ''
       },
     ];
+
+    // Adicione condicionalmente o campo se `statusVistoria` não for "APROVADO"
+    if (vistoria.statusVistoria != "APROVADO") {
+      camposCarroMoto.add({
+        'label': 'Observação Reprovado',
+        'value': vistoria.statusVistoria == "APROVADO" ? "OK" : "False",
+        'Obs': vistoria.reprovadoObs ?? 'Sem observações',
+      });
+    }
 
     // (Outras variáveis do seu código para camposMoto, camposCarro, camposCarroMoto...)
 
@@ -500,6 +515,14 @@ class VistoriaDetalhesView extends StatelessWidget {
             ),
           ),
         ),
+        Container(
+          height: MediaQuery.of(context).size.height * 0.35,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Get.theme.primaryColor
+                .withOpacity(0.15), // const Color.fromRGBO(58, 66, 86, .9),
+          ),
+        ),
         Positioned(
           left: 15,
           top: 30,
@@ -523,8 +546,8 @@ class VistoriaDetalhesView extends StatelessWidget {
         icon: const Icon(Icons.download),
         label: const Text("Baixar PDF", style: TextStyle(color: Colors.white)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
-        ),
+            //backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
+            ),
       ),
     );
 

@@ -15,6 +15,7 @@ import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_contro
 class VistoriaFormPage extends StatelessWidget {
   final VistoriaController controller = Get.find<VistoriaController>();
   final formKey = GlobalKey<FormState>();
+  var comentarioController = TextEditingController();
   final FocusNode myFocusNode = FocusNode();
   final FocusNode radioFocusNode = FocusNode();
   VistoriaFormPage({super.key});
@@ -215,40 +216,42 @@ class VistoriaFormPage extends StatelessWidget {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Radio<String>(
-                                              value: 'APROVADO',
-                                              groupValue: controller
-                                                  .statusVistoria.value,
-                                              onChanged: (String? value) {
-                                                controller.statusVistoria
-                                                    .value = value ?? '';
-                                              },
-                                              focusNode:
-                                                  radioFocusNode, // Adiciona o FocusNode ao Radio
-                                            ),
-                                            const Text('APROVADO'),
-                                          ],
+                                        Expanded(
+                                          child: RadioListTile<String>(
+                                            title: const Text('APROVADO'),
+                                            value: 'APROVADO',
+                                            groupValue:
+                                                controller.statusVistoria.value,
+                                            onChanged: (String? value) {
+                                              controller.statusVistoria.value =
+                                                  value ?? '';
+                                            },
+                                            controlAffinity:
+                                                ListTileControlAffinity.leading,
+                                            focusNode:
+                                                radioFocusNode, // If you need to manage focus
+                                          ),
                                         ),
                                         const SizedBox(width: 20),
-                                        Row(
-                                          children: [
-                                            Radio<String>(
-                                              value: 'DESAPROVADO',
-                                              groupValue: controller
-                                                  .statusVistoria.value,
-                                              onChanged: (String? value) {
-                                                controller.statusVistoria
-                                                    .value = value ?? '';
-                                              },
-                                              focusNode: radioFocusNode,
-                                            ),
-                                            const Text('DESAPROVADO'),
-                                          ],
+                                        Expanded(
+                                          child: RadioListTile<String>(
+                                            title: const Text('REPROVADO'),
+                                            value: 'REPROVADO',
+                                            groupValue:
+                                                controller.statusVistoria.value,
+                                            onChanged: (String? value) {
+                                              controller.statusVistoria.value =
+                                                  value ?? '';
+                                            },
+                                            controlAffinity:
+                                                ListTileControlAffinity.leading,
+                                            focusNode:
+                                                radioFocusNode, // If you need to manage focus
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -265,6 +268,40 @@ class VistoriaFormPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 16.0),
                         // Botão para capturar/selecionar imagem
+                        Obx(
+                          () => controller.RecarregarDropwndoTipo.value
+                              ? (controller.statusVistoria.value == "REPROVADO"
+                                  ? TextFormField(
+                                    validator: (value) {
+                                      if (controller.statusVistoria.value ==
+                                              "REPROVADO" &&
+                                          value!.isEmpty) {
+                                        return 'Campo obrigatório!';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (String value) {
+                                      controller.updateCampo(
+                                          "reprovadoObs", value);
+                                    },
+                                    controller:
+                                        comentarioController, // Controlador do campo de texto
+                                    maxLines:
+                                        5, // Número de linhas visíveis para tornar o campo grande
+                                    decoration: const InputDecoration(
+                                      labelText: 'Comentário',
+                                  
+                                      hintText:
+                                          'Digite seu comentário aqui...',
+                                  
+                                      border:
+                                          OutlineInputBorder(), // Adiciona uma borda ao redor do campo
+                                    ),
+                                  )
+                                  : const SizedBox.shrink())
+                              : const SizedBox.shrink(),
+                        ),
+                        const SizedBox(height: 16.0),
                         Obx(
                           () => controller.RecarregarDropwndoTipo.value
                               ? Column(
@@ -342,7 +379,7 @@ class VistoriaFormPage extends StatelessWidget {
                                                 ),
                                               ],
                                             );
-                                          }).toList(),
+                                          }),
                                         ],
                                       );
                                     }),

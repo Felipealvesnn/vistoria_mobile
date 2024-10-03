@@ -118,6 +118,7 @@ class Vistoria {
   int? usuarioId;
   String? agenteCod;
   String? statusVistoria;
+  String? reprovadoObs;
   TipoPermissionario? codTipoPemissaoNavigation;
   List<FotosVistorium>? FotosVistoria;
 
@@ -241,6 +242,7 @@ class Vistoria {
     this.agenteCod,
     this.statusVistoria,
     this.FotosVistoria,
+    this.reprovadoObs,
   });
 
   // Método para converter de JSON para a classe Dart
@@ -367,6 +369,7 @@ class Vistoria {
       usuarioId: json['usuarioId'],
       agenteCod: json['agenteCod'],
       statusVistoria: json['statusVistoria'],
+      reprovadoObs: json['reprovadoObs'],
       FotosVistoria: json['FotosVistoria'] != null
           ? List<FotosVistorium>.from(json['FotosVistoria']
               .map((item) => FotosVistorium.fromJson(item)))
@@ -494,6 +497,7 @@ class Vistoria {
       'usuarioId': usuarioId,
       'agenteCod': agenteCod,
       'statusVistoria': statusVistoria,
+      'reprovadoObs': reprovadoObs,
     };
   }
 }

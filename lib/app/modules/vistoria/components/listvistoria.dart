@@ -47,7 +47,7 @@ class ListVistoria extends StatelessWidget {
               (vistoria.tipo == "MOTOCICLETA" || vistoria.tipo == "MOTONETA")) {
             leadingIcon = Icons.motorcycle; // Ícone para moto/motoneta
           } else {
-            leadingIcon = Icons.car_rental; // Ícone para carro ou outros
+            leadingIcon = Icons.car_repair; // Ícone para carro ou outros
           }
 
           return Card(

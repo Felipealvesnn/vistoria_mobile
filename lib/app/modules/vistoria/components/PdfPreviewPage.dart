@@ -15,6 +15,7 @@ class PdfPreviewPage extends StatelessWidget {
         title: const Text('PDF'),
       ),
       body: PdfPreview(
+        canDebug : false,
         build: (context) => generatePdf(ocorrencia),
       ),
     );
