@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/PdfPreviewPage.dart';
+import 'package:vistoria_mobile/app/modules/vistoria/components/PhotoViewGalleryScreen.dart';
+import 'package:vistoria_mobile/app/modules/vistoria/components/WidgetFotoDetalhes.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/generatePdf.dart';
 
 class VistoriaDetalhesView extends StatelessWidget {
@@ -443,13 +447,13 @@ class VistoriaDetalhesView extends StatelessWidget {
     } else {
       camposVistoria = [...dadosVeiclos, ...camposCarro, ...camposCarroMoto];
     }
-
+    double alturaContainer = 250;
     // Top Content (com as informações da vistoria e a imagem de fundo)
     final topContent = Stack(
       children: <Widget>[
         Container(
           padding: const EdgeInsets.only(left: 10.0),
-          height: MediaQuery.of(context).size.height * 0.35,
+          height: alturaContainer, //MediaQuery.of(context).size.height * 0.35,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: (vistoria.tipo == "MOTOCICLETA" ||
@@ -462,8 +466,8 @@ class VistoriaDetalhesView extends StatelessWidget {
           ),
         ),
         Container(
-          height: MediaQuery.of(context).size.height * 0.35,
-          width: MediaQuery.of(context).size.width,
+          height: alturaContainer, //MediaQuery.of(context).size.height * 0.35,
+          // width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
             color: Color.fromRGBO(58, 66, 86, .9),
           ),
@@ -510,13 +514,22 @@ class VistoriaDetalhesView extends StatelessWidget {
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 10.0,
+                    ),
+                    child: Text(
+                      'Status: ${vistoria.statusVistoria ?? "Reprovado"}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
         Container(
-          height: MediaQuery.of(context).size.height * 0.35,
+          height: alturaContainer, // MediaQuery.of(context).size.height * 0.35,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: Get.theme.primaryColor
@@ -615,6 +628,9 @@ class VistoriaDetalhesView extends StatelessWidget {
                     childCount: camposVistoria.length,
                   ),
                 ),
+                if (vistoria.FotosVistoria != null &&
+                    vistoria.FotosVistoria!.isNotEmpty)
+                  WidgetFotoDetalhes(vistoria: vistoria),
               ],
             ),
           ),

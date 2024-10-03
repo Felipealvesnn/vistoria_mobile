@@ -26,13 +26,12 @@ class _HeaderWidgetState extends State<HeaderWidget> {
 
     // Cores dos gradientes
     Color primaryColor = Get.theme.primaryColor;
-    Color colorGrafite1 = const Color(0xFF232323);
-    Color colorGrafite2 = const Color(0xFF2B2B2B);
-    Color colorGrafite3 = const Color(0xFF333333);
+    Color VerdeEscuro = const Color.fromARGB(255, 16, 68, 20);
 
     return Stack(
       children: [
         // Primeira camada (mais ao fundo)
+
         _buildClipPath(
           width,
           _height,
@@ -42,7 +41,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             Offset(width / 5 * 4, _height + 20),
             Offset(width, _height - 18),
           ],
-          [colorGrafite3, primaryColor],
+          [primaryColor.withOpacity(0.9), VerdeEscuro],
           const [0.0, 1.0],
         ),
         // Segunda camada (intermediária)
@@ -55,7 +54,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             Offset(width / 5 * 4, _height - 60),
             Offset(width, _height - 20),
           ],
-          [colorGrafite2, primaryColor],
+          [primaryColor, VerdeEscuro],
           const [0.0, 1.0],
         ),
         // Terceira camada (mais à frente)
@@ -68,7 +67,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             Offset(width / 5 * 4, _height - 80),
             Offset(width, _height - 20),
           ],
-          [colorGrafite1, primaryColor],
+          [primaryColor, VerdeEscuro],
           const [0.0, 1.0],
         ),
         // Ícone de overlay (opcional)

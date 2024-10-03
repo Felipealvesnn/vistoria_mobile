@@ -251,7 +251,7 @@ class Vistoria {
       codTipoPemissaoNavigation: json['codTipoPemissaoNavigation'] != null
           ? TipoPermissionario.fromJson(json['codTipoPemissaoNavigation'])
           : null,
-      vistoriaId: json['vistoriaId'],
+      vistoriaId: json['vistoriaID'],
       idPermissionario: json['idPermissionario'],
       codTipoPermissao: json['codTipoPermissao'],
       dataVistoria: DateTime.parse(json['dataVistoria']),

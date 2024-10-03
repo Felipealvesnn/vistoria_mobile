@@ -51,6 +51,7 @@ dependencies:
   path: ^1.9.0
   intl: ^0.19.0
   eva_icons_flutter:
+  photo_view:
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +84,8 @@ flutter:
     - assets/icon/icon.png
     - assets/images/
     - assets/images/onix-hatch-showroom-1920x960.webp
+    - assets/images/notfound.jpg
+
     - assets/images/FAN-LATERAL_4.webp
   #   - images/a_dot_ham.jpeg
 
