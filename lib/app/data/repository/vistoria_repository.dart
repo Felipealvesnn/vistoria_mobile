@@ -61,7 +61,7 @@ class VistoriaRepository {
     if (deranPermissio['Sucesso'] == false) {
       Get.snackbar(
         'Erro',
-       'Permissionario não encontrado',
+        'Permissionario não encontrado',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -78,6 +78,20 @@ class VistoriaRepository {
     print(itens);
 
     return veiculoDetran;
+  }
+
+  Future<List<FotosVistorium>> getImagemVistoria({required int placa}) async {
+    try {
+      var itens = await vistoriaclient.getImagemVistoria(placa);
+      List<FotosVistorium> fotosVistorium =
+          itens.map((json) => FotosVistorium.fromJson(json)).toList();
+      return fotosVistorium;
+    } on Exception catch (e) {
+      print("Erro ao buscar notificações: $e");
+
+      return [];
+      // TODO
+    }
   }
 
   Future<vistoriaMobileDTO> getvistoriaMobileDTO({int? page}) async {

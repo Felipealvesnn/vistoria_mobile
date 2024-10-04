@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
@@ -102,14 +103,14 @@ class VistoriaController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Erro', 'Erro ao buscar vistorias');
-    }finally{
+    } finally {
       isLoadingVistoriaInicial.value = false;
     }
   }
 
   Future<void> reseteFiltroVistorias() async {
     try {
-       isLoadingVistoriaInicial.value = true;
+      isLoadingVistoriaInicial.value = true;
       placaSeacherController.clear();
       dataInicioController.clear();
       dataFimController.clear();
@@ -117,8 +118,7 @@ class VistoriaController extends GetxController {
       hasMoreVistorias.value = true;
     } catch (e) {
       Get.snackbar('Erro', 'Erro ao buscar vistorias');
-    }
-    finally{
+    } finally {
       isLoadingVistoriaInicial.value = false;
     }
   }
@@ -202,8 +202,18 @@ class VistoriaController extends GetxController {
     await fetchVistorias();
     isLoadingMore.value = false;
   }
-   
-   
+
+  Future<List<FotosVistorium>> GetimagensVistoria(int vistoriaId) async {
+    try {
+      final mockData =
+          await vistoriaProvider.getImagemVistoria(placa: vistoriaId);
+
+      return mockData;
+    } catch (e) {
+      Get.snackbar('Erro', 'Erro ao buscar imagens');
+      return [];
+    }
+  }
 
   // Fetch vistoriasMobileDTO data
   Future<void> fetchVistoriasMobileDTO() async {
