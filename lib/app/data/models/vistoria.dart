@@ -503,8 +503,8 @@ class Vistoria {
 }
 
 class FotosVistorium {
-  double fotoVistoriaId;
-  double? vistoriaId;
+  int fotoVistoriaId;
+  int? vistoriaId;
   String? nomeFoto;
   Vistoria? vistoria;
 
@@ -518,8 +518,8 @@ class FotosVistorium {
   // Método para converter um Map (JSON) em um objeto FotosVistorium
   factory FotosVistorium.fromJson(Map<String, dynamic> json) {
     return FotosVistorium(
-      fotoVistoriaId: json['fotoVistoriaId'] ?? 0,
-      vistoriaId: json['vistoriaId'],
+      fotoVistoriaId: json['fotoVistoriaID'] ?? 0,
+      vistoriaId: json['vistoriaID'],
       nomeFoto: json['nomeFoto'],
       // vistoria: json['vistoria'] != null ? Vistoria.fromJson(json['vistoria']) : null,
     );

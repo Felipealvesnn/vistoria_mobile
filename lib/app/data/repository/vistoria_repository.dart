@@ -83,14 +83,16 @@ class VistoriaRepository {
   Future<List<FotosVistorium>> getImagemVistoria({required int placa}) async {
     try {
       var itens = await vistoriaclient.getImagemVistoria(placa);
-      List<FotosVistorium> fotosVistorium =
-          itens.map((json) => FotosVistorium.fromJson(json)).toList();
+
+      // Garantir que 'itens' é uma lista de mapas
+      List<FotosVistorium> fotosVistorium = (itens as List<dynamic>)
+          .map((json) => FotosVistorium.fromJson(json as Map<String, dynamic>))
+          .toList();
+
       return fotosVistorium;
     } on Exception catch (e) {
       print("Erro ao buscar notificações: $e");
-
       return [];
-      // TODO
     }
   }
 
