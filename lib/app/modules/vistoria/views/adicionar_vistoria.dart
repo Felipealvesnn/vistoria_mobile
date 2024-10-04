@@ -11,6 +11,7 @@ import 'package:vistoria_mobile/app/modules/vistoria/components/CamposMoto.dart'
 import 'package:vistoria_mobile/app/modules/vistoria/components/DadosVeiculoWidget.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/camposCarroMoto.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_controller.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class VistoriaFormPage extends StatelessWidget {
   final VistoriaController controller = Get.find<VistoriaController>();
@@ -162,6 +163,7 @@ class VistoriaFormPage extends StatelessWidget {
                   _buildSelectedImages(context),
                   const SizedBox(height: 16.0),
                   _buildEnviarButton(context),
+                  const SizedBox(height: 16.0),
                 ],
               )
             : const SizedBox.shrink()),
@@ -214,8 +216,8 @@ class VistoriaFormPage extends StatelessWidget {
       onChanged: controller.isPermissionarioipoLocked.value
           ? null
           : (TipoPermissionario? newValue) {
-              controller.updateCampo(
-                  'codTipoPermissao', newValue?.codTipoPermissao.toString() ?? '');
+              controller.updateCampo('codTipoPermissao',
+                  newValue?.codTipoPermissao.toString() ?? '');
               controller.updateVisibility(
                 newValue?.codTipoPermissao.toString() ?? '',
                 controller.veiculoTipoSelecionado.value?.veiTipDesc ?? '',
@@ -237,7 +239,14 @@ class VistoriaFormPage extends StatelessWidget {
           children: [
             Expanded(
               child: RadioListTile<String>(
-                title: const Text('APROVADO'),
+                title: const AutoSizeText(
+                  'APROVADO',
+                  maxLines: 1, // Limita a uma linha para evitar a quebra
+                  minFontSize:
+                      10, // Define o tamanho mínimo da fonte ao redimensionar
+                  overflow: TextOverflow
+                      .ellipsis, // Adiciona "..." se o texto for muito longo
+                ),
                 value: 'APROVADO',
                 groupValue: controller.statusVistoria.value,
                 onChanged: (String? value) {
@@ -250,7 +259,14 @@ class VistoriaFormPage extends StatelessWidget {
             const SizedBox(width: 20),
             Expanded(
               child: RadioListTile<String>(
-                title: const Text('REPROVADO'),
+                title: const AutoSizeText(
+                  'REPROVADO',
+                  maxLines: 1, // Limita a uma linha para evitar a quebra
+                  minFontSize:
+                      10, // Define o tamanho mínimo da fonte ao redimensionar
+                  overflow: TextOverflow
+                      .ellipsis, // Adiciona "..." se o texto for muito longo
+                ),
                 value: 'REPROVADO',
                 groupValue: controller.statusVistoria.value,
                 onChanged: (String? value) {
@@ -303,95 +319,115 @@ class VistoriaFormPage extends StatelessWidget {
   Widget _buildSelectedImages(BuildContext context) {
     return Obx(
       () {
-        return OverflowBar(
-          spacing: 8.0,
-          children: [
-            if (controller.selectedImages.isEmpty)
-              const Text("Nenhuma imagem selecionada"),
-            ...controller.selectedImages.map((imageFile) {
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  ClipOval(
-                    child: Image.file(
-                      imageFile,
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      Get.dialog(
-                        AlertDialog(
-                          title: const Text("Confirmar"),
-                          content: const Text("Você deseja excluir a imagem?"),
-                          actions: [
-                            TextButton(
-                              child: const Text("Cancelar"),
-                              onPressed: () {
-                                Get.back();
-                              },
-                            ),
-                            TextButton(
-                              child: const Text("Excluir"),
-                              onPressed: () {
-                                controller.selectedImages.remove(imageFile);
-                                Get.back();
-                              },
-                            ),
-                          ],
+        return controller.selectedImages.isEmpty
+            ? const Text("Nenhuma imagem selecionada")
+            : Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: controller.selectedImages.map((imageFile) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipOval(
+                        child: Image.file(
+                          imageFile,
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
                         ),
-                      );
-                    },
-                  ),
-                ],
+                      ),
+                      Positioned(
+                        top: 5,
+                        right: 5,
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.dialog(
+                              AlertDialog(
+                                title: const Text("Confirmar"),
+                                content:
+                                    const Text("Você deseja excluir a imagem?"),
+                                actions: [
+                                  TextButton(
+                                    child: const Text("Cancelar"),
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text("Excluir"),
+                                    onPressed: () {
+                                      controller.selectedImages
+                                          .remove(imageFile);
+                                      Get.back();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
               );
-            }),
-          ],
-        );
       },
     );
   }
 
   Widget _buildEnviarButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: controller.RecarregarDropwndoTipo.value
-          ? () {
-              if ((formKey.currentState?.validate() ?? false) &&
-                  controller.statusVistoria.value.isNotEmpty) {
-                Get.dialog(
-                  AlertDialog(
-                    title: const Text('Confirmação'),
-                    content: const Text('Você tem certeza que deseja registrar a vistoria?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        child: const Text('Cancelar'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          final jsonFinal = controller.generateJson();
-                          print(jsonFinal);
-                          Get.back();
-                        },
-                        child: const Text('Confirmar'),
-                      ),
-                    ],
-                  ),
-                );
-              } else {
-                Get.snackbar('Erro', 'Preencha todos os campos obrigatórios');
-              }
-            }
-          : () {
-              myFocusNode.requestFocus();
-              Get.snackbar('Erro', 'Digite uma placa válida');
-            },
-      child: const Text("Enviar"),
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: controller.RecarregarDropwndoTipo.value
+                ? () {
+                    if ((formKey.currentState?.validate() ?? false) &&
+                        controller.statusVistoria.value.isNotEmpty) {
+                      Get.dialog(
+                        AlertDialog(
+                          title: const Text('Confirmação'),
+                          content: const Text(
+                              'Você tem certeza que deseja registrar a vistoria?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              child: const Text('Cancelar'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                final jsonFinal = controller.generateJson();
+                                print(jsonFinal);
+                                Get.back();
+                              },
+                              child: const Text('Confirmar'),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      Get.snackbar(
+                          'Erro', 'Preencha todos os campos obrigatórios');
+                    }
+                  }
+                : () {
+                    myFocusNode.requestFocus();
+                    Get.snackbar('Erro', 'Digite uma placa válida');
+                  },
+            child: const Padding(
+              padding: EdgeInsets.all(10),
+              child: Text("Enviar"),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
