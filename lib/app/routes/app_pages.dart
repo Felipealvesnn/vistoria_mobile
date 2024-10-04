@@ -12,8 +12,7 @@ import '../modules/login_page/bindings/login_page_binding.dart';
 import '../modules/login_page/views/login_page_view.dart';
 import '../modules/vistoria/bindings/vistoria_binding.dart';
 import '../modules/vistoria/views/vistoria_view.dart';
-import '../modules/vistoriaDetalhes/bindings/vistoria_detalhes_binding.dart';
-import '../modules/vistoriaDetalhes/views/vistoria_detalhes_view.dart';
+
 
 part 'app_routes.dart';
 
@@ -53,10 +52,6 @@ class AppPages {
       page: () => const ConfiguracoesView(),
       binding: ConfiguracoesBinding(),
     ),
-    GetPage(
-      name: _Paths.VISTORIA_DETALHES,
-      page: () => const VistoriaDetalhesView(),
-      binding: VistoriaDetalhesBinding(),
-    ),
+    
   ];
 }
