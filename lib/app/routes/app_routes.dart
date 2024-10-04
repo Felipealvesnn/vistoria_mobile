@@ -10,6 +10,7 @@ abstract class Routes {
   static const LOGIN = _Paths.LOGIN;
   static const WELCOME = _Paths.WELCOME;
   static const CONFIGURACOES = _Paths.CONFIGURACOES;
+  static const VISTORIA_DETALHES = _Paths.VISTORIA_DETALHES;
 }
 
 abstract class _Paths {
@@ -21,4 +22,5 @@ abstract class _Paths {
   static const LOGIN = '/login';
   static const WELCOME = '/welcome';
   static const CONFIGURACOES = '/configuracoes';
+  static const VISTORIA_DETALHES = '/vistoria-detalhes';
 }
