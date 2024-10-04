@@ -233,7 +233,7 @@ class VistoriaController extends GetxController {
   }
 
   // Select an image from the device
-  Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
+  Future<void> pickImage(ImageSource source, {double percentage = 0.3}) async {
     if (selectedImages.length >= 5) {
       Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
       return;
