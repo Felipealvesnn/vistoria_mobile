@@ -26,8 +26,7 @@ class WidgetFotoDetalhes extends StatelessWidget {
               const NeverScrollableScrollPhysics(), // Para desativar o scroll do GridView
           shrinkWrap:
               true, // Para ajustar o tamanho do GridView dentro do Sliver
-          gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, // Número de miniaturas por linha
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
@@ -36,11 +35,20 @@ class WidgetFotoDetalhes extends StatelessWidget {
           itemBuilder: (context, index) {
             final fotoVistoria = vistoria.FotosVistoria![index];
 
-              
+            // Verifica se a extensão do arquivo é ".jpg"
+            bool isJpgFile = fotoVistoria.nomeFoto!.endsWith('.jpg');
+
+            // Se a extensão for .jpg, mostrar o CircularProgressIndicator
+            if (isJpgFile) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
             // Decodifica a string Base64 para bytes
-            final imageBytes = const Base64Decoder()
-                .convert(fotoVistoria.nomeFoto!);
-    
+            final imageBytes =
+                const Base64Decoder().convert(fotoVistoria.nomeFoto!);
+
             return GestureDetector(
               onTap: () {
                 // Quando a miniatura for clicada, abrir a visualização em tela cheia
@@ -64,12 +72,3 @@ class WidgetFotoDetalhes extends StatelessWidget {
 }
 
 
-Future<Uint8List> _getImageBytes(String? nomeFoto) async {
-  // Se `nomeFoto` for nula ou vazia, retorna os bytes da imagem de fallback
-  if (nomeFoto == null || nomeFoto.isEmpty) {
-    return (await rootBundle.load('assets/images/notfound.jpg')).buffer.asUint8List();
-  }
-
-  // Caso contrário, decodifica a string Base64 normalmente
-  return const Base64Decoder().convert(nomeFoto);
-}

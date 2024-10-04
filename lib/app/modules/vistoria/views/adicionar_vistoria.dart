@@ -193,23 +193,29 @@ class VistoriaFormPage extends StatelessWidget {
                                         }
                                         return null;
                                       },
-                                      onChanged:
-                                          (TipoPermissionario? newValue) {
-                                        // Atualizar estado conforme necessário
-                                        // Atualiza visibilidade com base na seleção
-                                        controller.updateCampo(
-                                            'codTipoPermissao',
-                                            newValue?.codTipoPermissao
-                                                    .toString() ??
-                                                '');
-                                        controller.updateVisibility(
-                                            newValue?.codTipoPermissao
-                                                    .toString() ??
-                                                '',
-                                            controller.veiculoTipoSelecionado
-                                                    .value?.veiTipDesc ??
-                                                '');
-                                      },
+                                       value:
+                                       controller.permisionarioSelecionado.value,
+                                      onChanged: controller
+                                              .isPermissionarioipoLocked.value
+                                          ? null
+                                          : (TipoPermissionario? newValue) {
+                                              // Atualizar estado conforme necessário
+                                              // Atualiza visibilidade com base na seleção
+                                              controller.updateCampo(
+                                                  'codTipoPermissao',
+                                                  newValue?.codTipoPermissao
+                                                          .toString() ??
+                                                      '');
+                                              controller.updateVisibility(
+                                                  newValue?.codTipoPermissao
+                                                          .toString() ??
+                                                      '',
+                                                  controller
+                                                          .veiculoTipoSelecionado
+                                                          .value
+                                                          ?.veiTipDesc ??
+                                                      '');
+                                            },
                                     ),
                                     const SizedBox(height: 16.0),
                                   ],
