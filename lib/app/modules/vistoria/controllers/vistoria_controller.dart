@@ -232,8 +232,9 @@ class VistoriaController extends GetxController {
   }
 
   // Select an image from the device
-  void pickImage(ImageSource source, {double percentage = 0.5}) async {
+  Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
     if (selectedImages.length >= 5) {
+      // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
       Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
       return;
     }
@@ -247,28 +248,6 @@ class VistoriaController extends GetxController {
       File imageFile = File(pickedFile.path);
       List<int> imageBytes = await imageFile.readAsBytes();
 
-      // Executar a redimensionamento da imagem em uma thread separada
-      imageFile = await compute(resizeImageIfNecessary, {
-        'imageFile': imageFile,
-        'imageBytes': imageBytes,
-        'percentage': percentage,
-      });
-
-      // Adiciona o arquivo redimensionado ou original à lista de imagens selecionadas
-      selectedImages.add(imageFile);
-
-      print('Nome da foto: $fileName'); // Exibe o nome da foto
-    }
-  }
-
-// Função para redimensionar a imagem se necessário
-  File resizeImageIfNecessary(Map<String, dynamic> params) {
-    File imageFile = params['imageFile'];
-    List<int> imageBytes = params['imageBytes'];
-    double percentage = params['percentage'];
-
-    // Verificar o tamanho da imagem (em bytes)
-    if (imageBytes.length > 1000000) {
       // Converter para Uint8List
       Uint8List uint8List = Uint8List.fromList(imageBytes);
 
@@ -284,13 +263,14 @@ class VistoriaController extends GetxController {
           img.copyResize(originalImage, width: newWidth, height: newHeight);
 
       // Salvar a imagem redimensionada em um novo arquivo temporário
-      imageFile = File(imageFile.path)
+      File resizedFile = File(pickedFile.path)
         ..writeAsBytesSync(img.encodeJpg(resizedImage));
 
-      print('Imagem redimensionada devido ao tamanho maior que 1 MB.');
-    }
+      // Adiciona o arquivo redimensionado à lista de imagens selecionadas
+      selectedImages.add(resizedFile);
 
-    return imageFile;
+      print('Nome da foto: $fileName'); // Exibe o nome da foto
+    }
   }
 
   Future<VeiculoDetran> getInforVeiculoDetran(String placa) async {
@@ -389,11 +369,17 @@ class VistoriaController extends GetxController {
     // Tenta encontrar um tipo de permissionário que corresponda à string fornecida
     var permisionarioEncontrado = tipoPermissionariosFiltrados.value.firstWhere(
       (permissionario) => permissionario.descricao == tipoPermissionarioString,
-      orElse: () => TipoPermissionario() , // Retorna 'null' se não encontrar uma correspondência
+      orElse: () =>
+          TipoPermissionario(), // Retorna 'null' se não encontrar uma correspondência
     );
 
     // Atualiza o permissionário selecionado e bloqueia o tipo se uma correspondência for encontrada
     if (permisionarioEncontrado != null) {
+      updateCampo('codTipoPermissao',
+          permisionarioEncontrado.codTipoPermissao.toString());
+      updateVisibility(permisionarioEncontrado.descricao!,
+          veiculoTipoSelecionado.value?.veiTipDesc ?? '');
+
       permisionarioSelecionado.value = permisionarioEncontrado;
       isPermissionarioipoLocked.value =
           permisionarioEncontrado.codTipoPermissao != null;

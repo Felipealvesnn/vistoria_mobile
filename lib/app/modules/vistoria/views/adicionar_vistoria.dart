@@ -41,17 +41,21 @@ class VistoriaFormPage extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.photo_library),
                 title: const Text('Selecionar da galeria'),
-                onTap: () {
-                  controller.pickImage(ImageSource.gallery);
-                  Navigator.of(context).pop();
+                onTap: () async {
+                  await controller.pickImage(ImageSource.gallery);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
                 title: const Text('Tirar foto'),
-                onTap: () {
-                  controller.pickImage(ImageSource.camera);
-                  Navigator.of(context).pop();
+                onTap: () async {
+                  await controller.pickImage(ImageSource.camera);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
                 },
               ),
             ],
@@ -193,8 +197,8 @@ class VistoriaFormPage extends StatelessWidget {
                                         }
                                         return null;
                                       },
-                                       value:
-                                       controller.permisionarioSelecionado.value,
+                                      value: controller
+                                          .permisionarioSelecionado.value,
                                       onChanged: controller
                                               .isPermissionarioipoLocked.value
                                           ? null
