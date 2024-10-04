@@ -1,272 +1,306 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/components/PdfPreviewPage.dart';
-import 'package:vistoria_mobile/app/modules/vistoria/components/generatePdf.dart';
+import 'package:vistoria_mobile/app/modules/vistoria/components/WidgetFotoDetalhes.dart';
+import 'package:vistoria_mobile/app/modules/vistoria/controllers/vistoria_controller.dart';
 
-class VistoriaDetalhesView extends StatelessWidget {
+class VistoriaDetalhesView extends StatefulWidget {
   final Vistoria vistoria;
 
   const VistoriaDetalhesView({super.key, required this.vistoria});
+
+  @override
+  State<VistoriaDetalhesView> createState() => _VistoriaDetalhesViewState();
+}
+
+class _VistoriaDetalhesViewState extends State<VistoriaDetalhesView> {
+  VistoriaController controller = Get.find<VistoriaController>();
+  Future<void> _fetchImages() async {
+    List<FotosVistorium> imagens =
+        await controller.GetimagensVistoria(widget.vistoria.vistoriaId!);
+    if (imagens.isNotEmpty) {
+      setState(() {
+        widget.vistoria.FotosVistoria = imagens;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _fetchImages();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String?>> dadosVeiclos = [
       //{"label": "Marca", "value": vistoria.marcaModelo},
       // {"label": "Placa", "value": vistoria.placa},
-      {"label": "Chassi", "value": vistoria.chassi},
-      {"label": "Ano", "value": vistoria.ano},
+      {"label": "Chassi", "value": widget.vistoria.chassi},
+      {"label": "Ano", "value": widget.vistoria.ano},
       //{"label": "Cor", "value": vistoria.cor},
-      {"label": "Tipo", "value": vistoria.tipo},
+      {"label": "Tipo", "value": widget.vistoria.tipo},
       //{"label": "KM", "value": vistoria.km.toString()},
     ];
     final List<Map<String, String?>> camposMoto = [
       {
         'label': 'Ruído do Motor',
-        'value': vistoria.ruidoMotor == true ? "OK" : "False",
-        'Obs':
-            vistoria.ruidoMotorObs != null && vistoria.ruidoMotorObs!.isNotEmpty
-                ? vistoria.ruidoMotorObs!
-                : "Sem observações",
+        'value': widget.vistoria.ruidoMotor == true ? "OK" : "False",
+        'Obs': widget.vistoria.ruidoMotorObs != null &&
+                widget.vistoria.ruidoMotorObs!.isNotEmpty
+            ? widget.vistoria.ruidoMotorObs!
+            : "Sem observações",
       },
       {
         'label': 'Redutores de Temperatura',
-        'value': vistoria.redutoresTemperatura == true ? "OK" : "False",
-        'Obs': vistoria.redutoresTemperaturaObs != null &&
-                vistoria.redutoresTemperaturaObs!.isNotEmpty
-            ? vistoria.redutoresTemperaturaObs!
+        'value': widget.vistoria.redutoresTemperatura == true ? "OK" : "False",
+        'Obs': widget.vistoria.redutoresTemperaturaObs != null &&
+                widget.vistoria.redutoresTemperaturaObs!.isNotEmpty
+            ? widget.vistoria.redutoresTemperaturaObs!
             : "Sem observações",
       },
       {
         'label': 'Kit de Tração',
-        'value': vistoria.kitTracao == true ? "OK" : "False",
-        'Obs':
-            vistoria.kitTracaoObs != null && vistoria.kitTracaoObs!.isNotEmpty
-                ? vistoria.kitTracaoObs!
-                : "Sem observações",
+        'value': widget.vistoria.kitTracao == true ? "OK" : "False",
+        'Obs': widget.vistoria.kitTracaoObs != null &&
+                widget.vistoria.kitTracaoObs!.isNotEmpty
+            ? widget.vistoria.kitTracaoObs!
+            : "Sem observações",
       },
       {
         'label': 'Chave de Ignição do Baú',
-        'value': vistoria.chavesIgnicaoBau == true ? "OK" : "False",
-        'Obs': vistoria.chavesIgnicaoBauObs != null &&
-                vistoria.chavesIgnicaoBauObs!.isNotEmpty
-            ? vistoria.chavesIgnicaoBauObs!
+        'value': widget.vistoria.chavesIgnicaoBau == true ? "OK" : "False",
+        'Obs': widget.vistoria.chavesIgnicaoBauObs != null &&
+                widget.vistoria.chavesIgnicaoBauObs!.isNotEmpty
+            ? widget.vistoria.chavesIgnicaoBauObs!
             : "Sem observações",
       },
       {
         'label': 'Mata Cachorro',
-        'value': vistoria.mataCachorro == true ? "OK" : "False",
-        'Obs': vistoria.mataCachorroObs != null &&
-                vistoria.mataCachorroObs!.isNotEmpty
-            ? vistoria.mataCachorroObs!
+        'value': widget.vistoria.mataCachorro == true ? "OK" : "False",
+        'Obs': widget.vistoria.mataCachorroObs != null &&
+                widget.vistoria.mataCachorroObs!.isNotEmpty
+            ? widget.vistoria.mataCachorroObs!
             : "Sem observações",
       },
       {
         'label': 'Corta Pipa',
-        'value': vistoria.cortaPipa == true ? "OK" : "False",
-        'Obs':
-            vistoria.cortaPipaObs != null && vistoria.cortaPipaObs!.isNotEmpty
-                ? vistoria.cortaPipaObs!
-                : "Sem observações",
+        'value': widget.vistoria.cortaPipa == true ? "OK" : "False",
+        'Obs': widget.vistoria.cortaPipaObs != null &&
+                widget.vistoria.cortaPipaObs!.isNotEmpty
+            ? widget.vistoria.cortaPipaObs!
+            : "Sem observações",
       },
       {
         'label': 'Colete',
-        'value': vistoria.colete == true ? "OK" : "False",
-        'Obs': vistoria.coleteObs != null && vistoria.coleteObs!.isNotEmpty
-            ? vistoria.coleteObs!
+        'value': widget.vistoria.colete == true ? "OK" : "False",
+        'Obs': widget.vistoria.coleteObs != null &&
+                widget.vistoria.coleteObs!.isNotEmpty
+            ? widget.vistoria.coleteObs!
             : "Sem observações",
       },
       {
         'label': 'Potência Mínima e Máxima',
-        'value': vistoria.potenciaMinimaMaxima == true ? "OK" : "False",
-        'Obs': vistoria.potenciaMinimaMaximaObs != null &&
-                vistoria.potenciaMinimaMaximaObs!.isNotEmpty
-            ? vistoria.potenciaMinimaMaximaObs!
+        'value': widget.vistoria.potenciaMinimaMaxima == true ? "OK" : "False",
+        'Obs': widget.vistoria.potenciaMinimaMaximaObs != null &&
+                widget.vistoria.potenciaMinimaMaximaObs!.isNotEmpty
+            ? widget.vistoria.potenciaMinimaMaximaObs!
             : "Sem observações",
       },
       {
         'label': 'Capacetes',
-        'value': vistoria.capacetes == true ? "OK" : "False",
-        'Obs':
-            vistoria.capacetesObs != null && vistoria.capacetesObs!.isNotEmpty
-                ? vistoria.capacetesObs!
-                : "Sem observações",
+        'value': widget.vistoria.capacetes == true ? "OK" : "False",
+        'Obs': widget.vistoria.capacetesObs != null &&
+                widget.vistoria.capacetesObs!.isNotEmpty
+            ? widget.vistoria.capacetesObs!
+            : "Sem observações",
       },
     ];
 
     final List<Map<String, String?>> camposCarro = [
       {
         'label': 'Para-choque',
-        'value': vistoria.parachoques == true ? "OK" : "False",
-        'Obs': vistoria.parachoquesObs != null &&
-                vistoria.parachoquesObs!.isNotEmpty
-            ? vistoria.parachoquesObs!
+        'value': widget.vistoria.parachoques == true ? "OK" : "False",
+        'Obs': widget.vistoria.parachoquesObs != null &&
+                widget.vistoria.parachoquesObs!.isNotEmpty
+            ? widget.vistoria.parachoquesObs!
             : "Sem observações",
       },
       {
         'label': 'Macaco',
-        'value': vistoria.macaco == true ? "OK" : "False",
-        'Obs': vistoria.macacoObs != null && vistoria.macacoObs!.isNotEmpty
-            ? vistoria.macacoObs!
+        'value': widget.vistoria.macaco == true ? "OK" : "False",
+        'Obs': widget.vistoria.macacoObs != null &&
+                widget.vistoria.macacoObs!.isNotEmpty
+            ? widget.vistoria.macacoObs!
             : "Sem observações",
       },
       {
         'label': 'Triângulo',
-        'value': vistoria.triangulo == true ? "OK" : "False",
-        'Obs':
-            vistoria.trianguloObs != null && vistoria.trianguloObs!.isNotEmpty
-                ? vistoria.trianguloObs!
-                : "Sem observações",
+        'value': widget.vistoria.triangulo == true ? "OK" : "False",
+        'Obs': widget.vistoria.trianguloObs != null &&
+                widget.vistoria.trianguloObs!.isNotEmpty
+            ? widget.vistoria.trianguloObs!
+            : "Sem observações",
       },
       {
         'label': 'Vidros',
-        'value': vistoria.vidros == true ? "OK" : "False",
-        'Obs': vistoria.vidrosObs != null && vistoria.vidrosObs!.isNotEmpty
-            ? vistoria.vidrosObs!
+        'value': widget.vistoria.vidros == true ? "OK" : "False",
+        'Obs': widget.vistoria.vidrosObs != null &&
+                widget.vistoria.vidrosObs!.isNotEmpty
+            ? widget.vistoria.vidrosObs!
             : "Sem observações",
       },
       {
         'label': 'Limpador Parabrisa',
-        'value': vistoria.limpadorParabrisa == true ? "OK" : "False",
-        'Obs': vistoria.limpadorParabrisaObs != null &&
-                vistoria.limpadorParabrisaObs!.isNotEmpty
-            ? vistoria.limpadorParabrisaObs!
+        'value': widget.vistoria.limpadorParabrisa == true ? "OK" : "False",
+        'Obs': widget.vistoria.limpadorParabrisaObs != null &&
+                widget.vistoria.limpadorParabrisaObs!.isNotEmpty
+            ? widget.vistoria.limpadorParabrisaObs!
             : "Sem observações",
       },
       {
         'label': 'Luz Indicadora Direção Dianteira',
-        'value':
-            vistoria.luzIndicadoraDirecaoDianteira == true ? "OK" : "False",
-        'Obs': vistoria.luzIndicadoraDirecaoDianteiraObs != null &&
-                vistoria.luzIndicadoraDirecaoDianteiraObs!.isNotEmpty
-            ? vistoria.luzIndicadoraDirecaoDianteiraObs!
+        'value': widget.vistoria.luzIndicadoraDirecaoDianteira == true
+            ? "OK"
+            : "False",
+        'Obs': widget.vistoria.luzIndicadoraDirecaoDianteiraObs != null &&
+                widget.vistoria.luzIndicadoraDirecaoDianteiraObs!.isNotEmpty
+            ? widget.vistoria.luzIndicadoraDirecaoDianteiraObs!
             : "Sem observações",
       },
       {
         'label': 'Luz Indicadora Direção Traseira',
-        'value': vistoria.luzIndicadoraDirecaoTraseira == true ? "OK" : "False",
-        'Obs': vistoria.luzIndicadoraDirecaoTraseiraObs != null &&
-                vistoria.luzIndicadoraDirecaoTraseiraObs!.isNotEmpty
-            ? vistoria.luzIndicadoraDirecaoTraseiraObs!
+        'value': widget.vistoria.luzIndicadoraDirecaoTraseira == true
+            ? "OK"
+            : "False",
+        'Obs': widget.vistoria.luzIndicadoraDirecaoTraseiraObs != null &&
+                widget.vistoria.luzIndicadoraDirecaoTraseiraObs!.isNotEmpty
+            ? widget.vistoria.luzIndicadoraDirecaoTraseiraObs!
             : "Sem observações",
       },
       {
         'label': 'Indicadores Painel',
-        'value': vistoria.indicadoresPainel == true ? "OK" : "False",
-        'Obs': vistoria.indicadoresPainelObs != null &&
-                vistoria.indicadoresPainelObs!.isNotEmpty
-            ? vistoria.indicadoresPainelObs!
+        'value': widget.vistoria.indicadoresPainel == true ? "OK" : "False",
+        'Obs': widget.vistoria.indicadoresPainelObs != null &&
+                widget.vistoria.indicadoresPainelObs!.isNotEmpty
+            ? widget.vistoria.indicadoresPainelObs!
             : "Sem observações",
       },
       {
         'label': 'Nível de Óleo do Motor',
-        'value': vistoria.nivelOleoMotor == true ? "OK" : "False",
-        'Obs': vistoria.nivelOleoMotorObs != null &&
-                vistoria.nivelOleoMotorObs!.isNotEmpty
-            ? vistoria.nivelOleoMotorObs!
+        'value': widget.vistoria.nivelOleoMotor == true ? "OK" : "False",
+        'Obs': widget.vistoria.nivelOleoMotorObs != null &&
+                widget.vistoria.nivelOleoMotorObs!.isNotEmpty
+            ? widget.vistoria.nivelOleoMotorObs!
             : "Sem observações",
       },
       {
         'label': 'Nível de Fluido de Freio',
-        'value': vistoria.nivelFluidoFreio == true ? "OK" : "False",
-        'Obs': vistoria.nivelFluidoFreioObs != null &&
-                vistoria.nivelFluidoFreioObs!.isNotEmpty
-            ? vistoria.nivelFluidoFreioObs!
+        'value': widget.vistoria.nivelFluidoFreio == true ? "OK" : "False",
+        'Obs': widget.vistoria.nivelFluidoFreioObs != null &&
+                widget.vistoria.nivelFluidoFreioObs!.isNotEmpty
+            ? widget.vistoria.nivelFluidoFreioObs!
             : "Sem observações",
       },
       {
         'label': 'Adesivação',
-        'value': vistoria.adesivacao == true ? "OK" : "False",
-        'Obs':
-            vistoria.adesivacaoObs != null && vistoria.adesivacaoObs!.isNotEmpty
-                ? vistoria.adesivacaoObs!
-                : "Sem observações",
+        'value': widget.vistoria.adesivacao == true ? "OK" : "False",
+        'Obs': widget.vistoria.adesivacaoObs != null &&
+                widget.vistoria.adesivacaoObs!.isNotEmpty
+            ? widget.vistoria.adesivacaoObs!
+            : "Sem observações",
       },
       {
         'label': 'Freio de Serviço',
-        'value': vistoria.freioServico == true ? "OK" : "False",
-        'Obs': vistoria.freioServicoObs != null &&
-                vistoria.freioServicoObs!.isNotEmpty
-            ? vistoria.freioServicoObs!
+        'value': widget.vistoria.freioServico == true ? "OK" : "False",
+        'Obs': widget.vistoria.freioServicoObs != null &&
+                widget.vistoria.freioServicoObs!.isNotEmpty
+            ? widget.vistoria.freioServicoObs!
             : "Sem observações",
       },
       {
         'label': 'Freio de Estacionamento',
-        'value': vistoria.freioEstacionamento == true ? "OK" : "False",
-        'Obs': vistoria.freioEstacionamentoObs != null &&
-                vistoria.freioEstacionamentoObs!.isNotEmpty
-            ? vistoria.freioEstacionamentoObs!
+        'value': widget.vistoria.freioEstacionamento == true ? "OK" : "False",
+        'Obs': widget.vistoria.freioEstacionamentoObs != null &&
+                widget.vistoria.freioEstacionamentoObs!.isNotEmpty
+            ? widget.vistoria.freioEstacionamentoObs!
             : "Sem observações",
       },
       {
         'label': 'Nível de Água',
-        'value': vistoria.nivelAgua == true ? "OK" : "False",
-        'Obs':
-            vistoria.nivelAguaObs != null && vistoria.nivelAguaObs!.isNotEmpty
-                ? vistoria.nivelAguaObs!
-                : "Sem observações",
+        'value': widget.vistoria.nivelAgua == true ? "OK" : "False",
+        'Obs': widget.vistoria.nivelAguaObs != null &&
+                widget.vistoria.nivelAguaObs!.isNotEmpty
+            ? widget.vistoria.nivelAguaObs!
+            : "Sem observações",
       },
       {
         'label': 'Faroletes',
-        'value': vistoria.faroletes == true ? "OK" : "False",
-        'Obs':
-            vistoria.faroletesObs != null && vistoria.faroletesObs!.isNotEmpty
-                ? vistoria.faroletesObs!
-                : "Sem observações",
+        'value': widget.vistoria.faroletes == true ? "OK" : "False",
+        'Obs': widget.vistoria.faroletesObs != null &&
+                widget.vistoria.faroletesObs!.isNotEmpty
+            ? widget.vistoria.faroletesObs!
+            : "Sem observações",
       },
       {
         'label': 'Lanternas Direção',
-        'value': vistoria.lanternasDirecao == true ? "OK" : "False",
-        'Obs': vistoria.lanternasDirecaoObs != null &&
-                vistoria.lanternasDirecaoObs!.isNotEmpty
-            ? vistoria.lanternasDirecaoObs!
+        'value': widget.vistoria.lanternasDirecao == true ? "OK" : "False",
+        'Obs': widget.vistoria.lanternasDirecaoObs != null &&
+                widget.vistoria.lanternasDirecaoObs!.isNotEmpty
+            ? widget.vistoria.lanternasDirecaoObs!
             : "Sem observações",
       },
       {
         'label': 'Lanterna Marcha Ré',
-        'value': vistoria.lanternaMarchaRe == true ? "OK" : "False",
-        'Obs': vistoria.lanternaMarchaReObs != null &&
-                vistoria.lanternaMarchaReObs!.isNotEmpty
-            ? vistoria.lanternaMarchaReObs!
+        'value': widget.vistoria.lanternaMarchaRe == true ? "OK" : "False",
+        'Obs': widget.vistoria.lanternaMarchaReObs != null &&
+                widget.vistoria.lanternaMarchaReObs!.isNotEmpty
+            ? widget.vistoria.lanternaMarchaReObs!
             : "Sem observações",
       },
       {
         'label': 'Extintor',
-        'value': vistoria.extintor == true ? "OK" : "False",
-        'Obs': vistoria.extintorObs != null && vistoria.extintorObs!.isNotEmpty
-            ? vistoria.extintorObs!
+        'value': widget.vistoria.extintor == true ? "OK" : "False",
+        'Obs': widget.vistoria.extintorObs != null &&
+                widget.vistoria.extintorObs!.isNotEmpty
+            ? widget.vistoria.extintorObs!
             : "Sem observações",
       },
       {
         'label': 'Cinto de Segurança',
-        'value': vistoria.cintoSeguranca == true ? "OK" : "False",
-        'Obs': vistoria.cintoSegurancaObs != null &&
-                vistoria.cintoSegurancaObs!.isNotEmpty
-            ? vistoria.cintoSegurancaObs!
+        'value': widget.vistoria.cintoSeguranca == true ? "OK" : "False",
+        'Obs': widget.vistoria.cintoSegurancaObs != null &&
+                widget.vistoria.cintoSegurancaObs!.isNotEmpty
+            ? widget.vistoria.cintoSegurancaObs!
             : "Sem observações",
       },
       {
         'label': 'Step',
-        'value': vistoria.step == true ? "OK" : "False",
-        'Obs': vistoria.stepObs != null && vistoria.stepObs!.isNotEmpty
-            ? vistoria.stepObs!
+        'value': widget.vistoria.step == true ? "OK" : "False",
+        'Obs': widget.vistoria.stepObs != null &&
+                widget.vistoria.stepObs!.isNotEmpty
+            ? widget.vistoria.stepObs!
             : "Sem observações",
       },
       {
         'label': 'Chave de Roda',
-        'value': vistoria.chaveRoda == true ? "OK" : "False",
-        'Obs':
-            vistoria.chaveRodaObs != null && vistoria.chaveRodaObs!.isNotEmpty
-                ? vistoria.chaveRodaObs!
-                : "Sem observações",
+        'value': widget.vistoria.chaveRoda == true ? "OK" : "False",
+        'Obs': widget.vistoria.chaveRodaObs != null &&
+                widget.vistoria.chaveRodaObs!.isNotEmpty
+            ? widget.vistoria.chaveRodaObs!
+            : "Sem observações",
       },
       {
         'label': 'Cilindro de Gás',
-        'value': vistoria.cinlindroGas == true ? "OK" : "False",
-        'Obs': vistoria.cilindroGasObs != null &&
-                vistoria.cilindroGasObs!.isNotEmpty
-            ? vistoria.cilindroGasObs!
+        'value': widget.vistoria.cinlindroGas == true ? "OK" : "False",
+        'Obs': widget.vistoria.cilindroGasObs != null &&
+                widget.vistoria.cilindroGasObs!.isNotEmpty
+            ? widget.vistoria.cilindroGasObs!
             : "Sem observações",
       },
     ];
@@ -275,170 +309,206 @@ class VistoriaDetalhesView extends StatelessWidget {
     final List<Map<String, String?>> camposCarroMoto = [
       {
         'label': 'Faróis Principais Dianteiros',
-        'value': vistoria.faroisPrincipaisDianteiros == true ? "OK" : "False",
-        'Obs': vistoria.faroisPrincipaisDianteirosObs != null &&
-                vistoria.faroisPrincipaisDianteirosObs!.isNotEmpty
-            ? vistoria.faroisPrincipaisDianteirosObs!
+        'value':
+            widget.vistoria.faroisPrincipaisDianteiros == true ? "OK" : "False",
+        'Obs': widget.vistoria.faroisPrincipaisDianteirosObs != null &&
+                widget.vistoria.faroisPrincipaisDianteirosObs!.isNotEmpty
+            ? widget.vistoria.faroisPrincipaisDianteirosObs!
             : "Sem observações",
       },
       {
         'label': 'Retrovisores',
-        'value': vistoria.retrovisores == true ? "OK" : "False",
-        'Obs': vistoria.retrovisoresObs != null &&
-                vistoria.retrovisoresObs!.isNotEmpty
-            ? vistoria.retrovisoresObs!
+        'value': widget.vistoria.retrovisores == true ? "OK" : "False",
+        'Obs': widget.vistoria.retrovisoresObs != null &&
+                widget.vistoria.retrovisoresObs!.isNotEmpty
+            ? widget.vistoria.retrovisoresObs!
             : "Sem observações",
       },
       {
         'label': 'Buzina',
-        'value': vistoria.buzina == true ? "OK" : "False",
-        'Obs': vistoria.buzinaObs != null && vistoria.buzinaObs!.isNotEmpty
-            ? vistoria.buzinaObs!
+        'value': widget.vistoria.buzina == true ? "OK" : "False",
+        'Obs': widget.vistoria.buzinaObs != null &&
+                widget.vistoria.buzinaObs!.isNotEmpty
+            ? widget.vistoria.buzinaObs!
             : "Sem observações",
       },
       {
         'label': 'Lanternas de Posição Traseira',
-        'value': vistoria.lanternasPosicaoTraseira == true ? "OK" : "False",
-        'Obs': vistoria.lanternasPosicaoTraseiraObs != null &&
-                vistoria.lanternasPosicaoTraseiraObs!.isNotEmpty
-            ? vistoria.lanternasPosicaoTraseiraObs!
+        'value':
+            widget.vistoria.lanternasPosicaoTraseira == true ? "OK" : "False",
+        'Obs': widget.vistoria.lanternasPosicaoTraseiraObs != null &&
+                widget.vistoria.lanternasPosicaoTraseiraObs!.isNotEmpty
+            ? widget.vistoria.lanternasPosicaoTraseiraObs!
             : "Sem observações",
       },
       {
         'label': 'Lanternas de Freio',
-        'value': vistoria.lanternasFreio == true ? "OK" : "False",
-        'Obs': vistoria.lanternasFreioObs != null &&
-                vistoria.lanternasFreioObs!.isNotEmpty
-            ? vistoria.lanternasFreioObs!
+        'value': widget.vistoria.lanternasFreio == true ? "OK" : "False",
+        'Obs': widget.vistoria.lanternasFreioObs != null &&
+                widget.vistoria.lanternasFreioObs!.isNotEmpty
+            ? widget.vistoria.lanternasFreioObs!
             : "Sem observações",
       },
       {
         'label': 'Lanterna da Placa Traseira',
-        'value': vistoria.lanternaPlacaTraseira == true ? "OK" : "False",
-        'Obs': vistoria.lanternaPlacaTraseiraObs != null &&
-                vistoria.lanternaPlacaTraseiraObs!.isNotEmpty
-            ? vistoria.lanternaPlacaTraseiraObs!
+        'value': widget.vistoria.lanternaPlacaTraseira == true ? "OK" : "False",
+        'Obs': widget.vistoria.lanternaPlacaTraseiraObs != null &&
+                widget.vistoria.lanternaPlacaTraseiraObs!.isNotEmpty
+            ? widget.vistoria.lanternaPlacaTraseiraObs!
             : "Sem observações",
       },
       {
         'label': 'Pneus',
-        'value': vistoria.pneus == true ? "OK" : "False",
-        'Obs': vistoria.pneusObs != null && vistoria.pneusObs!.isNotEmpty
-            ? vistoria.pneusObs!
+        'value': widget.vistoria.pneus == true ? "OK" : "False",
+        'Obs': widget.vistoria.pneusObs != null &&
+                widget.vistoria.pneusObs!.isNotEmpty
+            ? widget.vistoria.pneusObs!
             : "Sem observações",
       },
       {
         'label': 'Higiene e Segurança',
-        'value': vistoria.higieneSeguranca == true ? "OK" : "False",
-        'Obs': vistoria.higieneSegurancaObs != null &&
-                vistoria.higieneSegurancaObs!.isNotEmpty
-            ? vistoria.higieneSegurancaObs!
+        'value': widget.vistoria.higieneSeguranca == true ? "OK" : "False",
+        'Obs': widget.vistoria.higieneSegurancaObs != null &&
+                widget.vistoria.higieneSegurancaObs!.isNotEmpty
+            ? widget.vistoria.higieneSegurancaObs!
             : "Sem observações",
       },
       {
         'label': 'Bancos - Higiene e Segurança',
-        'value': vistoria.bancosHigieneSeguranca == true ? "OK" : "False",
-        'Obs': vistoria.bancosHigieneSegurancaObs != null &&
-                vistoria.bancosHigieneSegurancaObs!.isNotEmpty
-            ? vistoria.bancosHigieneSegurancaObs!
+        'value':
+            widget.vistoria.bancosHigieneSeguranca == true ? "OK" : "False",
+        'Obs': widget.vistoria.bancosHigieneSegurancaObs != null &&
+                widget.vistoria.bancosHigieneSegurancaObs!.isNotEmpty
+            ? widget.vistoria.bancosHigieneSegurancaObs!
             : "Sem observações",
       },
       {
         'label': 'Velocímetro',
-        'value': vistoria.velocimetro == true ? "OK" : "False",
-        'Obs': vistoria.velocimetroObs != null &&
-                vistoria.velocimetroObs!.isNotEmpty
-            ? vistoria.velocimetroObs!
+        'value': widget.vistoria.velocimetro == true ? "OK" : "False",
+        'Obs': widget.vistoria.velocimetroObs != null &&
+                widget.vistoria.velocimetroObs!.isNotEmpty
+            ? widget.vistoria.velocimetroObs!
             : "Sem observações",
       },
       {
         'label': 'Tacógrafo',
-        'value': vistoria.tacografo == true ? "OK" : "False",
-        'Obs':
-            vistoria.tacografoObs != null && vistoria.tacografoObs!.isNotEmpty
-                ? vistoria.tacografoObs!
-                : "Sem observações",
+        'value': widget.vistoria.tacografo == true ? "OK" : "False",
+        'Obs': widget.vistoria.tacografoObs != null &&
+                widget.vistoria.tacografoObs!.isNotEmpty
+            ? widget.vistoria.tacografoObs!
+            : "Sem observações",
       },
       {
         'label': 'Bateria',
-        'value': vistoria.bateria == true ? "OK" : "False",
-        'Obs': vistoria.bateriaObs != null && vistoria.bateriaObs!.isNotEmpty
-            ? vistoria.bateriaObs!
+        'value': widget.vistoria.bateria == true ? "OK" : "False",
+        'Obs': widget.vistoria.bateriaObs != null &&
+                widget.vistoria.bateriaObs!.isNotEmpty
+            ? widget.vistoria.bateriaObs!
             : "Sem observações",
       },
       {
         'label': 'Documento do Veículo Proprietário',
-        'value': vistoria.docVeiculoProp == true ? "OK" : "False",
-        'Obs': vistoria.docVeiculoPropObs != null &&
-                vistoria.docVeiculoPropObs!.isNotEmpty
-            ? vistoria.docVeiculoPropObs!
+        'value': widget.vistoria.docVeiculoProp == true ? "OK" : "False",
+        'Obs': widget.vistoria.docVeiculoPropObs != null &&
+                widget.vistoria.docVeiculoPropObs!.isNotEmpty
+            ? widget.vistoria.docVeiculoPropObs!
             : "Sem observações",
       },
       {
         'label': 'Motor de Partida',
-        'value': vistoria.motorPartida == true ? "OK" : "False",
-        'Obs': vistoria.motorPartidaObs != null &&
-                vistoria.motorPartidaObs!.isNotEmpty
-            ? vistoria.motorPartidaObs!
+        'value': widget.vistoria.motorPartida == true ? "OK" : "False",
+        'Obs': widget.vistoria.motorPartidaObs != null &&
+                widget.vistoria.motorPartidaObs!.isNotEmpty
+            ? widget.vistoria.motorPartidaObs!
             : "Sem observações",
       },
       {
         'label': 'observacao',
-        'value': vistoria.observacao != null && vistoria.observacao!.isNotEmpty
-            ? vistoria.observacao!
+        'value': widget.vistoria.observacao != null &&
+                widget.vistoria.observacao!.isNotEmpty
+            ? widget.vistoria.observacao!
             : "False",
-        'Obs': vistoria.observacao != null && vistoria.observacao!.isNotEmpty
-            ? vistoria.observacao!
+        'Obs': widget.vistoria.observacao != null &&
+                widget.vistoria.observacao!.isNotEmpty
+            ? widget.vistoria.observacao!
             : "Sem observações",
       },
       // Campos sem observações
       {
         'label': 'Liberação de Alvará para Licenciamento de Veículo de Aluguel',
-        'value': vistoria.requerPrefDiretTributario01 == true ? "OK" : "False",
+        'value': widget.vistoria.requerPrefDiretTributario01 == true
+            ? "OK"
+            : "False",
+        'Obs': ''
       },
       {
         'label': 'Renovação de Alvará para Licenciamento de Veículo de Aluguel',
-        'value': vistoria.requerPrefDiretTributario02 == true ? "OK" : "False",
+        'value': widget.vistoria.requerPrefDiretTributario02 == true
+            ? "OK"
+            : "False",
+        'Obs': ''
       },
       {
         'label': 'Vistoria de Veículo de Aluguel',
-        'value': vistoria.requerPrefDiretTributario03 == true ? "OK" : "False",
+        'value': widget.vistoria.requerPrefDiretTributario03 == true
+            ? "OK"
+            : "False",
+        'Obs': ''
       },
       {
         'label': 'Transferência',
-        'value': vistoria.requerPrefDiretTributario04 == true ? "OK" : "False",
+        'value': widget.vistoria.requerPrefDiretTributario04 == true
+            ? "OK"
+            : "False",
+        'Obs': ''
       },
       {
         'label': 'Mudança de Placa ou Tarjeta',
-        'value': vistoria.requerPrefDiretTributario05 == true ? "OK" : "False",
+        'value': widget.vistoria.requerPrefDiretTributario05 == true
+            ? "OK"
+            : "False",
+        'Obs': ''
       },
       {
         'label': 'Outros',
-        'value': vistoria.requerPrefDiretTributario06 == true ? "OK" : "False",
+        'value': widget.vistoria.requerPrefDiretTributario06 == true
+            ? "OK"
+            : "False",
+        'Obs': ''
       },
     ];
+
+    // Adicione condicionalmente o campo se `statusVistoria` não for "APROVADO"
+    if (widget.vistoria.statusVistoria != "APROVADO") {
+      camposCarroMoto.add({
+        'label': 'Observação Reprovado',
+        'value': widget.vistoria.statusVistoria == "APROVADO" ? "OK" : "False",
+        'Obs': widget.vistoria.reprovadoObs ?? 'Sem observações',
+      });
+    }
 
     // (Outras variáveis do seu código para camposMoto, camposCarro, camposCarroMoto...)
 
     // Determina os campos a serem exibidos com base no tipo de veículo
     List<Map<String, String?>> camposVistoria = [];
 
-    if (vistoria.tipo == "MOTOCICLETA" || vistoria.tipo == "MOTONETA") {
+    if (widget.vistoria.tipo == "MOTOCICLETA" ||
+        widget.vistoria.tipo == "MOTONETA") {
       camposVistoria = [...dadosVeiclos, ...camposMoto, ...camposCarroMoto];
     } else {
       camposVistoria = [...dadosVeiclos, ...camposCarro, ...camposCarroMoto];
     }
-
+    double alturaContainer = 250;
     // Top Content (com as informações da vistoria e a imagem de fundo)
     final topContent = Stack(
       children: <Widget>[
         Container(
           padding: const EdgeInsets.only(left: 10.0),
-          height: MediaQuery.of(context).size.height * 0.35,
+          height: alturaContainer, //MediaQuery.of(context).size.height * 0.35,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: (vistoria.tipo == "MOTOCICLETA" ||
-                      vistoria.tipo == "MOTONETA")
+              image: (widget.vistoria.tipo == "MOTOCICLETA" ||
+                      widget.vistoria.tipo == "MOTONETA")
                   ? const AssetImage("assets/images/FAN-LATERAL_4.webp")
                   : const AssetImage(
                       "assets/images/onix-hatch-showroom-1920x960.webp"),
@@ -447,8 +517,8 @@ class VistoriaDetalhesView extends StatelessWidget {
           ),
         ),
         Container(
-          height: MediaQuery.of(context).size.height * 0.35,
-          width: MediaQuery.of(context).size.width,
+          height: alturaContainer, //MediaQuery.of(context).size.height * 0.35,
+          // width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
             color: Color.fromRGBO(58, 66, 86, .9),
           ),
@@ -460,7 +530,7 @@ class VistoriaDetalhesView extends StatelessWidget {
                 children: <Widget>[
                   const SizedBox(height: 50.0),
                   Text(
-                    vistoria.placa ?? "Placa False",
+                    widget.vistoria.placa ?? "Placa False",
                     style: const TextStyle(color: Colors.white, fontSize: 40.0),
                   ),
                   const Divider(thickness: 2),
@@ -473,7 +543,7 @@ class VistoriaDetalhesView extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                           child: Text(
-                            'Cor: ${vistoria.cor ?? "False"}',
+                            'Cor: ${widget.vistoria.cor ?? "False"}',
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 16.0),
                           ),
@@ -484,20 +554,37 @@ class VistoriaDetalhesView extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
-                      'Modelo: ${vistoria.marcaModelo ?? "False"}',
+                      'Modelo: ${widget.vistoria.marcaModelo ?? "False"}',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Text(
-                      'Realizada: ${DateFormat('dd/MM/yyyy HH:mm').format(vistoria.dataVistoria!) ?? "False"}',
+                      'Realizada: ${DateFormat('dd/MM/yyyy HH:mm').format(widget.vistoria.dataVistoria!) ?? "False"}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 10.0,
+                    ),
+                    child: Text(
+                      'Status: ${widget.vistoria.statusVistoria ?? "Reprovado"}',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+        ),
+        Container(
+          height: alturaContainer, // MediaQuery.of(context).size.height * 0.35,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Get.theme.primaryColor
+                .withOpacity(0.15), // const Color.fromRGBO(58, 66, 86, .9),
           ),
         ),
         Positioned(
@@ -518,13 +605,13 @@ class VistoriaDetalhesView extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton.icon(
         onPressed: () {
-          Get.to(() => PdfPreviewPage(ocorrencia: vistoria));
+          Get.to(() => PdfPreviewPage(ocorrencia: widget.vistoria));
         },
         icon: const Icon(Icons.download),
         label: const Text("Baixar PDF", style: TextStyle(color: Colors.white)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
-        ),
+            //backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
+            ),
       ),
     );
 
@@ -592,6 +679,9 @@ class VistoriaDetalhesView extends StatelessWidget {
                     childCount: camposVistoria.length,
                   ),
                 ),
+                if (widget.vistoria.FotosVistoria != null &&
+                    widget.vistoria.FotosVistoria!.isNotEmpty)
+                  WidgetFotoDetalhes(vistoria: widget.vistoria),
               ],
             ),
           ),

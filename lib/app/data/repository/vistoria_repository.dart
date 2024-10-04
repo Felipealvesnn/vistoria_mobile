@@ -53,31 +53,43 @@ class VistoriaRepository {
     }
   }
 
-  Future<VeiculoDetran> getPlaca({required String placa}) async {
+  Future<Map<String, dynamic>> getPlaca({required String placa}) async {
     // Faz a primeira requisição para verificar se o permissionário existe
     var deranPermissio = await vistoriaclient.getPpermissionario(placa);
 
     // Verifica se a resposta contém "Sucesso": false
     if (deranPermissio['Sucesso'] == false) {
-      Get.snackbar(
-        'Erro',
-       'Permissionario não encontrado',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      // Caso não tenha sucesso, lança uma exceção ou retorna um valor padrão
-      throw Exception(deranPermissio['Mensagem']);
-      // ou
-      // return VeiculoDetran(); // Retorna um objeto vazio ou de acordo com sua lógica de negócios
+      // Lança a exceção personalizada
+      throw PermissionarioNotFoundException(deranPermissio['Mensagem']);
     }
 
-    // Se tiver sucesso, faz a segunda requisição
+    // Se tiver sucesso, faz a segunda requisição para buscar o veículo
     var itens = await vistoriaclient.getPlacaDetraN(placa);
     VeiculoDetran veiculoDetran = VeiculoDetran.fromJson(itens);
 
     print(itens);
 
-    return veiculoDetran;
+    // Retorna um mapa contendo o tipo do permissionário e o veículo
+    return {
+      'TipoPermissionario': deranPermissio['TipoPermissionario'],
+      'VeiculoDetran': veiculoDetran,
+    };
+  }
+
+  Future<List<FotosVistorium>> getImagemVistoria({required int placa}) async {
+    try {
+      var itens = await vistoriaclient.getImagemVistoria(placa);
+
+      // Garantir que 'itens' é uma lista de mapas
+      List<FotosVistorium> fotosVistorium = (itens as List<dynamic>)
+          .map((json) => FotosVistorium.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      return fotosVistorium;
+    } on Exception catch (e) {
+      print("Erro ao buscar notificações: $e");
+      return [];
+    }
   }
 
   Future<vistoriaMobileDTO> getvistoriaMobileDTO({int? page}) async {
@@ -108,4 +120,14 @@ class VistoriaRepository {
       print("Erro ao enviar notificação: $e");
     }
   }
+}
+
+// Exceção personalizada
+class PermissionarioNotFoundException implements Exception {
+  final String message;
+
+  PermissionarioNotFoundException(this.message);
+
+  @override
+  String toString() => message;
 }

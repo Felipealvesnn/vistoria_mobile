@@ -16,16 +16,28 @@ class DadosVeiculoWidget extends StatelessWidget {
       {
         'controller': controller.chassiController,
         'label': 'chassi',
-        'obs': 'chassiObs'
+        //'obs': 'chassiObs'
       },
       {
         'controller': controller.marcaModeloController,
         'label': 'Marca/Modelo',
-        'obs': 'marcaModeloObs'
+        //'obs': 'marcaModeloObs'
       },
-      {'controller': controller.anoController, 'label': 'Ano', 'obs': 'anoObs'},
-      {'controller': controller.corController, 'label': 'Cor', 'obs': 'corObs'},
-      {'controller': controller.kmController, 'label': 'KM', 'obs': 'kmObs'},
+      {
+        'controller': controller.anoController,
+        'label': 'Ano',
+        'obs': 'anoObs',
+      },
+      {
+        'controller': controller.corController,
+        'label': 'Cor',
+       // 'obs': 'corObs',
+      },
+      {
+        'controller': controller.kmController,
+        'label': 'KM',
+       // 'obs': 'kmObs',
+      },
     ];
 
     return Column(
@@ -36,6 +48,7 @@ class DadosVeiculoWidget extends StatelessWidget {
             children: [
               // Campo de texto com controlador
               TextFormField(
+                 enabled : false,
                 controller: campo['controller'],
                 decoration: InputDecoration(
                   labelText: campo['label'],
@@ -43,7 +56,7 @@ class DadosVeiculoWidget extends StatelessWidget {
                 ),
                 onChanged: (String? value) {
                   // Atualiza o valor do campo no controlador
-                  controller.updateCampo(campo['obs'], value ?? '');
+                //  controller.updateCampo(campo['obs'], value ?? '');
                 },
               ),
               // Campo de observação, se necessário
@@ -53,6 +66,7 @@ class DadosVeiculoWidget extends StatelessWidget {
                         margin: const EdgeInsets.only(top: 16.0),
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: TextFormField(
+                          enabled : false,
                           decoration: InputDecoration(
                             labelText: '${campo['label']} Observações',
                             border: const OutlineInputBorder(),

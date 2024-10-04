@@ -414,6 +414,14 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
     },
   ];
 
+  if (vistoria.statusVistoria != "APROVADO") {
+    camposCarroMoto.add({
+      'label': 'Observação Reprovado',
+      'value': vistoria.statusVistoria == "APROVADO" ? "OK" : "False",
+      'Obs': vistoria.reprovadoObs ?? 'Sem observações',
+    });
+  }
+
   // Determina os campos a serem exibidos com base no tipo de veículo
   List<Map<String, String?>> camposVistoria = [];
 
@@ -451,7 +459,7 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
     return pw.Padding(
       padding: const pw.EdgeInsets.all(30),
       child: pw.Text(
-        'Para maiores informações, acesse: www.juazeirodonorte.ce.gov.br',
+        'Para maiores informações, acesse: www.w2e.ce.gov.br',
         style: pw.TextStyle(
           font: font,
           fontSize: 12,
@@ -474,20 +482,65 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
         List<pw.Widget> widgets = [];
 
         // Add the dadosVeiclos table (this will appear on the first page)
-        widgets.add(
-          pw.TableHelper.fromTextArray(
-            border: pw.TableBorder.all(color: PdfColors.black),
-            cellPadding: const pw.EdgeInsets.all(10),
-            headerStyle: pw.TextStyle(
-              fontWeight: pw.FontWeight.bold,
-              font: font,
+        // widgets.add(
+        //   pw.TableHelper.fromTextArray(
+        //     border: pw.TableBorder.all(color: PdfColors.black),
+        //     cellPadding: const pw.EdgeInsets.all(10),
+        //     headerStyle: pw.TextStyle(
+        //       fontWeight: pw.FontWeight.bold,
+        //       font: font,
+        //     ),
+        //     headers: ['Campo', 'Valor'],
+        //     data: dadosVeiclos.map((campo) {
+        //       return [campo['label'] ?? '', campo['value'] ?? "False"];
+        //     }).toList(),
+        //   ),
+        // );
+
+        // Adiciona as informações como Rows ao PDF com bordas
+        for (int i = 0; i < dadosVeiclos.length; i += 2) {
+          final first = dadosVeiclos[i];
+          final second =
+              (i + 1 < dadosVeiclos.length) ? dadosVeiclos[i + 1] : null;
+
+          widgets.add(
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                // Primeiro item com borda
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(8),
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.black),
+                    ),
+                    child: pw.Text(
+                      '${first['label']}: ${first['value'] ?? 'False'}',
+                      textAlign: pw.TextAlign.left,
+                    ),
+                  ),
+                ),
+                // Segundo item com borda, se existir
+                if (second != null)
+                  pw.Expanded(
+                    child: pw.Container(
+                      padding: const pw.EdgeInsets.all(8),
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(color: PdfColors.black),
+                      ),
+                      child: pw.Text(
+                        '${second['label']}: ${second['value'] ?? 'False'}',
+                        textAlign: pw.TextAlign.left,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            headers: ['Campo', 'Valor'],
-            data: dadosVeiclos.map((campo) {
-              return [campo['label'] ?? '', campo['value'] ?? "False"];
-            }).toList(),
-          ),
-        );
+          );
+
+          // Espaçamento entre as linhas
+          widgets.add(pw.SizedBox(height: 10));
+        }
 
         widgets.add(pw.SizedBox(height: 20)); // Add spacing between tables
 

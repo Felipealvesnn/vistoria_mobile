@@ -13,6 +13,7 @@ import '../modules/login_page/views/login_page_view.dart';
 import '../modules/vistoria/bindings/vistoria_binding.dart';
 import '../modules/vistoria/views/vistoria_view.dart';
 
+
 part 'app_routes.dart';
 
 class AppPages {
@@ -51,5 +52,6 @@ class AppPages {
       page: () => const ConfiguracoesView(),
       binding: ConfiguracoesBinding(),
     ),
+    
   ];
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 Color colorVerde = const Color(0xFF86AE28);
+Color colorAzulinfo = const Color(0xFF28A1AE);
+
 
 ThemeData ThemaApp() {
   final MaterialColor customGreen = createMaterialColor(colorVerde);

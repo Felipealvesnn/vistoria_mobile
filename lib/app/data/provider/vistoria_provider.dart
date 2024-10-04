@@ -99,16 +99,14 @@ class vistoriaProvider extends GetConnect {
       throw Exception('Failed to load data!');
     }
   }
-  
-   Future getPpermissionario(String placa) async {
+
+  Future getPpermissionario(String placa) async {
     timeout = const Duration(minutes: 10);
     final token = Storagers.boxToken.read("boxToken");
     final headers = {"Authorization": 'Bearer $token'};
 
-    var response = await get(
-        "$baseUrlw2e/getPermissionario?placa=$placa",
-        contentType: 'application/json',
-        headers: headers);
+    var response = await get("$baseUrlw2e/getPermissionario?placa=$placa",
+        contentType: 'application/json', headers: headers);
 
     if (response.statusCode == 200) {
       return response.body;
@@ -116,10 +114,23 @@ class vistoriaProvider extends GetConnect {
       throw Exception('Failed to load data!');
     }
   }
- 
 
+  Future getImagemVistoria(int id) async {
+    timeout = const Duration(minutes: 10);
+    final token = Storagers.boxToken.read("boxToken");
+    final headers = {"Authorization": 'Bearer $token'};
 
- Future<dynamic> postVistoria(Map<dynamic, dynamic> vistoria) async {
+    var response = await get("$baseUrlw2e/GetmagemVistoria?id=$id",
+        contentType: 'application/json', headers: headers);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load data!');
+    }
+  }
+
+  Future<dynamic> postVistoria(Map<dynamic, dynamic> vistoria) async {
     try {
       timeout = const Duration(minutes: 10);
 
@@ -156,6 +167,4 @@ class vistoriaProvider extends GetConnect {
       throw Exception('Erro ao enviar dados de vistoria: $e');
     }
   }
-
-
 }

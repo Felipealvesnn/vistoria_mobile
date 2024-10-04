@@ -118,6 +118,7 @@ class Vistoria {
   int? usuarioId;
   String? agenteCod;
   String? statusVistoria;
+  String? reprovadoObs;
   TipoPermissionario? codTipoPemissaoNavigation;
   List<FotosVistorium>? FotosVistoria;
 
@@ -241,6 +242,7 @@ class Vistoria {
     this.agenteCod,
     this.statusVistoria,
     this.FotosVistoria,
+    this.reprovadoObs,
   });
 
   // Método para converter de JSON para a classe Dart
@@ -249,7 +251,7 @@ class Vistoria {
       codTipoPemissaoNavigation: json['codTipoPemissaoNavigation'] != null
           ? TipoPermissionario.fromJson(json['codTipoPemissaoNavigation'])
           : null,
-      vistoriaId: json['vistoriaId'],
+      vistoriaId: json['vistoriaID'],
       idPermissionario: json['idPermissionario'],
       codTipoPermissao: json['codTipoPermissao'],
       dataVistoria: DateTime.parse(json['dataVistoria']),
@@ -367,6 +369,7 @@ class Vistoria {
       usuarioId: json['usuarioId'],
       agenteCod: json['agenteCod'],
       statusVistoria: json['statusVistoria'],
+      reprovadoObs: json['reprovadoObs'],
       FotosVistoria: json['FotosVistoria'] != null
           ? List<FotosVistorium>.from(json['FotosVistoria']
               .map((item) => FotosVistorium.fromJson(item)))
@@ -494,13 +497,14 @@ class Vistoria {
       'usuarioId': usuarioId,
       'agenteCod': agenteCod,
       'statusVistoria': statusVistoria,
+      'reprovadoObs': reprovadoObs,
     };
   }
 }
 
 class FotosVistorium {
-  double fotoVistoriaId;
-  double? vistoriaId;
+  int fotoVistoriaId;
+  int? vistoriaId;
   String? nomeFoto;
   Vistoria? vistoria;
 
@@ -514,8 +518,8 @@ class FotosVistorium {
   // Método para converter um Map (JSON) em um objeto FotosVistorium
   factory FotosVistorium.fromJson(Map<String, dynamic> json) {
     return FotosVistorium(
-      fotoVistoriaId: json['fotoVistoriaId'] ?? 0,
-      vistoriaId: json['vistoriaId'],
+      fotoVistoriaId: json['fotoVistoriaID'] ?? 0,
+      vistoriaId: json['vistoriaID'],
       nomeFoto: json['nomeFoto'],
       // vistoria: json['vistoria'] != null ? Vistoria.fromJson(json['vistoria']) : null,
     );

@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img; // Importa a biblioteca 'image'
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/data/models/TipoPermissionario%20.dart';
@@ -11,7 +15,9 @@ import 'package:vistoria_mobile/app/data/models/VeiculoTipo.dart';
 import 'package:vistoria_mobile/app/data/models/vistoriaMobileDTO.dart';
 import 'package:vistoria_mobile/app/data/repository/vistoria_repository.dart';
 import 'package:vistoria_mobile/app/routes/app_pages.dart';
+import 'package:vistoria_mobile/app/utils/funcoesUtils.dart';
 import 'package:vistoria_mobile/app/utils/getstorages.dart';
+import 'package:vistoria_mobile/app/utils/themaapp.dart';
 import '../../../data/models/vistoria.dart';
 
 class VistoriaController extends GetxController {
@@ -19,6 +25,7 @@ class VistoriaController extends GetxController {
 
   // Observables and Controllers
   var veiculoTipoSelecionado = Rxn<VeiculoTipo>();
+  var permisionarioSelecionado = Rxn<TipoPermissionario>();
   var tipoPermissionariosFiltrados = <TipoPermissionario>[].obs;
   var vistoriasAll = <Vistoria>[];
   var vistoriasFiltro = <Vistoria>[];
@@ -27,6 +34,8 @@ class VistoriaController extends GetxController {
 
   // Lock for VeiculoTipo dropdown
   var isVeiculoTipoLocked = false.obs;
+  var isPermissionarioipoLocked = false.obs;
+  var tipoPermissionarioString = '';
 
   final chassiController = TextEditingController();
   final placaController = TextEditingController();
@@ -56,8 +65,6 @@ class VistoriaController extends GetxController {
   List<Map<String, dynamic>> fotosVistoria = [];
 
   var selectedImages = RxList<File>([]);
-
-  final ImagePicker _picker = ImagePicker();
 
   var camposMap = <dynamic, dynamic>{}.obs;
 
@@ -102,14 +109,14 @@ class VistoriaController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Erro', 'Erro ao buscar vistorias');
-    }finally{
+    } finally {
       isLoadingVistoriaInicial.value = false;
     }
   }
 
   Future<void> reseteFiltroVistorias() async {
     try {
-       isLoadingVistoriaInicial.value = true;
+      isLoadingVistoriaInicial.value = true;
       placaSeacherController.clear();
       dataInicioController.clear();
       dataFimController.clear();
@@ -117,8 +124,7 @@ class VistoriaController extends GetxController {
       hasMoreVistorias.value = true;
     } catch (e) {
       Get.snackbar('Erro', 'Erro ao buscar vistorias');
-    }
-    finally{
+    } finally {
       isLoadingVistoriaInicial.value = false;
     }
   }
@@ -202,8 +208,18 @@ class VistoriaController extends GetxController {
     await fetchVistorias();
     isLoadingMore.value = false;
   }
-   
-   
+
+  Future<List<FotosVistorium>> GetimagensVistoria(int vistoriaId) async {
+    try {
+      final mockData =
+          await vistoriaProvider.getImagemVistoria(placa: vistoriaId);
+
+      return mockData;
+    } catch (e) {
+      Get.snackbar('Erro', 'Erro ao buscar imagens');
+      return [];
+    }
+  }
 
   // Fetch vistoriasMobileDTO data
   Future<void> fetchVistoriasMobileDTO() async {
@@ -217,39 +233,56 @@ class VistoriaController extends GetxController {
   }
 
   // Select an image from the device
-  void pickImage(ImageSource source) async {
-    if (selectedImages.length >= 3) {
-      // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
+  Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
+    if (selectedImages.length >= 5) {
       Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
       return;
     }
+
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
-      // Obter o nome da foto
       String fileName = path.basename(pickedFile.path);
+      File imageFile = File(pickedFile.path);
 
-      // Adiciona o arquivo à lista de imagens selecionadas
-      selectedImages.add(File(pickedFile.path));
+      // Processar a imagem em uma thread separada
+      File? resizedFile = await compute(processImage, [imageFile, percentage]);
 
-      print('Nome da foto: $fileName'); // Exibe o nome da foto
+      if (resizedFile != null) {
+        selectedImages.add(resizedFile);
+        print('Nome da foto: $fileName');
+      }
     }
   }
 
-  // Fetch vehicle information from Detran
   Future<VeiculoDetran> getInforVeiculoDetran(String placa) async {
     try {
       limparCampos();
       isLoading.value = true;
-      VeiculoDetran dadosVeiculo =
-          await vistoriaProvider.getPlaca(placa: placa);
+
+      var dadosVeiculoMap = await vistoriaProvider.getPlaca(placa: placa);
+      VeiculoDetran dadosVeiculo = dadosVeiculoMap['VeiculoDetran'];
+      tipoPermissionarioString = dadosVeiculoMap['TipoPermissionario'];
 
       updateFieldsWithVeiculoDetran(dadosVeiculo);
       filterVeiculoTipo(dadosVeiculo.tipo);
 
       return dadosVeiculo;
+    } on PermissionarioNotFoundException catch (e) {
+      // Mostra o snackbar específico quando o permissionário não é encontrado
+      hideAllFields();
+      RecarregarDropwndoTipo.value = false;
+      Get.snackbar(
+        'Info',
+        'Permissionário não encontrado',
+        backgroundColor: colorAzulinfo,
+        colorText: Colors.white,
+      );
+      // Retorna um objeto vazio ou de acordo com sua lógica de negócios
+      return VeiculoDetran();
     } catch (e) {
       hideAllFields();
       RecarregarDropwndoTipo.value = false;
+      // Mostra o snackbar de erro genérico
       Get.snackbar('Erro', 'Erro ao buscar veículo');
       return VeiculoDetran();
     } finally {
@@ -306,12 +339,36 @@ class VistoriaController extends GetxController {
 
   // Helper to add permissionários to list based on descriptions
   void addPermissionarioToList(List<String> descriptions) {
+    // Atualiza a lista de tipos permissionários com base nas descrições
     tipoPermissionariosFiltrados.value = descriptions.map((descricao) {
       return TipoPermissionario(
         codTipoPermissao: getCodTipoPermissaoByDescricao(descricao),
         descricao: descricao,
       );
     }).toList();
+
+    // Tenta encontrar um tipo de permissionário que corresponda à string fornecida
+    var permisionarioEncontrado = tipoPermissionariosFiltrados.value.firstWhere(
+      (permissionario) => permissionario.descricao == tipoPermissionarioString,
+      orElse: () =>
+          TipoPermissionario(), // Retorna 'null' se não encontrar uma correspondência
+    );
+
+    // Atualiza o permissionário selecionado e bloqueia o tipo se uma correspondência for encontrada
+    if (permisionarioEncontrado != null) {
+      updateCampo('codTipoPermissao',
+          permisionarioEncontrado.codTipoPermissao.toString());
+      updateVisibility(permisionarioEncontrado.descricao!,
+          veiculoTipoSelecionado.value?.veiTipDesc ?? '');
+
+      permisionarioSelecionado.value = permisionarioEncontrado;
+      isPermissionarioipoLocked.value =
+          permisionarioEncontrado.codTipoPermissao != null;
+    } else {
+      // Caso não encontre, reseta o valor para o estado padrão desejado
+      permisionarioSelecionado.value = null;
+      isPermissionarioipoLocked.value = false;
+    }
   }
 
   // Helper to find codTipoPermissao by description
