@@ -15,6 +15,7 @@ import 'package:vistoria_mobile/app/data/models/VeiculoTipo.dart';
 import 'package:vistoria_mobile/app/data/models/vistoriaMobileDTO.dart';
 import 'package:vistoria_mobile/app/data/repository/vistoria_repository.dart';
 import 'package:vistoria_mobile/app/routes/app_pages.dart';
+import 'package:vistoria_mobile/app/utils/funcoesUtils.dart';
 import 'package:vistoria_mobile/app/utils/getstorages.dart';
 import 'package:vistoria_mobile/app/utils/themaapp.dart';
 import '../../../data/models/vistoria.dart';
@@ -234,42 +235,22 @@ class VistoriaController extends GetxController {
   // Select an image from the device
   Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
     if (selectedImages.length >= 5) {
-      // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
       Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
       return;
     }
 
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
-      // Obter o nome da foto
       String fileName = path.basename(pickedFile.path);
-
-      // Carregar a imagem como um Uint8List
       File imageFile = File(pickedFile.path);
-      List<int> imageBytes = await imageFile.readAsBytes();
 
-      // Converter para Uint8List
-      Uint8List uint8List = Uint8List.fromList(imageBytes);
+      // Processar a imagem em uma thread separada
+      File? resizedFile = await compute(processImage, [imageFile, percentage]);
 
-      // Decodificar a imagem
-      img.Image originalImage = img.decodeImage(uint8List)!;
-
-      // Calcular a nova largura e altura com base na porcentagem
-      int newWidth = (originalImage.width * percentage).toInt();
-      int newHeight = (originalImage.height * percentage).toInt();
-
-      // Redimensionar a imagem mantendo a proporção com base na porcentagem
-      img.Image resizedImage =
-          img.copyResize(originalImage, width: newWidth, height: newHeight);
-
-      // Salvar a imagem redimensionada em um novo arquivo temporário
-      File resizedFile = File(pickedFile.path)
-        ..writeAsBytesSync(img.encodeJpg(resizedImage));
-
-      // Adiciona o arquivo redimensionado à lista de imagens selecionadas
-      selectedImages.add(resizedFile);
-
-      print('Nome da foto: $fileName'); // Exibe o nome da foto
+      if (resizedFile != null) {
+        selectedImages.add(resizedFile);
+        print('Nome da foto: $fileName');
+      }
     }
   }
 

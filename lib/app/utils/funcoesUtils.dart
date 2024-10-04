@@ -3,7 +3,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
-
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -75,3 +75,36 @@ void showSnackBarCuida(String title, String message, Color backgroundColor) {
 //       print('Nome da foto: $fileName'); // Exibe o nome da foto
 //     }
 //   }
+
+
+Future<File?> processImage(List<dynamic> args) async {
+  File imageFile = args[0];
+  double percentage = args[1];
+
+  // Verificar o tamanho da imagem
+  int imageSize = await imageFile.length();
+  if (imageSize > 1 * 1024 * 1024) {
+    // Se a imagem for maior que 1MB, redimensionar
+    List<int> imageBytes = await imageFile.readAsBytes();
+    Uint8List uint8List = Uint8List.fromList(imageBytes);
+
+    img.Image originalImage = img.decodeImage(uint8List)!;
+
+    // Calcular a nova largura e altura com base na porcentagem
+    int newWidth = (originalImage.width * percentage).toInt();
+    int newHeight = (originalImage.height * percentage).toInt();
+
+    // Redimensionar a imagem mantendo a proporção com base na porcentagem
+    img.Image resizedImage =
+        img.copyResize(originalImage, width: newWidth, height: newHeight);
+
+    // Salvar a imagem redimensionada em um novo arquivo temporário
+    File resizedFile = File(imageFile.path)
+      ..writeAsBytesSync(img.encodeJpg(resizedImage));
+
+    return resizedFile;
+  }
+
+  // Se a imagem não for maior que 1MB, retornar o arquivo original
+  return imageFile;
+}
