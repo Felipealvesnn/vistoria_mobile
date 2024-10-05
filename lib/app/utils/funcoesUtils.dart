@@ -77,34 +77,34 @@ void showSnackBarCuida(String title, String message, Color backgroundColor) {
 //   }
 
 
-Future<File?> processImage(List<dynamic> args) async {
-  File imageFile = args[0];
-  double percentage = args[1];
+Future<File?> processImage(List<dynamic> params) async {
+  File imageFile = params[0];
 
-  // Verificar o tamanho da imagem
-  int imageSize = await imageFile.length();
-  if (imageSize > 1 * 1024 * 1024) {
-    // Se a imagem for maior que 1MB, redimensionar
-    List<int> imageBytes = await imageFile.readAsBytes();
-    Uint8List uint8List = Uint8List.fromList(imageBytes);
+  // Lê a imagem como bytes
+  final imageBytes = await imageFile.readAsBytes();
+  final originalImage = img.decodeImage(imageBytes);
 
-    img.Image originalImage = img.decodeImage(uint8List)!;
+  if (originalImage != null) {
+    // Verifica se a largura da imagem é maior que 800 pixels
+    if (originalImage.width > 800) {
+      // Redimensiona a imagem para uma largura de 800px mantendo a proporção da altura
+      final resizedImage = img.copyResize(originalImage, width: 800);
 
-    // Calcular a nova largura e altura com base na porcentagem
-    int newWidth = (originalImage.width * percentage).toInt();
-    int newHeight = (originalImage.height * percentage).toInt();
+      // Comprime a imagem (JPEG com qualidade de 85)
+      final resizedImageBytes = img.encodeJpg(resizedImage, quality: 85);
 
-    // Redimensionar a imagem mantendo a proporção com base na porcentagem
-    img.Image resizedImage =
-        img.copyResize(originalImage, width: newWidth, height: newHeight);
+      // Cria um novo arquivo para a imagem redimensionada
+      final resizedImageFile = File(imageFile.path.replaceAll('.jpg', '_resized.jpg'));
 
-    // Salvar a imagem redimensionada em um novo arquivo temporário
-    File resizedFile = File(imageFile.path)
-      ..writeAsBytesSync(img.encodeJpg(resizedImage));
+      // Salva a imagem redimensionada no mesmo diretório
+      await resizedImageFile.writeAsBytes(resizedImageBytes);
 
-    return resizedFile;
+      return resizedImageFile;
+    } else {
+      // Retorna a imagem original se for de baixa resolução
+      return imageFile;
+    }
   }
 
-  // Se a imagem não for maior que 1MB, retornar o arquivo original
-  return imageFile;
+  return null;
 }

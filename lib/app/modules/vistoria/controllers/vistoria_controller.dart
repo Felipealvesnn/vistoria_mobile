@@ -254,46 +254,65 @@ class VistoriaController extends GetxController {
   //   }
   // }
 
-  Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
-    if (selectedImages.length >= 5) {
-      // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
-      Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
+ Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
+  if (selectedImages.length >= 5) {
+    // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
+    Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
+    return;
+  }
+
+  final pickedFile = await ImagePicker().pickImage(source: source);
+  if (pickedFile != null) {
+    // Obter o nome da foto
+    String fileName = path.basename(pickedFile.path);
+
+    // Carregar a imagem como um Uint8List
+    File imageFile = File(pickedFile.path);
+    List<int> imageBytes = await imageFile.readAsBytes();
+
+    // Converter para Uint8List
+    Uint8List uint8List = Uint8List.fromList(imageBytes);
+
+    // Decodificar a imagem
+    img.Image originalImage = img.decodeImage(uint8List)!;
+
+    // Definir a resolução mínima aceitável
+    const int minResolutionWidth = 1280; // Exemplo: resolução mínima de 1280 pixels de largura
+    const int minResolutionHeight = 720; // Exemplo: resolução mínima de 720 pixels de altura
+
+    // Verificar se a imagem tem qualidade suficiente para ser redimensionada
+    if (originalImage.width < minResolutionWidth ||
+        originalImage.height < minResolutionHeight) {
+      // Caso a imagem já tenha uma qualidade baixa, não vamos redimensionar
+      Get.snackbar('Imagem de baixa qualidade',
+          'A imagem selecionada já está com qualidade baixa e não será redimensionada.');
+      selectedImages.add(imageFile); // Adiciona a imagem original sem redimensionar
       return;
     }
 
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile != null) {
-      // Obter o nome da foto
-      String fileName = path.basename(pickedFile.path);
+    // Calcular a nova largura e altura com base na porcentagem
+    int newWidth = (originalImage.width * percentage).toInt();
+    int newHeight = (originalImage.height * percentage).toInt();
 
-      // Carregar a imagem como um Uint8List
-      File imageFile = File(pickedFile.path);
-      List<int> imageBytes = await imageFile.readAsBytes();
+    // Redimensionar a imagem mantendo a proporção com base na porcentagem
+    img.Image resizedImage =
+        img.copyResize(originalImage, width: newWidth, height: newHeight);
 
-      // Converter para Uint8List
-      Uint8List uint8List = Uint8List.fromList(imageBytes);
+    // Codificar a imagem redimensionada como JPEG com qualidade ajustada (reduzindo o tamanho do arquivo)
+    List<int> resizedBytes = img.encodeJpg(resizedImage, quality: 85);
 
-      // Decodificar a imagem
-      img.Image originalImage = img.decodeImage(uint8List)!;
+    // Salvar a imagem redimensionada em um novo arquivo temporário
+    File resizedFile = File(pickedFile.path)..writeAsBytesSync(resizedBytes);
 
-      // Calcular a nova largura e altura com base na porcentagem
-      int newWidth = (originalImage.width * percentage).toInt();
-      int newHeight = (originalImage.height * percentage).toInt();
+    // Adiciona o arquivo redimensionado à lista de imagens selecionadas
+    selectedImages.add(resizedFile);
 
-      // Redimensionar a imagem mantendo a proporção com base na porcentagem
-      img.Image resizedImage =
-          img.copyResize(originalImage, width: newWidth, height: newHeight);
-
-      // Salvar a imagem redimensionada em um novo arquivo temporário
-      File resizedFile = File(pickedFile.path)
-        ..writeAsBytesSync(img.encodeJpg(resizedImage));
-
-      // Adiciona o arquivo redimensionado à lista de imagens selecionadas
-      selectedImages.add(resizedFile);
-
-      print('Nome da foto: $fileName'); // Exibe o nome da foto
-    }
+    print('Nome da foto: $fileName'); // Exibe o nome da foto
   }
+}
+
+
+
 
   Future<VeiculoDetran> getInforVeiculoDetran(String placa) async {
     try {

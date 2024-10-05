@@ -234,49 +234,68 @@ class VistoriaFormPage extends StatelessWidget {
           "Status da Vistoria",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: RadioListTile<String>(
-                title: const AutoSizeText(
-                  'APROVADO',
-                  maxLines: 1, // Limita a uma linha para evitar a quebra
-                  minFontSize:
-                      10, // Define o tamanho mínimo da fonte ao redimensionar
-                  overflow: TextOverflow
-                      .ellipsis, // Adiciona "..." se o texto for muito longo
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    // Atualiza o valor do grupo para 'APROVADO' ao clicar em qualquer parte do Row
+                    controller.statusVistoria.value = 'APROVADO';
+                  },
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: 'APROVADO',
+                        groupValue: controller.statusVistoria.value,
+                        onChanged: (String? value) {
+                          controller.statusVistoria.value = value ?? '';
+                        },
+                      ),
+                      const SizedBox(
+                          width: 8), // Ajuste de espaço entre o rádio e o texto
+                      const Expanded(
+                        child: Text(
+                          'APROVADO',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                value: 'APROVADO',
-                groupValue: controller.statusVistoria.value,
-                onChanged: (String? value) {
-                  controller.statusVistoria.value = value ?? '';
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-                focusNode: radioFocusNode,
               ),
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: RadioListTile<String>(
-                title: const AutoSizeText(
-                  'REPROVADO',
-                  maxLines: 1, // Limita a uma linha para evitar a quebra
-                  minFontSize:
-                      10, // Define o tamanho mínimo da fonte ao redimensionar
-                  overflow: TextOverflow
-                      .ellipsis, // Adiciona "..." se o texto for muito longo
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    // Atualiza o valor do grupo para 'REPROVADO' ao clicar em qualquer parte do Row
+                    controller.statusVistoria.value = 'REPROVADO';
+                  },
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: 'REPROVADO',
+                        groupValue: controller.statusVistoria.value,
+                        onChanged: (String? value) {
+                          controller.statusVistoria.value = value ?? '';
+                        },
+                      ),
+                      const SizedBox(
+                          width: 8), // Ajuste de espaço entre o rádio e o texto
+                      const Expanded(
+                        child: Text(
+                          'REPROVADO',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                value: 'REPROVADO',
-                groupValue: controller.statusVistoria.value,
-                onChanged: (String? value) {
-                  controller.statusVistoria.value = value ?? '';
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-                focusNode: radioFocusNode,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         if (controller.statusVistoria.value.isEmpty)
           const Text(
@@ -326,7 +345,8 @@ class VistoriaFormPage extends StatelessWidget {
                 runSpacing: 8.0,
                 children: controller.selectedImages.map((imageFile) {
                   return Stack(
-                    alignment: Alignment.center,
+                    alignment: Alignment
+                        .center, // Alinhar o conteúdo do Stack ao centro
                     children: [
                       ClipOval(
                         child: Image.file(
@@ -336,42 +356,30 @@ class VistoriaFormPage extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      Positioned(
-                        top: 5,
-                        right: 5,
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.dialog(
-                              AlertDialog(
-                                title: const Text("Confirmar"),
-                                content:
-                                    const Text("Você deseja excluir a imagem?"),
-                                actions: [
-                                  TextButton(
-                                    child: const Text("Cancelar"),
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text("Excluir"),
-                                    onPressed: () {
-                                      controller.selectedImages
-                                          .remove(imageFile);
-                                      Get.back();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          child: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                            size: 24,
-                          ),
-                        ),
-                      ),
+                      IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            Get.dialog(AlertDialog(
+                              title: const Text("Confirmar"),
+                              content:
+                                  const Text("Você deseja excluir a imagem?"),
+                              actions: [
+                                TextButton(
+                                  child: const Text("Cancelar"),
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text("Excluir"),
+                                  onPressed: () {
+                                    controller.selectedImages.remove(imageFile);
+                                    Get.back();
+                                  },
+                                ),
+                              ],
+                            ));
+                          })
                     ],
                   );
                 }).toList(),
