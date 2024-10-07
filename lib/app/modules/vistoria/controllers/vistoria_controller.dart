@@ -233,11 +233,6 @@ class VistoriaController extends GetxController {
   }
 
   // Select an image from the device
-<<<<<<< HEAD
-  Future<void> pickImage(ImageSource source, {double percentage = 0.3}) async {
-    if (selectedImages.length >= 5) {
-      Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
-=======
   // Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
   //   if (selectedImages.length >= 5) {
   //     Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
@@ -292,7 +287,6 @@ class VistoriaController extends GetxController {
       Get.snackbar('Imagem de baixa qualidade',
           'A imagem selecionada já está com qualidade baixa e não será redimensionada.');
       selectedImages.add(imageFile); // Adiciona a imagem original sem redimensionar
->>>>>>> 634b8fc3e12cb184180c53d3caacfdd9cb517c4e
       return;
     }
 
