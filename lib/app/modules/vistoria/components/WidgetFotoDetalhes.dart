@@ -40,7 +40,7 @@ class WidgetFotoDetalhes extends StatelessWidget {
 
             // Se a extensão for .jpg, mostrar o CircularProgressIndicator
             if (isJpgFile) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
@@ -70,5 +70,3 @@ class WidgetFotoDetalhes extends StatelessWidget {
     );
   }
 }
-
-

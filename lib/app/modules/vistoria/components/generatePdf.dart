@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart' show rootBundle;
@@ -432,6 +434,84 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
     // Mostrar campos de carro + campos compartilhados
     camposVistoria = [...camposCarro, ...camposCarroMoto];
   }
+  // final pdfPageWidth = PdfPageFormat.a4.availableWidth;
+  // final pdfPageHeight = PdfPageFormat.a4.availableHeight;
+
+  Uint8List loadImageDataFromBase64(String base64String) {
+    return base64Decode(base64String);
+  }
+
+  const pageTheme = pw.PageTheme(
+    margin: pw.EdgeInsets.all(20),
+    pageFormat: PdfPageFormat.a4,
+  );
+
+// Obter as dimensões disponíveis
+  final pdfPageWidth = pageTheme.pageFormat.availableWidth;
+  final pdfPageHeight = pageTheme.pageFormat.availableHeight;
+
+// Calcular a altura máxima para cada imagem (50% da altura disponível)
+  final imageHeight =
+      (pdfPageHeight - 40) / 2; // Subtrai 40 para considerar espaçamentos
+
+  void addImagePage(
+      pw.Document pdf, pw.MemoryImage image1, pw.MemoryImage? image2) {
+    pdf.addPage(
+      pw.Page(
+        pageTheme: pageTheme,
+        build: (context) {
+          return pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment
+                .start, // Elementos empilhados verticalmente a partir do topo
+            crossAxisAlignment:
+                pw.CrossAxisAlignment.center, // Centralizar horizontalmente
+            children: [
+              pw.Container(
+                padding: const pw.EdgeInsets.all(8),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(color: PdfColors.black),
+                ),
+                child: pw.Text(
+                  "Fotos da Vistoria",
+                  style: pw.TextStyle(
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+
+              pw.SizedBox(height: 20),
+              // Primeiro contêiner de imagem
+              pw.Center(
+                child: pw.Container(
+                  height: imageHeight,
+                  width: pdfPageWidth, // Ajustar a largura se necessário
+                  child: pw.Image(
+                    image1,
+                    fit: pw.BoxFit.cover,
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 20), // Espaço entre as imagens
+              // Segundo contêiner de imagem (se existir)
+              if (image2 != null)
+                pw.Center(
+                  child: pw.Container(
+                    height: imageHeight,
+                    width: pdfPageWidth, // Ajustar a largura se necessário
+                    child: pw.Image(
+                      image2,
+                      fit: pw.BoxFit.cover,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
 // Header function
   pw.Widget buildHeader(pw.Context context) {
@@ -480,22 +560,6 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
       footer: buildFooter,
       build: (context) {
         List<pw.Widget> widgets = [];
-
-        // Add the dadosVeiclos table (this will appear on the first page)
-        // widgets.add(
-        //   pw.TableHelper.fromTextArray(
-        //     border: pw.TableBorder.all(color: PdfColors.black),
-        //     cellPadding: const pw.EdgeInsets.all(10),
-        //     headerStyle: pw.TextStyle(
-        //       fontWeight: pw.FontWeight.bold,
-        //       font: font,
-        //     ),
-        //     headers: ['Campo', 'Valor'],
-        //     data: dadosVeiclos.map((campo) {
-        //       return [campo['label'] ?? '', campo['value'] ?? "False"];
-        //     }).toList(),
-        //   ),
-        // );
 
         // Adiciona as informações como Rows ao PDF com bordas
         for (int i = 0; i < dadosVeiclos.length; i += 2) {
@@ -572,24 +636,35 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
           ),
         );
 
+        // Iterar sobre as imagens em pares
+
         return widgets;
       },
     ),
   );
+  List<pw.MemoryImage> imageList = [];
+
+  if (vistoria.FotosVistoria != null && vistoria.FotosVistoria!.isNotEmpty) {
+    for (var foto in vistoria.FotosVistoria!) {
+      Uint8List imageData;
+
+      // Carregar os dados da imagem (adapte conforme necessário)
+      imageData = loadImageDataFromBase64(foto.nomeFoto!);
+
+      // Criar uma pw.MemoryImage e adicionar à lista
+      final image = pw.MemoryImage(imageData);
+      imageList.add(image);
+    }
+  }
+
+  for (int i = 0; i < imageList.length; i += 2) {
+    final image1 = imageList[i];
+    final image2 = (i + 1 < imageList.length) ? imageList[i + 1] : null;
+
+    // Adicionar uma nova página com até duas imagens
+    addImagePage(pdf, image1, image2);
+  }
 
   return pdf.save();
-}
 
-pw.Widget _paddedText(
-  final String text,
-  pw.Font font, {
-  final pw.TextAlign align = pw.TextAlign.left,
-}) =>
-    pw.Padding(
-      padding: const pw.EdgeInsets.all(10),
-      child: pw.Text(
-        text,
-        style: pw.TextStyle(font: font),
-        textAlign: align,
-      ),
-    );
+}
