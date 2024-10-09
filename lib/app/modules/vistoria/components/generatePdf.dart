@@ -635,7 +635,17 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
         // Add the camposVistoria table with the new header
         widgets.add(
           pw.TableHelper.fromTextArray(
+            cellAlignments: {
+              0: pw.Alignment.centerLeft,
+              1: pw.Alignment.center,
+              2: pw.Alignment.center,
+            },
             border: pw.TableBorder.all(color: PdfColors.black),
+            columnWidths: {
+              0: const pw.FlexColumnWidth(3),
+              1: const pw.FlexColumnWidth(2),
+              2: const pw.FlexColumnWidth(1),
+            },
             cellPadding: const pw.EdgeInsets.all(10),
             headerStyle: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
