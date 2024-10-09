@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:pdf/pdf.dart';
+import 'package:image/image.dart' as img;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
@@ -15,7 +16,7 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
 
   // Carregar a fonte customizada
   final font = pw.Font.ttf(
-      await rootBundle.load("assets/fonts/Roboto/Roboto-Regular.ttf"));
+      await rootBundle.load("assets/fonts/ttf/JetBrainsMono-Bold.ttf"));
 
   // Definindo campos de acordo com o tipo de veículo
 
@@ -25,9 +26,17 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
     {"label": "Chassi", "value": vistoria.chassi},
     {"label": "Ano", "value": vistoria.ano},
     //{"label": "Cor", "value": vistoria.cor},
+    {"label": "Vistoria feita por", "value": vistoria.usuarioNome},
     {"label": "Tipo", "value": vistoria.tipo},
     //{"label": "KM", "value": vistoria.km.toString()},
   ];
+
+  if (vistoria.agenteCod != '0' && vistoria.agenteCod != null) {
+    dadosVeiclos.add(
+      {"label": "Codigo agente", "value": vistoria.agenteCod},
+    );
+  }
+
   final List<Map<String, String?>> camposMoto = [
     {
       'label': 'Ruído do Motor',
@@ -435,12 +444,13 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
     camposVistoria = [...camposCarro, ...camposCarroMoto];
   }
   // final pdfPageWidth = PdfPageFormat.a4.availableWidth;
-  // final pdfPageHeight = PdfPageFormat.a4.availableHeight;
+  final pdfPageHeightrs = PdfPageFormat.a4.availableHeight;
 
   Uint8List loadImageDataFromBase64(String base64String) {
     return base64Decode(base64String);
   }
 
+// Definição do tema da página
   const pageTheme = pw.PageTheme(
     margin: pw.EdgeInsets.all(20),
     pageFormat: PdfPageFormat.a4,
@@ -450,64 +460,60 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
   final pdfPageWidth = pageTheme.pageFormat.availableWidth;
   final pdfPageHeight = pageTheme.pageFormat.availableHeight;
 
-// Calcular a altura máxima para cada imagem (50% da altura disponível)
-  final imageHeight =
-      (pdfPageHeight - 40) / 2; // Subtrai 40 para considerar espaçamentos
-
+// Função para adicionar páginas com imagens
+// Função para adicionar páginas com imagens
+  // Função para adicionar páginas com imagens
   void addImagePage(
       pw.Document pdf, pw.MemoryImage image1, pw.MemoryImage? image2) {
     pdf.addPage(
       pw.Page(
         pageTheme: pageTheme,
         build: (context) {
-          return pw.Column(
-            mainAxisAlignment: pw.MainAxisAlignment
-                .start, // Elementos empilhados verticalmente a partir do topo
-            crossAxisAlignment:
-                pw.CrossAxisAlignment.center, // Centralizar horizontalmente
-            children: [
-              pw.Container(
-                padding: const pw.EdgeInsets.all(8),
-                decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: PdfColors.black),
-                ),
-                child: pw.Text(
-                  "Fotos da Vistoria",
-                  style: pw.TextStyle(
-                    fontSize: 24,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  textAlign: pw.TextAlign.center,
-                ),
+          // Verifica se há uma ou duas imagens
+          if (image2 == null) {
+            // Se houver apenas uma imagem, ela deve ocupar toda a página
+            return pw.Center(
+              child: pw.Image(
+                image1,
+                width: pdfPageWidth,
+                height: pdfPageHeight,
+                fit: pw.BoxFit
+                    .contain, // Ajusta para ocupar a folha mantendo a proporção sem cortar
               ),
-
-              pw.SizedBox(height: 20),
-              // Primeiro contêiner de imagem
-              pw.Center(
-                child: pw.Container(
-                  height: imageHeight,
-                  width: pdfPageWidth, // Ajustar a largura se necessário
+            );
+          } else {
+            // Se houver duas imagens, exibir em coluna e garantir que estejam deitadas
+            return pw.Column(
+              mainAxisAlignment: pw.MainAxisAlignment.start,
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                // Primeiro contêiner de imagem
+                pw.Center(
+                    child: pw.Container(
+                  height: pdfPageHeight / 2 -
+                      20, // Metade da altura disponível (com espaçamento)
+                  width: pdfPageWidth,
                   child: pw.Image(
                     image1,
-                    fit: pw.BoxFit.cover,
+                    fit: pw.BoxFit
+                        .contain, // Ajustar para que a imagem caiba no espaço sem cortar
+                  ),
+                )),
+                pw.SizedBox(height: 20), // Espaço entre as imagens
+                // Segundo contêiner de imagem (se existir)
+                pw.Container(
+                  height: pdfPageHeight / 2 -
+                      20, // Metade da altura disponível (com espaçamento)
+                  width: pdfPageWidth,
+                  child: pw.Image(
+                    image2,
+                    fit: pw.BoxFit
+                        .contain, // Ajustar para que a imagem caiba no espaço sem cortar
                   ),
                 ),
-              ),
-              pw.SizedBox(height: 20), // Espaço entre as imagens
-              // Segundo contêiner de imagem (se existir)
-              if (image2 != null)
-                pw.Center(
-                  child: pw.Container(
-                    height: imageHeight,
-                    width: pdfPageWidth, // Ajustar a largura se necessário
-                    child: pw.Image(
-                      image2,
-                      fit: pw.BoxFit.cover,
-                    ),
-                  ),
-                ),
-            ],
-          );
+              ],
+            );
+          }
         },
       ),
     );
@@ -548,6 +554,14 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
         textAlign: pw.TextAlign.center,
       ),
     );
+  }
+
+  String getSymbol(dynamic value) {
+    if (value == true || value == 'OK' || value == 'OK') {
+      return 'OK'; //'✔'; // Símbolo de check (OK)
+    } else {
+      return '✗'; // Símbolo de X (não)
+    }
   }
 
   // Build the content
@@ -613,7 +627,7 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
           return [
             campo['label'] ?? '',
             campo['Obs'] ?? '',
-            campo['value'] ?? 'Não disponível',
+            getSymbol(campo['value']) ?? 'Não disponível',
           ];
         }).toList();
 
@@ -626,6 +640,9 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
             headerStyle: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               font: font,
+            ),
+            cellStyle: pw.TextStyle(
+              font: font, // Fonte para as células de dados
             ),
             headers: [
               'Campo',
@@ -642,6 +659,7 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
       },
     ),
   );
+
   List<pw.MemoryImage> imageList = [];
 
   if (vistoria.FotosVistoria != null && vistoria.FotosVistoria!.isNotEmpty) {
@@ -651,20 +669,57 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
       // Carregar os dados da imagem (adapte conforme necessário)
       imageData = loadImageDataFromBase64(foto.nomeFoto!);
 
+      // Decodificar a imagem
+      img.Image originalImage = img.decodeImage(imageData)!;
+
+      // Codificar a imagem como JPEG (sem rotacionar neste momento)
+      Uint8List imageDataFinal =
+          Uint8List.fromList(img.encodeJpg(originalImage));
+
       // Criar uma pw.MemoryImage e adicionar à lista
-      final image = pw.MemoryImage(imageData);
+      final image = pw.MemoryImage(imageDataFinal);
       imageList.add(image);
     }
   }
 
+// Adicionar páginas com as imagens em pares (2 por página)
   for (int i = 0; i < imageList.length; i += 2) {
     final image1 = imageList[i];
     final image2 = (i + 1 < imageList.length) ? imageList[i + 1] : null;
 
-    // Adicionar uma nova página com até duas imagens
-    addImagePage(pdf, image1, image2);
+    // Verificar se há duas imagens, e se for o caso, rotacionar ambas se necessário
+    if (image2 != null) {
+      // Carregar os dados das imagens e decodificar
+      img.Image decodedImage1 = img.decodeImage(image1.bytes)!;
+      img.Image decodedImage2 = img.decodeImage(image2.bytes)!;
+
+      // Rotacionar a imagem 1 se necessário
+      if (decodedImage1.height > decodedImage1.width) {
+        decodedImage1 = img.copyRotate(decodedImage1, angle: 90);
+      }
+
+      // Rotacionar a imagem 2 se necessário
+      if (decodedImage2.height > decodedImage2.width) {
+        decodedImage2 = img.copyRotate(decodedImage2, angle: 90);
+      }
+
+      // Codificar novamente as imagens rotacionadas como JPEG
+      Uint8List rotatedImageData1 =
+          Uint8List.fromList(img.encodeJpg(decodedImage1));
+      Uint8List rotatedImageData2 =
+          Uint8List.fromList(img.encodeJpg(decodedImage2));
+
+      // Atualizar as imagens para a lista rotacionada
+      final rotatedImage1 = pw.MemoryImage(rotatedImageData1);
+      final rotatedImage2 = pw.MemoryImage(rotatedImageData2);
+
+      // Adicionar uma nova página com duas imagens
+      addImagePage(pdf, rotatedImage1, rotatedImage2);
+    } else {
+      // Adicionar uma nova página com apenas uma imagem (sem rotacionar)
+      addImagePage(pdf, image1, null);
+    }
   }
 
   return pdf.save();
-
 }

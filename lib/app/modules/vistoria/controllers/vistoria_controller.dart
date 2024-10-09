@@ -254,65 +254,68 @@ class VistoriaController extends GetxController {
   //   }
   // }
 
- Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
-  if (selectedImages.length >= 5) {
-    // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
-    Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
-    return;
-  }
-
-  final pickedFile = await ImagePicker().pickImage(source: source);
-  if (pickedFile != null) {
-    // Obter o nome da foto
-    String fileName = path.basename(pickedFile.path);
-
-    // Carregar a imagem como um Uint8List
-    File imageFile = File(pickedFile.path);
-    List<int> imageBytes = await imageFile.readAsBytes();
-
-    // Converter para Uint8List
-    Uint8List uint8List = Uint8List.fromList(imageBytes);
-
-    // Decodificar a imagem
-    img.Image originalImage = img.decodeImage(uint8List)!;
-
-    // Definir a resolução mínima aceitável
-    const int minResolutionWidth = 1280; // Exemplo: resolução mínima de 1280 pixels de largura
-    const int minResolutionHeight = 720; // Exemplo: resolução mínima de 720 pixels de altura
-
-    // Verificar se a imagem tem qualidade suficiente para ser redimensionada
-    if (originalImage.width < minResolutionWidth ||
-        originalImage.height < minResolutionHeight) {
-      // Caso a imagem já tenha uma qualidade baixa, não vamos redimensionar
-      Get.snackbar('Imagem de baixa qualidade',
-          'A imagem selecionada já está com qualidade baixa e não será redimensionada.');
-      selectedImages.add(imageFile); // Adiciona a imagem original sem redimensionar
+  Future<void> pickImage(ImageSource source) async {
+    if (selectedImages.length >= 5) {
+      // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
+      Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
       return;
     }
 
-    // Calcular a nova largura e altura com base na porcentagem
-    int newWidth = (originalImage.width * percentage).toInt();
-    int newHeight = (originalImage.height * percentage).toInt();
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      // Obter o nome da foto
+      String fileName = path.basename(pickedFile.path);
 
-    // Redimensionar a imagem mantendo a proporção com base na porcentagem
-    img.Image resizedImage =
-        img.copyResize(originalImage, width: newWidth, height: newHeight);
+      // Carregar a imagem como um Uint8List
+      File imageFile = File(pickedFile.path);
+      List<int> imageBytes = await imageFile.readAsBytes();
 
-    // Codificar a imagem redimensionada como JPEG com qualidade ajustada (reduzindo o tamanho do arquivo)
-    List<int> resizedBytes = img.encodeJpg(resizedImage, quality: 85);
+      // Converter para Uint8List
+      Uint8List uint8List = Uint8List.fromList(imageBytes);
 
-    // Salvar a imagem redimensionada em um novo arquivo temporário
-    File resizedFile = File(pickedFile.path)..writeAsBytesSync(resizedBytes);
+      // Decodificar a imagem
+      img.Image originalImage = img.decodeImage(uint8List)!;
 
-    // Adiciona o arquivo redimensionado à lista de imagens selecionadas
-    selectedImages.add(resizedFile);
+      // Definir a resolução mínima aceitável
+      const int minResolutionWidth =
+          1280; // Exemplo: resolução mínima de 1280 pixels de largura
+      const int minResolutionHeight =
+          720; // Exemplo: resolução mínima de 720 pixels de altura
 
-    print('Nome da foto: $fileName'); // Exibe o nome da foto
+      // Verificar se a imagem tem qualidade suficiente para ser redimensionada
+      if (originalImage.width < minResolutionWidth ||
+          originalImage.height < minResolutionHeight) {
+        // Caso a imagem já tenha uma qualidade baixa, não vamos redimensionar
+        Get.snackbar('Imagem de baixa qualidade',
+            'A imagem selecionada já está com qualidade baixa e não será redimensionada.');
+        selectedImages
+            .add(imageFile); // Adiciona a imagem original sem redimensionar
+        return;
+      }
+
+      // Dimensão alvo para redimensionar a largura
+      const int targetWidth = 700;
+
+      // Calcular a nova altura mantendo a proporção da imagem original
+      double aspectRatio = originalImage.height / originalImage.width;
+      int newHeight = (targetWidth * aspectRatio).toInt();
+
+      // Redimensionar a imagem para a nova largura, mantendo a proporção
+      img.Image resizedImage =
+          img.copyResize(originalImage, width: targetWidth, height: newHeight);
+
+      // Codificar a imagem redimensionada como JPEG com qualidade ajustada (reduzindo o tamanho do arquivo)
+      List<int> resizedBytes = img.encodeJpg(resizedImage, quality: 85);
+
+      // Salvar a imagem redimensionada em um novo arquivo temporário
+      File resizedFile = File(pickedFile.path)..writeAsBytesSync(resizedBytes);
+
+      // Adiciona o arquivo redimensionado à lista de imagens selecionadas
+      selectedImages.add(resizedFile);
+
+      print('Nome da foto: $fileName'); // Exibe o nome da foto
+    }
   }
-}
-
-
-
 
   Future<VeiculoDetran> getInforVeiculoDetran(String placa) async {
     try {

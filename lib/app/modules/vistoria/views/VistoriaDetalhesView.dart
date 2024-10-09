@@ -18,6 +18,7 @@ class VistoriaDetalhesView extends StatefulWidget {
 }
 
 class _VistoriaDetalhesViewState extends State<VistoriaDetalhesView> {
+  RxBool loadingImagemPdf = false.obs;
   VistoriaController controller = Get.find<VistoriaController>();
   Future<void> _fetchImages() async {
     List<FotosVistorium> imagens =
@@ -27,6 +28,7 @@ class _VistoriaDetalhesViewState extends State<VistoriaDetalhesView> {
         widget.vistoria.FotosVistoria = imagens;
       });
     }
+    loadingImagemPdf.value = true;
   }
 
   @override
@@ -600,20 +602,35 @@ class _VistoriaDetalhesViewState extends State<VistoriaDetalhesView> {
       ],
     );
 
-    final readButton = Container(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      width: MediaQuery.of(context).size.width,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          Get.to(() => PdfPreviewPage(ocorrencia: widget.vistoria));
-        },
-        icon: const Icon(Icons.download),
-        label: const Text("Baixar PDF", style: TextStyle(color: Colors.white)),
-        style: ElevatedButton.styleFrom(
-            //backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
-            ),
-      ),
-    );
+    final readButton = Obx(() => Container(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          width: MediaQuery.of(context).size.width,
+          child: (loadingImagemPdf.value)
+              ? ElevatedButton.icon(
+                  onPressed: () {
+                    Get.to(() => PdfPreviewPage(ocorrencia: widget.vistoria));
+                  },
+                  icon: const Icon(Icons.download),
+                  label: const Text(
+                    "Baixar PDF",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      // Defina as propriedades do botão aqui
+                      // backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
+                      ),
+                )
+              : const Center(
+                  child: Text(
+                    "Carregando PDF...",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+        ));
 
     // Uso do CustomScrollView com Slivers
     return Scaffold(

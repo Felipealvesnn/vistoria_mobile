@@ -121,8 +121,10 @@ class Vistoria {
   String? reprovadoObs;
   TipoPermissionario? codTipoPemissaoNavigation;
   List<FotosVistorium>? FotosVistoria;
+  String? usuarioNome;
 
   Vistoria({
+    this.usuarioNome,
     this.codTipoPemissaoNavigation,
     this.vistoriaId,
     this.idPermissionario,
@@ -248,6 +250,7 @@ class Vistoria {
   // Método para converter de JSON para a classe Dart
   factory Vistoria.fromJson(Map<dynamic, dynamic> json) {
     return Vistoria(
+      usuarioNome: json['usuarioNome'],
       codTipoPemissaoNavigation: json['codTipoPemissaoNavigation'] != null
           ? TipoPermissionario.fromJson(json['codTipoPemissaoNavigation'])
           : null,
@@ -380,6 +383,7 @@ class Vistoria {
   // Método para converter a classe Dart para JSON
   Map<String, dynamic> toJson() {
     return {
+      'usuarioNome': usuarioNome,
       'vistoriaId': vistoriaId,
       'idPermissionario': idPermissionario,
       'codTipoPemissao': codTipoPermissao,
