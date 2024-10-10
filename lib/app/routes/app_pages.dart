@@ -10,9 +10,10 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login_page/bindings/login_page_binding.dart';
 import '../modules/login_page/views/login_page_view.dart';
+import '../modules/printPage/bindings/print_page_binding.dart';
+import '../modules/printPage/views/print_page_view.dart';
 import '../modules/vistoria/bindings/vistoria_binding.dart';
 import '../modules/vistoria/views/vistoria_view.dart';
-
 
 part 'app_routes.dart';
 
@@ -52,6 +53,10 @@ class AppPages {
       page: () => const ConfiguracoesView(),
       binding: ConfiguracoesBinding(),
     ),
-    
+    GetPage(
+      name: _Paths.PRINT_PAGE,
+      page: () =>  PrintPageView(),
+      binding: PrintPageBinding(),
+    ),
   ];
 }

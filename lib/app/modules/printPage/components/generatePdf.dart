@@ -634,7 +634,7 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
         // Add the camposVistoria table
         // Add the camposVistoria table with the new header
         widgets.add(
-          pw.TableHelper.fromTextArray(
+          pw.Table.fromTextArray(
             cellAlignments: {
               0: pw.Alignment.centerLeft,
               1: pw.Alignment.center,
@@ -705,12 +705,12 @@ Future<Uint8List> generatePdf(Vistoria vistoria) async {
 
       // Rotacionar a imagem 1 se necessário
       if (decodedImage1.height > decodedImage1.width) {
-        decodedImage1 = img.copyRotate(decodedImage1, angle: 90);
+        decodedImage1 = img.copyRotate(decodedImage1,angle:   90);
       }
 
       // Rotacionar a imagem 2 se necessário
       if (decodedImage2.height > decodedImage2.width) {
-        decodedImage2 = img.copyRotate(decodedImage2, angle: 90);
+        decodedImage2 = img.copyRotate(decodedImage2,angle:   90);
       }
 
       // Codificar novamente as imagens rotacionadas como JPEG

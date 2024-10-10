@@ -35,6 +35,16 @@ void showSnackBarCuida(String title, String message, Color backgroundColor) {
   );
 }
 
+String removeSpecialCharacters(String input) {
+  final withoutAccents = input.replaceAll(RegExp(r'[áàâãä]'), 'a');
+  // Adicione mais substituições para outros acentos e caracteres especiais conforme necessário
+  // por exemplo: éèêë -> e, íìîï -> i, óòôõö -> o, úùûü -> u, ç -> c
+  final withoutSpecialChars =
+      withoutAccents.replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '');
+  return withoutSpecialChars;
+}
+
+
 // void pickImage(ImageSource source, {double percentage = 0.5}) async {
 //     if (selectedImages.length >= 5) {
 //       // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens

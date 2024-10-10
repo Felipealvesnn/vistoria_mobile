@@ -53,6 +53,8 @@ dependencies:
   eva_icons_flutter:
   photo_view:
   auto_size_text: ^3.0.0
+  font_awesome_flutter: ^10.7.0
+  blue_thermal_printer: ^1.2.3
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +65,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 icons_launcher:
   android: true
