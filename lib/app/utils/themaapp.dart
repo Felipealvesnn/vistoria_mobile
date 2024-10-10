@@ -12,7 +12,7 @@ ThemeData ThemaApp() {
     primaryColor: colorVerde,
     primarySwatch: customGreen,
     
-    scaffoldBackgroundColor: Colors.blueGrey,
+    scaffoldBackgroundColor: Colors.grey[200],
     dividerTheme: const DividerThemeData(
       space: 0,
       thickness: 1,
