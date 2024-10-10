@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:vistoria_mobile/app/modules/printPage/components/PdfPreviewPage.dart';
 import 'package:vistoria_mobile/app/utils/themaapp.dart';
 import '../controllers/print_page_controller.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PrintPageView extends GetView<PrintPageController> {
   const PrintPageView({super.key});
@@ -85,11 +84,16 @@ class PrintPageView extends GetView<PrintPageController> {
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton.icon(
-                      onPressed: controller.isConnectedToPrinter.value
+                      onPressed: controller.isConnectedToPrinter.value &&
+                              !controller.isPrinting.value
                           ? () => controller.printDocument()
                           : null,
                       icon: const Icon(Icons.print),
-                      label: const Text('Imprimir'),
+                      label: Obx(() => Text(
+                            controller.isPrinting.value
+                                ? 'Imprimindo...'
+                                : 'Imprimir',
+                          )),
                       style: ElevatedButton.styleFrom(
                         disabledBackgroundColor: Colors.grey,
                         minimumSize: const Size.fromHeight(50),
@@ -122,29 +126,29 @@ class PrinterDropdown extends StatelessWidget {
         ),
         SizedBox(
           width: 20,
-          ),
+        ),
         Obx(() => DropdownButton<String>(
-          value: controller.tempSelectedPrinter.value,
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              controller.tempSelectedPrinter.value = newValue;
-            }
-          },
-          items: controller.availablePrinters.isNotEmpty
-              ? controller.availablePrinters
-                  .map<DropdownMenuItem<String>>((String printer) {
-                  return DropdownMenuItem<String>(
-                    value: printer,
-                    child: Text(printer),
-                  );
-                }).toList()
-              : [
-                  const DropdownMenuItem<String>(
-                    value: 'Não disponível',
-                    child: Text('Não disponível'),
-                  ),
-                ],
-        )),
+              value: controller.tempSelectedPrinter.value,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  controller.tempSelectedPrinter.value = newValue;
+                }
+              },
+              items: controller.availablePrinters.isNotEmpty
+                  ? controller.availablePrinters
+                      .map<DropdownMenuItem<String>>((String printer) {
+                      return DropdownMenuItem<String>(
+                        value: printer,
+                        child: Text(printer),
+                      );
+                    }).toList()
+                  : [
+                      const DropdownMenuItem<String>(
+                        value: 'Não disponível',
+                        child: Text('Não disponível'),
+                      ),
+                    ],
+            )),
         Expanded(
           flex: 1,
           child: IconButton(

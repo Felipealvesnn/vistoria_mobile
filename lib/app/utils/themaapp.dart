@@ -11,12 +11,15 @@ ThemeData ThemaApp() {
     fontFamily: 'Quicksand',
     primaryColor: colorVerde,
     primarySwatch: customGreen,
+    
+    scaffoldBackgroundColor: Colors.blueGrey,
     dividerTheme: const DividerThemeData(
       space: 0,
       thickness: 1,
       color: Colors.grey,
     ),
     colorScheme: ColorScheme.fromSwatch(
+      backgroundColor: Colors.blueGrey,
       primarySwatch: customGreen,
     ),
     switchTheme: SwitchThemeData(

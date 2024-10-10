@@ -12,6 +12,7 @@ class PrintPageController extends GetxController {
   var isConnectedToPrinter = false.obs;
   var isConnecting = false.obs;
   var isLoading = true.obs;
+  var isPrinting = false.obs; // Novo: Gerencia o estado da impressão
   late Vistoria vistoria;
   var isBluetoothOn = false.obs;
   final BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
@@ -165,10 +166,15 @@ class PrintPageController extends GetxController {
     }
   }
 
-  void printDocument() {
+  void printDocument() async {
     if (isConnectedToPrinter.value) {
+      isPrinting.value = true; // Inicia o estado de impressão
       print('Imprimindo documento...');
-      TestPrintVistoria.printVistoria(vistoria);
+
+      // Simula o processo de impressão
+      await TestPrintVistoria.printVistoria(vistoria); // Aguarda a impressão
+
+      isPrinting.value = false; // Finaliza o estado de impressão
     } else {
       print('Nenhuma impressora conectada.');
     }
