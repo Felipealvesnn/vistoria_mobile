@@ -156,8 +156,16 @@ class VistoriaFormPage extends StatelessWidget {
                   _buildCamposCondicionais(),
                   const SizedBox(height: 16.0),
                   _buildStatusVistoriaRadio(),
-                  if (controller.statusVistoria.value == "REPROVADO")
-                    _buildComentarioField(),
+                  // Aqui está o AnimatedSwitcher
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut, // Define a curva de animação
+                    child: controller.statusVistoria.value == "REPROVADO"
+                        ? _buildComentarioField() // Exibe o campo quando necessário
+                        : const SizedBox
+                            .shrink(), // Campo vazio para quando não for exibido
+                  ),
+
                   const SizedBox(height: 16.0),
                   _buildAddPhotoButton(context),
                   const SizedBox(height: 20),
