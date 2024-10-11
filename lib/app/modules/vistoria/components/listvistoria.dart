@@ -52,7 +52,7 @@ class ListVistoria extends StatelessWidget {
 
           return Card(
             elevation: 3,
-            margin: const EdgeInsets.all(10),
+            margin: const EdgeInsets.all(8),
             child: ListTile(
               leading: Icon(leadingIcon), // Usa o ícone correto
               title: Text('Placa: ${vistoria.placa}'),

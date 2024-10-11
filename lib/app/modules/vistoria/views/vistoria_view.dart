@@ -15,133 +15,165 @@ class VistoriaView extends GetView<VistoriaController> {
   Widget build(BuildContext context) {
     double tamanho = 100;
     void showFilterModal(BuildContext context) {
-      showModalBottomSheet(
-        context: context,
+      Get.bottomSheet(
+        backgroundColor: Colors.white,
+        Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GetBuilder<VistoriaController>(
+              builder: (controller) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Filtros',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Campo de texto para filtrar por placa
+                    TextFormField(
+                      controller: controller.placaSeacherController,
+                      inputFormatters: [
+                        TextInputMask(
+                            mask: 'AAA-9N99',
+                            placeholder: '_',
+                            maxPlaceHolders: 11,
+                            reverse: false),
+                        PlacaVeiculoInputFormatter()
+                      ],
+                      decoration: const InputDecoration(
+                        labelText: 'Placa',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Campo para selecionar data inicial
+                    TextFormField(
+                      controller: controller.dataInicioController,
+                      decoration: const InputDecoration(
+                        labelText: 'Data Inicial',
+                        border: OutlineInputBorder(),
+                      ),
+                      readOnly: true, // Impede edição manual
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now(),
+                        );
+                        if (pickedDate != null) {
+                          controller.dataInicioController.text =
+                              DateFormat('dd/MM/yyyy').format(pickedDate);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Campo para selecionar data final
+                    TextFormField(
+                      controller: controller.dataFimController,
+                      decoration: const InputDecoration(
+                        labelText: 'Data Final',
+                        border: OutlineInputBorder(),
+                      ),
+                      readOnly: true, // Impede edição manual
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now(),
+                        );
+                        if (pickedDate != null) {
+                          controller.dataFimController.text =
+                              DateFormat('dd/MM/yyyy').format(pickedDate);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Botão para aplicar os filtros
+                    OverflowBar(
+                      spacing: 16,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            // Lógica para resetar os filtros aqui
+                            controller.reseteFiltroVistorias();
+                            // Fechar o modal após resetar os filtros
+                            Get.back();
+                          },
+                          child: const Text('Resetar Filtros'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            // Obter os textos dos controladores
+                            String plateText = controller
+                                .placaSeacherController.text
+                                .replaceAll('-', '')
+                                .replaceAll('_', '');
+                            controller.placaSeacherController.text = plateText;
+                            String dataInicioText =
+                                controller.dataInicioController.text.trim();
+                            String dataFimText =
+                                controller.dataFimController.text.trim();
+
+                            // Verificar se pelo menos a placa ou uma data foi preenchida
+                            if (plateText.isEmpty &&
+                                dataInicioText.isEmpty &&
+                                dataFimText.isEmpty) {
+                              // Mostrar mensagem de erro
+                              Get.snackbar(
+                                'Erro',
+                                'Por favor, preencha a placa ou uma data para aplicar o filtro.',
+                              );
+                              return; // Não prosseguir
+                            }
+
+                            // Se a placa estiver preenchida, verificar se tem pelo menos 7 caracteres
+                            if (plateText.isNotEmpty && plateText.length < 7) {
+                              // Mostrar mensagem de erro
+                              Get.snackbar(
+                                'Erro',
+                                'A placa deve ter pelo menos 7 caracteres.',
+                              );
+                              return; // Não prosseguir
+                            }
+
+                            // Lógica para aplicar os filtros aqui
+                            controller.fetchFiltroVistorias();
+                            // Fechar o modal após aplicar os filtros
+                            Get.back();
+                          },
+                          child: const Text('Aplicar Filtros'),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
         isScrollControlled: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(20),
           ),
         ),
-        builder: (BuildContext context) {
-          return Padding(
-            padding: MediaQuery.of(context).viewInsets,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Filtros',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Campo de texto para filtrar por placa
-                  TextFormField(
-                    controller: controller.placaSeacherController,
-                    inputFormatters: [
-                      TextInputMask(
-                          mask: 'AAA-9N99',
-                          placeholder: '_',
-                          maxPlaceHolders: 11,
-                          reverse: false),
-                      PlacaVeiculoInputFormatter()
-                    ],
-                    decoration: const InputDecoration(
-                      labelText: 'Placa',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Campo para selecionar data inicial
-                  TextFormField(
-                    controller: controller.dataInicioController,
-                    decoration: const InputDecoration(
-                      labelText: 'Data Inicial',
-                      border: OutlineInputBorder(),
-                    ),
-                    readOnly: true, // Impede edição manual
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime.now(),
-                      );
-                      if (pickedDate != null) {
-                        controller.dataInicioController.text =
-                            DateFormat('dd/MM/yyyy').format(pickedDate);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Campo para selecionar data final
-                  TextFormField(
-                    controller: controller.dataFimController,
-                    decoration: const InputDecoration(
-                      labelText: 'Data Final',
-                      border: OutlineInputBorder(),
-                    ),
-                    readOnly: true, // Impede edição manual
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime.now(),
-                      );
-                      if (pickedDate != null) {
-                        controller.dataFimController.text =
-                            DateFormat('dd/MM/yyyy').format(pickedDate);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Botão para aplicar os filtros
-                  OverflowBar(
-                    spacing: 16,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          // Lógica para aplicar os filtros aqui
-                          controller.reseteFiltroVistorias();
-                          // Fechar o modal após aplicar os filtros
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Resetar Filtros'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Lógica para aplicar os filtros aqui
-                          controller.placaSeacherController.text = controller
-                              .placaSeacherController.text
-                              .replaceAll('-', '')
-                              .replaceAll('_', '');
-                          controller.fetchFiltroVistorias();
-                          // Fechar o modal após aplicar os filtros
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Aplicar Filtros'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       );
     }
-
+  
+  
     return Scaffold(
       drawer: const MyDrawer(),
-      appBar: 
-      PreferredSize(
+      appBar: PreferredSize(
         preferredSize: Size.fromHeight(
           tamanho, // Define a altura do AppBar
         ),

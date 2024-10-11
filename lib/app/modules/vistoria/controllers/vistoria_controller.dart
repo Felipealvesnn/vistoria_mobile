@@ -85,6 +85,12 @@ class VistoriaController extends GetxController {
     });
   }
 
+  var isFilterValid =
+      false.obs; // Observável que controla a validação dos filtros
+
+  // Função que verifica se pelo menos um filtro está preenchido
+  
+
   // Updates a specific field dynamically in the map
   void updateCampo(String campo, dynamic valor) {
     camposMap[campo] = valor;
