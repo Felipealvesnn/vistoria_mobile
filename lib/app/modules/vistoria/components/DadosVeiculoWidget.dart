@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
@@ -31,12 +32,12 @@ class DadosVeiculoWidget extends StatelessWidget {
       {
         'controller': controller.corController,
         'label': 'Cor',
-       // 'obs': 'corObs',
+        // 'obs': 'corObs',
       },
       {
         'controller': controller.kmController,
-        'label': 'KM',
-       // 'obs': 'kmObs',
+        'label': 'km',
+        // 'obs': 'kmObs',
       },
     ];
 
@@ -48,17 +49,30 @@ class DadosVeiculoWidget extends StatelessWidget {
             children: [
               // Campo de texto com controlador
               TextFormField(
-                 enabled : false,
+                enabled: campo['controller'] == controller.kmController
+                    ? true
+                    : false,
                 controller: campo['controller'],
+                keyboardType: campo['controller'] == controller.kmController
+                    ? TextInputType.number
+                    : TextInputType
+                        .text, // Define o teclado numérico apenas para kmController
+                inputFormatters: campo['controller'] == controller.kmController
+                    ? <TextInputFormatter>[
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Aceita apenas números
+                      ]
+                    : null, // Permite qualquer entrada para outros campos
                 decoration: InputDecoration(
                   labelText: campo['label'],
                   border: const OutlineInputBorder(),
                 ),
                 onChanged: (String? value) {
                   // Atualiza o valor do campo no controlador
-                //  controller.updateCampo(campo['obs'], value ?? '');
+                  controller.updateCampo(campo['label'], value ?? '');
                 },
               ),
+
               // Campo de observação, se necessário
               Obx(
                 () => controller.camposMap[campo['obs']] != null
@@ -66,7 +80,7 @@ class DadosVeiculoWidget extends StatelessWidget {
                         margin: const EdgeInsets.only(top: 16.0),
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: TextFormField(
-                          enabled : false,
+                          enabled: false,
                           decoration: InputDecoration(
                             labelText: '${campo['label']} Observações',
                             border: const OutlineInputBorder(),
