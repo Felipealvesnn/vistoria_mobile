@@ -149,6 +149,7 @@ class PrinterDropdown extends StatelessWidget {
                   // style: const TextStyle(
                   //   overflow: TextOverflow.ellipsis,
                   // ),
+                  isExpanded: true,
                   value: controller.selectedPrinter.value,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
