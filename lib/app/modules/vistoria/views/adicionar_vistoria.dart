@@ -109,6 +109,7 @@ class VistoriaFormPage extends StatelessWidget {
           child: Form(
             key: formKey,
             child: ListView(
+              physics: const BouncingScrollPhysics(),
               children: [
                 const SizedBox(height: 16.0),
                 _buildPlacaField(),

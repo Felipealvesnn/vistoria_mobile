@@ -5,24 +5,29 @@ import 'package:vistoria_mobile/app/modules/printPage/components/TestPrintVistor
 import 'package:vistoria_mobile/app/utils/getstorages.dart';
 
 class PrintPageController extends GetxController {
-  var selectedPrinter = Rx<String?>(null);
-  var tempSelectedPrinter =
-      Rx<String?>(null); // Impressora temporária para o dropdown
-  var availablePrinters = <String>[].obs;
-  var isConnectedToPrinter = false.obs;
-  var isConnecting = false.obs;
-  var isLoading = true.obs;
-  var isPrinting = false.obs; // Novo: Gerencia o estado da impressão
+  // Impressora selecionada pelo usuário
+  final selectedPrinter = Rx<String?>(null);
+  // Lista de impressoras disponíveis
+  final availablePrinters = <String>[].obs;
+  // Estados observáveis
+  final isConnectedToPrinter = false.obs;
+  final isConnecting = false.obs;
+  final isLoading = true.obs;
+  final isPrinting = false.obs;
   late Vistoria vistoria;
-  var isBluetoothOn = false.obs;
-  final BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+  final bluetooth = BlueThermalPrinter.instance;
   List<BluetoothDevice> _devices = [];
   BluetoothDevice? selectedDevice;
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
     vistoria = Get.arguments as Vistoria;
+    initialize();
+  }
+
+  Future<void> initialize() async {
+    isLoading.value = true;
     await scanForPrinters();
     await checkBluetoothStatus();
     isLoading.value = false;
@@ -37,21 +42,22 @@ class PrintPageController extends GetxController {
         await attemptReconnect();
       }
     } catch (e) {
+      Get.snackbar('Erro', 'Erro ao verificar status do Bluetooth');
       print('Erro ao verificar status do Bluetooth: $e');
     }
   }
 
   Future<void> handleConnectedDevice() async {
     try {
-      var nomeIMpressora = Storagers.boxInicial.read('printer');
-      if (nomeIMpressora != null) {
-        selectedPrinter.value = nomeIMpressora;
-        tempSelectedPrinter.value = nomeIMpressora;
+      var printerName = Storagers.boxInicial.read('printer');
+      if (printerName != null) {
+        selectedPrinter.value = printerName;
         selectedDevice = _devices
             .firstWhere((device) => device.name == selectedPrinter.value);
         isConnectedToPrinter.value = true;
       }
     } catch (e) {
+      Get.snackbar('Erro', 'Erro ao recuperar impressora conectada');
       print('Erro ao manusear dispositivos conectados: $e');
     }
   }
@@ -62,9 +68,10 @@ class PrintPageController extends GetxController {
         await connectToDevice(selectedDevice!);
       } catch (e) {
         isConnectedToPrinter.value = false;
+        Get.snackbar('Erro', 'Não foi possível reconectar à impressora');
       }
     } else {
-      Get.snackbar('impressora', 'Nenhuma impressora conectada');
+      Get.snackbar('Impressora', 'Nenhuma impressora conectada');
     }
   }
 
@@ -76,58 +83,64 @@ class PrintPageController extends GetxController {
           .map((device) => device.name!)
           .toList();
 
-      bluetooth.onStateChanged().listen((state) {
+      if (availablePrinters.isEmpty) {
+        selectedPrinter.value = null;
+      }
+
+      bluetooth.onStateChanged().listen((state) async {
         switch (state) {
           case BlueThermalPrinter.CONNECTED:
             isConnectedToPrinter.value = true;
             break;
           case BlueThermalPrinter.DISCONNECTED:
             isConnectedToPrinter.value = false;
-            Future.delayed(const Duration(seconds: 1), () {
-              availablePrinters.value = [];
-              // Limpe o valor da impressora selecionada se a lista for esvaziada
-              if (!availablePrinters.contains(tempSelectedPrinter.value)) {
-                tempSelectedPrinter.value =
-                    null; // ou defina um valor padrão, se necessário
-              }
-            });
-
+            //Future.delayed(const Duration(seconds: 1), () {
+              selectedPrinter.value = null;
+              // availablePrinters.value = [];
+            //});
+            break;
+          case BlueThermalPrinter.STATE_TURNING_OFF:
+            isConnectedToPrinter.value = false;
+            availablePrinters.value = [];
+            selectedPrinter.value = null;
+            break;
+          case BlueThermalPrinter.STATE_TURNING_ON:
+            await scanForPrinters();
             break;
           default:
-            print(state);
+            print('Estado Bluetooth: $state');
             break;
         }
       });
     } catch (e) {
       _devices = [];
+      availablePrinters.value = [];
+      Get.snackbar('Erro', 'Erro ao escanear impressoras');
       print('Erro ao escanear impressoras: $e');
     }
   }
 
   Future<void> connectToPrinter() async {
-    try {
-      if (tempSelectedPrinter.value == null) {
-        Get.snackbar('Impressora', 'Nenhuma impressora selecionada');
-        return;
-      }
+    if (selectedPrinter.value == null) {
+      Get.snackbar('Impressora', 'Nenhuma impressora selecionada');
+      return;
+    }
 
-      isConnecting.value = true;
-      if (tempSelectedPrinter.value != null &&
-          tempSelectedPrinter.value != 'Não disponível') {
-        selectedDevice = _devices
-            .firstWhere((device) => device.name == tempSelectedPrinter.value);
-        if (selectedDevice != null) {
-          if (isConnectedToPrinter.value) {
-            await disconnectPrinter();
-          }
-          await connectToDevice(selectedDevice!);
-        } else {
-          print('Dispositivo não encontrado.');
+    isConnecting.value = true;
+    try {
+      selectedDevice =
+          _devices.firstWhere((device) => device.name == selectedPrinter.value);
+      if (selectedDevice != null) {
+        if (isConnectedToPrinter.value) {
+          await disconnectPrinter();
         }
+        await connectToDevice(selectedDevice!);
       } else {
-        print('Nenhuma impressora disponível para conectar.');
+        Get.snackbar('Erro', 'Dispositivo não encontrado');
+        print('Dispositivo não encontrado.');
       }
     } catch (e) {
+      Get.snackbar('Erro', 'Erro ao conectar: $e');
       print('Erro ao conectar: $e');
     } finally {
       isConnecting.value = false;
@@ -139,19 +152,18 @@ class PrintPageController extends GetxController {
       bool? isConnected = await bluetooth.isConnected;
       if (isConnected == false) {
         await bluetooth.connect(device);
-        Get.snackbar('impressora', 'Conectado à impressora ${device.name}');
+        Get.snackbar('Impressora', 'Conectado à impressora ${device.name}');
         Storagers.boxInicial.write('printer', device.name);
-        selectedPrinter.value =
-            tempSelectedPrinter.value; // Atualiza a impressora conectada
         isConnectedToPrinter.value = true;
       } else {
         isConnectedToPrinter.value = true;
         Get.snackbar(
-            'impressora', 'Impressora já conectada: ${selectedPrinter.value}');
+            'Impressora', 'Impressora já conectada: ${selectedPrinter.value}');
       }
     } catch (error) {
       isConnectedToPrinter.value = false;
-      Get.snackbar('Error', 'Erro ao conectar');
+      Get.snackbar('Erro', 'Erro ao conectar à impressora');
+      print('Erro ao conectar à impressora: $error');
     }
   }
 
@@ -159,23 +171,29 @@ class PrintPageController extends GetxController {
     try {
       await bluetooth.disconnect();
       isConnectedToPrinter.value = false;
-      selectedPrinter.value = null;
+      //  selectedPrinter.value = null;
+      Get.snackbar('Impressora', 'Impressora desconectada com sucesso');
       print('Impressora desconectada com sucesso.');
     } catch (e) {
+      Get.snackbar('Erro', 'Erro ao desconectar impressora');
       print('Erro ao desconectar: $e');
     }
   }
 
-  void printDocument() async {
+  Future<void> printDocument() async {
     if (isConnectedToPrinter.value) {
-      isPrinting.value = true; // Inicia o estado de impressão
-      print('Imprimindo documento...');
-
-      // Simula o processo de impressão
-      await TestPrintVistoria.printVistoria(vistoria); // Aguarda a impressão
-
-      isPrinting.value = false; // Finaliza o estado de impressão
+      isPrinting.value = true;
+      try {
+        await TestPrintVistoria.printVistoria(vistoria);
+        Get.snackbar('Impressão', 'Documento impresso com sucesso');
+      } catch (e) {
+        Get.snackbar('Erro', 'Erro ao imprimir documento');
+        print('Erro ao imprimir documento: $e');
+      } finally {
+        isPrinting.value = false;
+      }
     } else {
+      Get.snackbar('Impressora', 'Nenhuma impressora conectada');
       print('Nenhuma impressora conectada.');
     }
   }
