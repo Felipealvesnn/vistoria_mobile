@@ -41,7 +41,7 @@ class TestPrintVistoria {
           bluetooth.printNewLine();
           if (campo['Obs'] != null && campo['Obs']!.isNotEmpty) {
             bluetooth.printCustom(
-                "Observação: ${removeSpecialCharacters(campo['Obs']!)}", 0, 0);
+                "Observacao: ${removeSpecialCharacters(campo['Obs']!)}", 0, 0);
           }
         }
 

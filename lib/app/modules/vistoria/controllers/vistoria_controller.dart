@@ -294,7 +294,7 @@ class VistoriaController extends GetxController {
       }
 
       // Dimensão alvo para redimensionar a largura
-      const int targetWidth = 700;
+      const int targetWidth = 800;
 
       // Calcular a nova altura mantendo a proporção da imagem original
       double aspectRatio = originalImage.height / originalImage.width;
