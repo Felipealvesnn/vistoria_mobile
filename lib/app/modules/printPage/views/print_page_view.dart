@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -136,13 +137,18 @@ class PrinterDropdown extends StatelessWidget {
         children: [
           const Text(
             'Selecione a Impressora:',
-            style: TextStyle(fontSize: 18,),
+            style: TextStyle(
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
                 child: DropdownButtonFormField<String>(
+                  // style: const TextStyle(
+                  //   overflow: TextOverflow.ellipsis,
+                  // ),
                   value: controller.selectedPrinter.value,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -164,9 +170,14 @@ class PrinterDropdown extends StatelessWidget {
                         }).toList()
                       : [
                           const DropdownMenuItem<String>(
-                            
                             value: null,
-                            child: Text('Nenhuma impressora disponível',),
+                            child: AutoSizeText(
+                              minFontSize: 5,
+                              'Nenhuma impressora disponível',
+                              overflow: TextOverflow
+                                  .ellipsis, // Adiciona reticências se necessário
+                              maxLines: 2,
+                            ),
                           ),
                         ],
                 ),
