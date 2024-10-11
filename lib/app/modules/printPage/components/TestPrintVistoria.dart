@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 import 'package:vistoria_mobile/app/modules/vistoria/ultis/utilsVistoriaMaps.dart';
 import 'package:vistoria_mobile/app/utils/funcoesUtils.dart';
@@ -7,52 +11,78 @@ import 'package:vistoria_mobile/app/utils/funcoesUtils.dart';
 class TestPrintVistoria {
   static BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
 
-  static printVistoria(Vistoria vistoria) async {
+  static Future<void> printVistoria(Vistoria vistoria) async {
     // Formatação da data
     String dataVistoria = vistoria.dataVistoria != null
         ? DateFormat("dd/MM/yyyy HH:mm:ss")
             .format(vistoria.dataVistoria!.toLocal())
         : 'N/A';
 
-    // Dados do veículo (compartilhados para carro e moto)
-
     // Determina quais campos serão exibidos com base no tipo de veículo
-    List<Map<String, String?>> camposVistoria = [];
+    List<Map<String, String?>> camposVistoria =
+        MapDeVistoriaDetails(vistoria, incluirCamposExtras: true);
 
-    camposVistoria = MapDeVistoriaDetails(vistoria);
-    String pathImage = 'assets/icon/icon.png';
-    // Imprimir os campos conforme o tipo do veículo
-    bluetooth.isConnected.then((isConnected) {
-      if (isConnected!) {
+    String pathImage = await initSavetoPath();
+
+    // Verifica se está conectado à impressora
+    bool? isConnected = await bluetooth.isConnected;
+
+    if (isConnected == true) {
+      try {
         // Início da impressão
-        bluetooth.printNewLine();
-        bluetooth.printImage(pathImage); // Caminho da imagem/logo
-        bluetooth.printNewLine();
-        bluetooth.printCustom(
+        await bluetooth.printNewLine();
+        await bluetooth.printImage(pathImage); // Caminho da imagem/logo
+        await bluetooth.printNewLine();
+        await bluetooth.printCustom(
             "DETALHES DA VISTORIA", 3, 1); // Título centralizado
-        bluetooth.printNewLine();
+        await bluetooth.printNewLine();
 
         // Imprimir os campos dinamicamente
         for (var campo in camposVistoria) {
-          bluetooth.printCustom(
+          await bluetooth.printCustom(
               "${removeSpecialCharacters(campo['label']!)} : ${removeSpecialCharacters(campo['value']!)}",
               1,
               0);
-          bluetooth.printNewLine();
+          await bluetooth.printNewLine();
           if (campo['Obs'] != null && campo['Obs']!.isNotEmpty) {
-            bluetooth.printCustom(
+            await bluetooth.printCustom(
                 "Observacao: ${removeSpecialCharacters(campo['Obs']!)}", 0, 0);
+            await bluetooth.printNewLine();
           }
         }
 
         // Data da Vistoria
-        bluetooth.printCustom("Data da Vistoria: $dataVistoria", 0, 0);
+        await bluetooth.printCustom("Data da Vistoria: $dataVistoria", 0, 0);
 
-        // Cortar o papel no final
-        bluetooth.printNewLine();
-        bluetooth.printNewLine();
-        bluetooth.paperCut();
+        // Finaliza a impressão e corta o papel
+        await bluetooth.printNewLine();
+        await bluetooth.printNewLine();
+        await bluetooth.paperCut();
+      } catch (e) {
+        print('Erro ao imprimir: $e');
       }
-    });
+    } else {
+      print('Bluetooth não está conectado.');
+    }
   }
+}
+
+Future<String> initSavetoPath() async {
+  //read and write
+  //image max 300px X 300px
+  final filename = 'icon.png';
+  //var bytes = await rootBundle.load("assets/images/yourlogo.png");
+  var bytes = await rootBundle.load("assets/icon/icon.png");
+  String dir = (await getApplicationDocumentsDirectory()).path;
+  writeToFile(bytes, '$dir/$filename');
+
+  var pathImage = '$dir/$filename';
+  return pathImage;
+}
+
+Future<void> writeToFile(ByteData data, String path) {
+  final buffer = data.buffer;
+  return new File(path).writeAsBytes(
+    buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+  );
 }
