@@ -24,14 +24,13 @@ class _HeaderWidgetState extends State<HeaderWidget> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
-    // Cores dos gradientes
+    // Definindo as cores principais e o verde escuro
     Color primaryColor = Get.theme.primaryColor;
-    Color VerdeEscuro = const Color.fromARGB(255, 16, 68, 20);
+    Color verdeEscuro = const Color.fromARGB(255, 16, 68, 20);
 
     return Stack(
       children: [
-        // Primeira camada (mais ao fundo)
-
+        // Primeira camada (mais ao fundo) com opacidade menor
         _buildClipPath(
           width,
           _height,
@@ -41,10 +40,10 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             Offset(width / 5 * 4, _height + 20),
             Offset(width, _height - 18),
           ],
-          [primaryColor.withOpacity(0.9), VerdeEscuro],
+          [primaryColor.withOpacity(0.4), verdeEscuro.withOpacity(0.4)], // Menor opacidade
           const [0.0, 1.0],
         ),
-        // Segunda camada (intermediária)
+        // Segunda camada (intermediária) com opacidade média
         _buildClipPath(
           width,
           _height,
@@ -54,10 +53,10 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             Offset(width / 5 * 4, _height - 60),
             Offset(width, _height - 20),
           ],
-          [primaryColor, VerdeEscuro],
+          [primaryColor.withOpacity(0.6), verdeEscuro.withOpacity(0.6)], // Opacidade média
           const [0.0, 1.0],
         ),
-        // Terceira camada (mais à frente)
+        // Terceira camada (mais à frente) com opacidade total
         _buildClipPath(
           width,
           _height,
@@ -67,7 +66,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
             Offset(width / 5 * 4, _height - 80),
             Offset(width, _height - 20),
           ],
-          [primaryColor, VerdeEscuro],
+          [primaryColor.withOpacity(0.9), verdeEscuro.withOpacity(0.9)], // Maior opacidade
           const [0.0, 1.0],
         ),
         // Ícone de overlay (opcional)

@@ -213,6 +213,12 @@ class LoginPageView extends GetView<LoginPageController> {
                                 ),
                               ])),
                             ),
+
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child:
+                                  Image.asset('assets/icon/logo_municipio.png', cacheWidth:130,),
+                            ),
                           ],
                         ),
                       ),
@@ -223,12 +229,13 @@ class LoginPageView extends GetView<LoginPageController> {
             ],
           ),
         ),
-        bottomSheet: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Powered by'),
-          ],
-        ),
+        // bottomSheet:  Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //    // Text('Powered by'),
+        //     Image.asset('assets/icon/logo_municipio.png'),
+        //   ],
+        // ),
       ),
     );
   }

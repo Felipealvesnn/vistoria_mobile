@@ -89,7 +89,6 @@ class VistoriaController extends GetxController {
       false.obs; // Observável que controla a validação dos filtros
 
   // Função que verifica se pelo menos um filtro está preenchido
-  
 
   // Updates a specific field dynamically in the map
   void updateCampo(String campo, dynamic valor) {
@@ -238,28 +237,6 @@ class VistoriaController extends GetxController {
     }
   }
 
-  // Select an image from the device
-  // Future<void> pickImage(ImageSource source, {double percentage = 0.5}) async {
-  //   if (selectedImages.length >= 5) {
-  //     Get.snackbar('Limite atingido', 'Você só pode adicionar até 3 imagens.');
-  //     return;
-  //   }
-
-  //   final pickedFile = await ImagePicker().pickImage(source: source);
-  //   if (pickedFile != null) {
-  //     String fileName = path.basename(pickedFile.path);
-  //     File imageFile = File(pickedFile.path);
-
-  //     // Processar a imagem em uma thread separada
-  //     File? resizedFile = await compute(processImage, [imageFile, percentage]);
-
-  //     if (resizedFile != null) {
-  //       selectedImages.add(resizedFile);
-  //       print('Nome da foto: $fileName');
-  //     }
-  //   }
-  // }
-
   Future<void> pickImage(ImageSource source) async {
     if (selectedImages.length >= 5) {
       // Adicione uma lógica para mostrar uma mensagem ou alerta de limite de imagens
@@ -342,7 +319,7 @@ class VistoriaController extends GetxController {
       RecarregarDropwndoTipo.value = false;
       Get.snackbar(
         'Info',
-        'Permissionário não encontrado',
+        e.message,
         backgroundColor: colorAzulinfo,
         colorText: Colors.white,
       );
@@ -352,7 +329,12 @@ class VistoriaController extends GetxController {
       hideAllFields();
       RecarregarDropwndoTipo.value = false;
       // Mostra o snackbar de erro genérico
-      Get.snackbar('Erro', 'Erro ao buscar veículo');
+      Get.snackbar(
+        'Erro',
+        'Erro ao buscar veículo',
+        backgroundColor: VermelhoEscuro,
+        colorText: Colors.white,
+      );
       return VeiculoDetran();
     } finally {
       isLoading.value = false;
@@ -424,20 +406,14 @@ class VistoriaController extends GetxController {
     );
 
     // Atualiza o permissionário selecionado e bloqueia o tipo se uma correspondência for encontrada
-    if (permisionarioEncontrado != null) {
-      updateCampo('codTipoPermissao',
-          permisionarioEncontrado.codTipoPermissao.toString());
-      updateVisibility(permisionarioEncontrado.descricao!,
-          veiculoTipoSelecionado.value?.veiTipDesc ?? '');
+    updateCampo('codTipoPermissao',
+        permisionarioEncontrado.codTipoPermissao.toString());
+    updateVisibility(permisionarioEncontrado.descricao!,
+        veiculoTipoSelecionado.value?.veiTipDesc ?? '');
 
-      permisionarioSelecionado.value = permisionarioEncontrado;
-      isPermissionarioipoLocked.value =
-          permisionarioEncontrado.codTipoPermissao != null;
-    } else {
-      // Caso não encontre, reseta o valor para o estado padrão desejado
-      permisionarioSelecionado.value = null;
-      isPermissionarioipoLocked.value = false;
-    }
+    permisionarioSelecionado.value = permisionarioEncontrado;
+    isPermissionarioipoLocked.value =
+        permisionarioEncontrado.codTipoPermissao != null;
   }
 
   // Helper to find codTipoPermissao by description

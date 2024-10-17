@@ -8,7 +8,7 @@ import 'package:vistoria_mobile/app/data/models/vistoriaMobileDTO.dart';
 import 'package:vistoria_mobile/app/data/provider/vistoria_provider.dart';
 
 class VistoriaRepository {
-  final vistoriaProvider vistoriaclient = vistoriaProvider();
+  final VistoriaProvider vistoriaclient = VistoriaProvider();
 
   Future<List<Vistoria>> searchFiltroVistorias(
       {String? placa, String? dataInicial, String? dataFinal}) async {
@@ -55,7 +55,7 @@ class VistoriaRepository {
 
   Future<Map<String, dynamic>> getPlaca({required String placa}) async {
     // Faz a primeira requisição para verificar se o permissionário existe
-    var deranPermissio = await vistoriaclient.getPpermissionario(placa);
+    var deranPermissio = await vistoriaclient.getPermissionario(placa);
 
     // Verifica se a resposta contém "Sucesso": false
     if (deranPermissio['Sucesso'] == false) {
@@ -64,7 +64,7 @@ class VistoriaRepository {
     }
 
     // Se tiver sucesso, faz a segunda requisição para buscar o veículo
-    var itens = await vistoriaclient.getPlacaDetraN(placa);
+    var itens = await vistoriaclient.getPlacaDetran(placa);
     VeiculoDetran veiculoDetran = VeiculoDetran.fromJson(itens);
 
     print(itens);
@@ -96,7 +96,7 @@ class VistoriaRepository {
     try {
       // Obtém a lista de notificações do provedor
       Map<String, dynamic> jsonList =
-          await vistoriaclient.getvistoriaMobileDTO(page);
+          await vistoriaclient.getVistoriaMobileDTO(page);
       vistoriaMobileDTO mockData = vistoriaMobileDTO.fromJson(jsonList);
 
       // List<vistoriaMobileDTO> mockData = vistoriaMobileDTOjson

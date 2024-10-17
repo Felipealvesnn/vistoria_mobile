@@ -104,23 +104,23 @@ class VistoriaFormPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Formulário de Vistoria"),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: formKey,
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              children: [
-                const SizedBox(height: 16.0),
-                _buildPlacaField(),
-                const SizedBox(height: 16.0),
-                Obx(() => controller.isLoading.value
-                    ? const Center(child: CircularProgressIndicator())
-                    : _buildFormFields(context)),
-              ],
-            ),
-          ),
-        ),
+        body: Obx(() => controller.isLoading.value
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: formKey,
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      const SizedBox(height: 16.0),
+                      _buildPlacaField(),
+                      const SizedBox(height: 16.0),
+                      _buildFormFields(context),
+                    ],
+                  ),
+                ),
+              )),
       ),
     );
   }

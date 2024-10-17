@@ -14,8 +14,8 @@ class UsuarioProvider extends GetConnect {
 
     final body = usu.toJson();
 
-    var response = await post(
-      "$baseUrlw2e/login",
+     var response = await post(
+      "$baseUrlw2e/login?cliente=$nomeCliente", // Nome do cliente adicionado como query parameter
       body,
       headers: headers,
     );

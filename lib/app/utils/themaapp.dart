@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Color colorVerde = const Color(0xFF86AE28);
 Color colorAzulinfo = const Color(0xFF28A1AE);
-
+Color VermelhoEscuro = const Color(0xFFAE2828);
 
 ThemeData ThemaApp() {
   final MaterialColor customGreen = createMaterialColor(colorVerde);
@@ -11,7 +11,6 @@ ThemeData ThemaApp() {
     fontFamily: 'Quicksand',
     primaryColor: colorVerde,
     primarySwatch: customGreen,
-    
     scaffoldBackgroundColor: Colors.grey[200],
     dividerTheme: const DividerThemeData(
       space: 0,

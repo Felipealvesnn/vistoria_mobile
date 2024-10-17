@@ -4,7 +4,8 @@ import 'package:vistoria_mobile/app/data/models/vistoria.dart';
 import 'package:vistoria_mobile/app/utils/funcoesUtils.dart';
 import 'package:vistoria_mobile/app/utils/getstorages.dart';
 
-class vistoriaProvider extends GetConnect {
+
+class VistoriaProvider extends GetConnect {
   // Método para buscar vistorias por placa, dataInicial ou dataFinal
   Future searchVistorias(
       {String? placa, String? dataInicial, String? dataFinal}) async {
@@ -13,8 +14,8 @@ class vistoriaProvider extends GetConnect {
 
     final headers = {"Authorization": 'Bearer $token'};
 
-    // Monta a URL de acordo com os parâmetros fornecidos
-    String url = "${baseUrlw2e}getVistoriasFiltro";
+    // Monta a URL de acordo com os parâmetros fornecidos e o nome do cliente
+    String url = "${baseUrlw2e}getVistoriasFiltro?cliente=$nomeCliente";
     List<String> queryParams = [];
 
     if (placa != null && placa.isNotEmpty) {
@@ -29,7 +30,7 @@ class vistoriaProvider extends GetConnect {
 
     // Adiciona os parâmetros à URL
     if (queryParams.isNotEmpty) {
-      url += "?${queryParams.join('&')}";
+      url += "&${queryParams.join('&')}";
     }
 
     // Faz a requisição GET ao endpoint
@@ -53,9 +54,9 @@ class vistoriaProvider extends GetConnect {
 
     final headers = {"Authorization": 'Bearer $token'};
 
-    // Adiciona os parâmetros de paginação na URL
+    // Adiciona os parâmetros de paginação na URL, incluindo o nome do cliente
     var response = await get(
-      "$baseUrlw2e/Vistoria?pageNumber=$pageNumber&pageSize=$pageSize",
+      "$baseUrlw2e/Vistoria?cliente=$nomeCliente&pageNumber=$pageNumber&pageSize=$pageSize",
       contentType: 'application/json',
       headers: headers,
     );
@@ -67,13 +68,13 @@ class vistoriaProvider extends GetConnect {
     }
   }
 
-  Future getvistoriaMobileDTO(int? page) async {
+  Future getVistoriaMobileDTO(int? page) async {
     timeout = const Duration(minutes: 10);
     final token = Storagers.boxToken.read("boxToken");
 
     final headers = {"Authorization": 'Bearer $token'};
 
-    var response = await get("$baseUrlw2e/getmobile",
+    var response = await get("$baseUrlw2e/getmobile?cliente=$nomeCliente",
         contentType: 'application/json', headers: headers);
 
     if (response.statusCode == 200) {
@@ -83,13 +84,13 @@ class vistoriaProvider extends GetConnect {
     }
   }
 
-  Future getPlacaDetraN(String placa) async {
+  Future getPlacaDetran(String placa) async {
     timeout = const Duration(minutes: 10);
     final token = Storagers.boxToken.read("boxToken");
     final headers = {"Authorization": 'Bearer $token'};
 
     var response = await get(
-        "$pesquisarplacaURl/ConsultaPlaca?placa=$placa&blitz=n&blitzID=n",
+        "$pesquisarplacaURl/ConsultaPlaca?cliente=$nomeCliente&placa=$placa&blitz=n&blitzID=n",
         contentType: 'application/json',
         headers: headers);
 
@@ -100,12 +101,12 @@ class vistoriaProvider extends GetConnect {
     }
   }
 
-  Future getPpermissionario(String placa) async {
+  Future getPermissionario(String placa) async {
     timeout = const Duration(minutes: 10);
     final token = Storagers.boxToken.read("boxToken");
     final headers = {"Authorization": 'Bearer $token'};
 
-    var response = await get("$baseUrlw2e/getPermissionario?placa=$placa",
+    var response = await get("$baseUrlw2e/getPermissionario?cliente=$nomeCliente&placa=$placa",
         contentType: 'application/json', headers: headers);
 
     if (response.statusCode == 200) {
@@ -120,7 +121,7 @@ class vistoriaProvider extends GetConnect {
     final token = Storagers.boxToken.read("boxToken");
     final headers = {"Authorization": 'Bearer $token'};
 
-    var response = await get("$baseUrlw2e/GetmagemVistoria?id=$id",
+    var response = await get("$baseUrlw2e/GetmagemVistoria?cliente=$nomeCliente&id=$id",
         contentType: 'application/json', headers: headers);
 
     if (response.statusCode == 200) {
@@ -150,9 +151,9 @@ class vistoriaProvider extends GetConnect {
       // Configura os headers
       final headers = {"Authorization": 'Bearer $token'};
 
-      // Faz a requisição POST
+      // Faz a requisição POST, incluindo o nome do cliente
       var response =
-          await post("$baseUrlw2e/Create", vistoria, headers: headers);
+          await post("$baseUrlw2e/Create?cliente=$nomeCliente", vistoria, headers: headers);
 
       // Verifica se a resposta foi bem-sucedida
       if (response.statusCode == 200) {
