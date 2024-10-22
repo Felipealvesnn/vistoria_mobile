@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:image/image.dart' as img;
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -22,16 +22,18 @@ class TestPrintVistoria {
     List<Map<String, String?>> camposVistoria =
         MapDeVistoriaDetails(vistoria, incluirCamposExtras: true);
 
-    String pathImage = await initSavetoPath();
-
     // Verifica se está conectado à impressora
     bool? isConnected = await bluetooth.isConnected;
 
     if (isConnected == true) {
       try {
         // Início da impressão
+        ByteData bytesAsset = await rootBundle.load("assets/icon/icon.png");
+        Uint8List imageBytesFromAsset = bytesAsset.buffer
+            .asUint8List(bytesAsset.offsetInBytes, bytesAsset.lengthInBytes);
+
         await bluetooth.printNewLine();
-        await bluetooth.printImage(pathImage); // Caminho da imagem/logo
+        await bluetooth.printImageBytes(imageBytesFromAsset);
         await bluetooth.printNewLine();
         await bluetooth.printCustom(
             "DETALHES DA VISTORIA", 3, 1); // Título centralizado
@@ -39,11 +41,14 @@ class TestPrintVistoria {
 
         // Imprimir os campos dinamicamente
         for (var campo in camposVistoria) {
+          if (campo['label'] == "Realizada") {
+            continue; // Pula para o próximo campo
+          }
           await bluetooth.printCustom(
               "${removeSpecialCharacters(campo['label']!)} : ${removeSpecialCharacters(campo['value']!)}",
               1,
               0);
-          await bluetooth.printNewLine();
+          // await bluetooth.printNewLine();
           if (campo['Obs'] != null && campo['Obs']!.isNotEmpty) {
             await bluetooth.printCustom(
                 "Observacao: ${removeSpecialCharacters(campo['Obs']!)}", 0, 0);
@@ -52,7 +57,7 @@ class TestPrintVistoria {
         }
 
         // Data da Vistoria
-        await bluetooth.printCustom("Data da Vistoria: $dataVistoria", 0, 0);
+        await bluetooth.printCustom("Data da Vistoria: $dataVistoria", 1, 0);
 
         // Finaliza a impressão e corta o papel
         await bluetooth.printNewLine();
@@ -67,22 +72,3 @@ class TestPrintVistoria {
   }
 }
 
-Future<String> initSavetoPath() async {
-  //read and write
-  //image max 300px X 300px
-  final filename = 'icon.png';
-  //var bytes = await rootBundle.load("assets/images/yourlogo.png");
-  var bytes = await rootBundle.load("assets/icon/icon.png");
-  String dir = (await getApplicationDocumentsDirectory()).path;
-  writeToFile(bytes, '$dir/$filename');
-
-  var pathImage = '$dir/$filename';
-  return pathImage;
-}
-
-Future<void> writeToFile(ByteData data, String path) {
-  final buffer = data.buffer;
-  return new File(path).writeAsBytes(
-    buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-  );
-}

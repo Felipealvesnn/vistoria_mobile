@@ -28,7 +28,7 @@ List<Map<String, String?>> MapDeVistoriaDetails(Vistoria vistoria,
       },
     ]);
   }
-  List<Map<String, String?>> camposVistoria = [];
+ List<Map<String, String?>> camposVistoria = [...dadosVeiclos];
 
   if (incluirCamposVeiculos) {
     final List<Map<String, String?>> camposMoto = [
