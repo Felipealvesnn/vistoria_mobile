@@ -48,6 +48,7 @@ class VistoriaProvider extends GetConnect {
   }
 
   Future getVistoria(int pageNumber) async {
+    
     timeout = const Duration(minutes: 10);
     int pageSize = 10;
     final token = Storagers.boxToken.read("boxToken");
@@ -147,6 +148,7 @@ class VistoriaProvider extends GetConnect {
       if (vistoria.isEmpty) {
         throw Exception('Dados de vistoria não podem estar vazios!');
       }
+      print(vistoria.toString());
 
       // Configura os headers
       final headers = {"Authorization": 'Bearer $token'};

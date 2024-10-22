@@ -43,7 +43,7 @@ class _VistoriaDetalhesViewState extends State<VistoriaDetalhesView> {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String?>> camposVistoria = MapDeVistoriaDetails(widget.vistoria);
+    List<Map<String, String?>> camposVistoria = MapDeVistoriaDetails(widget.vistoria, incluirCamposVeiculos: true);
     double alturaContainer = 270;
     // Top Content (com as informações da vistoria e a imagem de fundo)
     final topContent = Stack(
