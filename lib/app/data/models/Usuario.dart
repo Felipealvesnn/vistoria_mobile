@@ -2,7 +2,7 @@ import 'dart:convert';
 
 
 class Usuario {
-  double? usuarioId;
+  int? usuarioId;
   String? usuNome;
   double? usuCPF;
   double? usuRg;
