@@ -28,7 +28,7 @@ class TestPrintVistoria {
     if (isConnected == true) {
       try {
         // Início da impressão
-        ByteData bytesAsset = await rootBundle.load("assets/icon/icon.png");
+        ByteData bytesAsset = await rootBundle.load("assets/icon/iconebranco.jpg");
         Uint8List imageBytesFromAsset = bytesAsset.buffer
             .asUint8List(bytesAsset.offsetInBytes, bytesAsset.lengthInBytes);
 

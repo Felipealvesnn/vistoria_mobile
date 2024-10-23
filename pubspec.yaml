@@ -87,6 +87,7 @@ flutter:
   assets:
     - assets/icon/logo_municipio.png
     - assets/icon/icon.png
+    - assets/icon/iconebranco.jpg
     - assets/images/
     - assets/images/onix-hatch-showroom-1920x960.webp
     - assets/images/notfound.jpg
